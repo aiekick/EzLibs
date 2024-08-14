@@ -1,0 +1,6 @@
+[submodule "EzExpr"]
+	path = EzExpr
+	url = https://github.com/aiekick/EzExpr.git
+[submodule "EzGraph"]
+	path = EzGraph
+	url = https://github.com/aiekick/EzGraph.git
