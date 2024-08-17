@@ -4,3 +4,9 @@
 [submodule "EzGraph"]
 	path = EzGraph
 	url = https://github.com/aiekick/EzGraph.git
+[submodule "EzIni"]
+	path = EzIni
+	url = https://github.com/aiekick/EzIni.git
+[submodule "EzXml"]
+	path = EzXml
+	url = https://github.com/aiekick/EzXml.git
