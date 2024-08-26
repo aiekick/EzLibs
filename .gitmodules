@@ -13,3 +13,6 @@
 [submodule "EzGui"]
 	path = EzGui
 	url = https://github.com/aiekick/EzGui.git
+[submodule "EzGL"]
+	path = EzGL
+	url = https://github.com/aiekick/EzGL.git
