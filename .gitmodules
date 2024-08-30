@@ -10,3 +10,12 @@
 [submodule "EzXml"]
 	path = EzXml
 	url = https://github.com/aiekick/EzXml.git
+[submodule "EzGui"]
+	path = EzGui
+	url = https://github.com/aiekick/EzGui.git
+[submodule "EzGL"]
+	path = EzGL
+	url = https://github.com/aiekick/EzGL.git
+[submodule "EzMath"]
+	path = EzMath
+	url = https://github.com/aiekick/EzMath.git
