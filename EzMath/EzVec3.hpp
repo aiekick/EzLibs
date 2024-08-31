@@ -1,25 +1,43 @@
 #pragma once
 
+#include <type_traits>
+#include <cmath>
+#include <string>
+#include <vector>
+
 namespace ez {
+
+// Restrict the template to relevant types only (e.g., disable bool)
 template <typename T>
 struct vec3 {
-    T x = (T)0, y = (T)0, z = (T)0;
-    vec3() : x((T)0), y((T)0), z((T)0) {
+    static_assert(!std::is_same<T, bool>::value, "vec3 cannot be instantiated with bool type");
+
+    T x = static_cast<T>(0), y = static_cast<T>(0), z = static_cast<T>(0);
+
+    // Default constructor
+    vec3() : x(static_cast<T>(0)), y(static_cast<T>(0)), z(static_cast<T>(0)) {
     }
+
+    // Constructor with type conversion
     template <typename U>
-    vec3<T>(vec3<U> a) {
-        x = (T)a.x;
-        y = (T)a.y;
-        z = (T)a.z;
+    vec3(const vec3<U>& a) : x(static_cast<T>(a.x)), y(static_cast<T>(a.y)), z(static_cast<T>(a.z)) {
     }
-    vec3(const T& xyz) : x(xyz), y(xyz), z(xyz) {
+
+    // Constructor for uniform initialization
+    vec3(T xyz) : x(xyz), y(xyz), z(xyz) {
     }
-    vec3(const T& x, const T& y, const T& z) : x(x), y(y), z(z) {
+
+    // Constructor with specific values
+    vec3(T x, T y, T z) : x(x), y(y), z(z) {
     }
-    vec3(const vec2<T>& xy, const T& z) : x(xy.x), y(xy.y), z(z) {
+
+    // Constructor using a vec2 and a scalar
+    // Assumption: vec2<T> is defined elsewhere, as it is referenced but not included here.
+    vec3(const vec2<T>& xy, T z) : x(xy.x), y(xy.y), z(z) {
     }
-    vec3(const std::string& vec, const char& c = ';', vec3<T>* def = nullptr)  // may be in format "0.2f,0.3f,0.4f"
-    {
+
+    // Constructor from string
+    vec3(const std::string& vec, char c = ';', vec3<T>* def = nullptr) {
         if (def) {
             x = def->x;
             y = def->y;
@@ -34,325 +52,414 @@ struct vec3 {
         if (s > 2)
             z = result[2];
     }
-    T& operator[](const size_t& i) {
+
+    // Indexing operator
+    T& operator[](size_t i) {
         return (&x)[i];
     }
-    vec3<T> Offset(const T& vX, const T& vY, const T& vZ) const {
-        return vec3<T>(x + vX, y + vY, z + vZ);
+
+    // Offset the vector
+    vec3 Offset(T vX, T vY, T vZ) const {
+        return vec3(x + vX, y + vY, z + vZ);
     }
-    void Set(const T& vX, const T& vY, const T& vZ) {
+
+    // Set the vector's components
+    void Set(T vX, T vY, T vZ) {
         x = vX;
         y = vY;
         z = vZ;
     }
-    vec3<T> operator-() const {
-        return vec3<T>(-x, -y, -z);
+
+    // Negation operator
+    vec3 operator-() const {
+        static_assert(std::is_signed<T>::value, "Negate is only valid for signed types");
+        return vec3(-x, -y, -z);
     }
-    vec3<T> operator!() const {
-        return vec3<T>(!(bool)x, !(bool)y, !(bool)z);
+
+    // Logical NOT operator, only for integral types
+    vec3 operator!() const {
+        static_assert(std::is_integral<T>::value, "Logical NOT is only valid for integral types");
+        return vec3(!x, !y, !z);
     }
+
+    // Extract 2D vectors from 3D vector
     vec2<T> xy() const {
         return vec2<T>(x, y);
     }
+
     vec2<T> xz() const {
         return vec2<T>(x, z);
     }
+
     vec2<T> yz() const {
         return vec2<T>(y, z);
     }
+
+    // Cyclic permutation
     vec3 yzx() const {
-        return vec3<T>(y, z, x);
+        return vec3(y, z, x);
     }
-    // https://en.cppreference.com/w/cpp/language/operator_incdec
-    vec3<T>& operator++() {
+
+    // Pre-increment and pre-decrement operators
+    vec3& operator++() {
         ++x;
         ++y;
         ++z;
         return *this;
-    }  // pre inc
-    vec3<T>& operator--() {
+    }
+
+    vec3& operator--() {
         --x;
         --y;
         --z;
         return *this;
-    }  // pre dec
-    vec3<T> operator++(int) {
-        vec3<T> tmp = *this;
+    }
+
+    // Post-increment and post-decrement operators
+    vec3 operator++(int) {
+        vec3 tmp = *this;
         ++*this;
         return tmp;
-    }  // post inc
-    vec3<T> operator--(int) {
-        vec3<T> tmp = *this;
+    }
+
+    vec3 operator--(int) {
+        vec3 tmp = *this;
         --*this;
         return tmp;
-    }  // post dec
-    void operator+=(const T& a) {
+    }
+
+    // Compound assignment operators
+    void operator+=(T a) {
         x += a;
         y += a;
         z += a;
     }
-    void operator+=(const vec3<T>& v) {
+
+    void operator+=(const vec3& v) {
         x += v.x;
         y += v.y;
         z += v.z;
     }
-    void operator-=(const T& a) {
+
+    void operator-=(T a) {
         x -= a;
         y -= a;
         z -= a;
     }
-    void operator-=(const vec3<T>& v) {
+
+    void operator-=(const vec3& v) {
         x -= v.x;
         y -= v.y;
         z -= v.z;
     }
-    bool operator==(const T& a) {
-        return (x == a) && (y == a) && (z == a);
-    }
-    bool operator==(const vec3<T>& v) {
-        return (x == v.x) && (y == v.y) && (z == v.z);
-    }
-    bool operator!=(const T& a) {
-        return (x != a) || (y != a) || (z != a);
-    }
-    bool operator!=(const vec3<T>& v) {
-        return (x != v.x) || (y != v.y) || (z != v.z);
-    }
-    void operator*=(const T& a) {
+
+    void operator*=(T a) {
         x *= a;
         y *= a;
         z *= a;
     }
-    void operator*=(const vec3<T>& v) {
+
+    void operator*=(const vec3& v) {
         x *= v.x;
         y *= v.y;
         z *= v.z;
     }
-    void operator/=(const T& a) {
+
+    void operator/=(T a) {
         x /= a;
         y /= a;
         z /= a;
     }
-    void operator/=(const vec3<T>& v) {
+
+    void operator/=(const vec3& v) {
         x /= v.x;
         y /= v.y;
         z /= v.z;
     }
+
+    // Length of the vector
     T length() const {
-        return (T)sqrt(lengthSquared());
+        return static_cast<T>(std::sqrt(lengthSquared()));
     }
+
+    // Squared length of the vector
     T lengthSquared() const {
         return x * x + y * y + z * z;
     }
+
+    // Normalize the vector
     T normalize() {
         T _length = length();
         if (_length < std::numeric_limits<T>::epsilon())
-            return (T)0;
-        T _invLength = (T)1 / _length;
+            return static_cast<T>(0);
+        T _invLength = static_cast<T>(1) / _length;
         x *= _invLength;
         y *= _invLength;
         z *= _invLength;
         return _length;
     }
-    vec3<T> GetNormalized() const {
-        vec3<T> n = vec3<T>(x, y, z);
+
+    // Get a normalized copy of the vector
+    vec3 GetNormalized() const {
+        vec3 n(x, y, z);
         n.normalize();
         return n;
     }
+
+    // Sum of components
     T sum() const {
         return x + y + z;
     }
+
+    // Sum of absolute values of components
     T sumAbs() const {
-        return abs<T>(x) + abs<T>(y) + abs<T>(z);
+        return std::abs(x) + std::abs(y) + std::abs(z);
     }
+
+    // Check if all components are zero (AND)
     bool emptyAND() const {
-        return x == (T)0 && y == (T)0 && z == (T)0;
+        return x == static_cast<T>(0) && y == static_cast<T>(0) && z == static_cast<T>(0);
     }
+
+    // Check if any component is zero (OR)
     bool emptyOR() const {
-        return x == (T)0 || y == (T)0 || z == (T)0;
+        return x == static_cast<T>(0) || y == static_cast<T>(0) || z == static_cast<T>(0);
     }
-    std::string string(const char& c = ';') const {
+
+    // Convert to string
+    std::string string(char c = ';') const {
         return toStr(x) + c + toStr(y) + c + toStr(z);
     }
+
+    // Minimum component
     T mini() const {
-        return internal_mini<T>(x, internal_mini<T>(y, z));
+        return std::min({x, y, z});
     }
+
+    // Maximum component
     T maxi() const {
-        return internal_maxi<T>(x, internal_maxi<T>(y, z));
+        return std::max({x, y, z});
     }
 };
-// https://en.cppreference.com/w/cpp/language/operator_incdec
+
+// Operators for vec3
 template <typename T>
-inline vec3<T>& operator++(vec3<T>& v) {
-    ++v;
-    return v;
-}  // pre inc
-template <typename T>
-inline vec3<T>& operator--(vec3<T>& v) {
-    --v;
-    return v;
-}  // pre dec
-template <typename T>
-inline vec3<T> operator++(vec3<T>& v, int) {
-    vec3<T> a = v;
-    ++a;
-    return a;
-}  // post inc
-template <typename T>
-inline vec3<T> operator--(vec3<T>& v, int) {
-    vec3<T> a = v;
-    --a;
-    return a;
-}  // post dec
-template <typename T>
-inline vec3<T> operator+(vec3<T> v, T f) {
+inline vec3<T> operator+(const vec3<T>& v, T f) {
     return vec3<T>(v.x + f, v.y + f, v.z + f);
 }
+
 template <typename T>
-inline vec3<T> operator+(vec3<T> v, vec3<T> f) {
+inline vec3<T> operator+(T f, const vec3<T>& v) {
+    return vec3<T>(v.x + f, v.y + f, v.z + f);
+}
+
+template <typename T>
+inline vec3<T> operator+(const vec3<T>& v, const vec3<T>& f) {
     return vec3<T>(v.x + f.x, v.y + f.y, v.z + f.z);
 }
+
 template <typename T>
-inline vec3<T> operator+(T f, vec3<T> v) {
-    return vec3<T>(f + v.x, f + v.y, f + v.z);
-}
-template <typename T>
-inline vec3<T> operator-(vec3<T> v, T f) {
+inline vec3<T> operator-(const vec3<T>& v, T f) {
     return vec3<T>(v.x - f, v.y - f, v.z - f);
 }
+
 template <typename T>
-inline vec3<T> operator-(vec3<T> v, vec3<T> f) {
-    return vec3<T>(v.x - f.x, v.y - f.y, v.z - f.z);
-}
-template <typename T>
-inline vec3<T> operator-(T f, vec3<T> v) {
+inline vec3<T> operator-(T f, const vec3<T>& v) {
     return vec3<T>(f - v.x, f - v.y, f - v.z);
 }
+
 template <typename T>
-inline vec3<T> operator*(vec3<T> v, T f) {
+inline vec3<T> operator-(const vec3<T>& v, const vec3<T>& f) {
+    return vec3<T>(v.x - f.x, v.y - f.y, v.z - f.z);
+}
+
+template <typename T>
+inline vec3<T> operator*(const vec3<T>& v, T f) {
     return vec3<T>(v.x * f, v.y * f, v.z * f);
 }
+
 template <typename T>
-inline vec3<T> operator*(vec3<T> v, vec3<T> f) {
+inline vec3<T> operator*(T f, const vec3<T>& v) {
+    return vec3<T>(v.x * f, v.y * f, v.z * f);
+}
+
+template <typename T>
+inline vec3<T> operator*(const vec3<T>& v, const vec3<T>& f) {
     return vec3<T>(v.x * f.x, v.y * f.y, v.z * f.z);
 }
+
 template <typename T>
-inline vec3<T> operator*(T f, vec3<T> v) {
-    return vec3<T>(f * v.x, f * v.y, f * v.z);
-}
-template <typename T>
-inline vec3<T> operator/(vec3<T> v, T f) {
+inline vec3<T> operator/(const vec3<T>& v, T f) {
     return vec3<T>(v.x / f, v.y / f, v.z / f);
 }
+
 template <typename T>
-inline vec3<T> operator/(T f, vec3<T> v) {
+inline vec3<T> operator/(T f, const vec3<T>& v) {
     return vec3<T>(f / v.x, f / v.y, f / v.z);
 }
+
 template <typename T>
-inline vec3<T> operator/(vec3<T> v, vec3<T> f) {
+inline vec3<T> operator/(const vec3<T>& v, const vec3<T>& f) {
     return vec3<T>(v.x / f.x, v.y / f.y, v.z / f.z);
 }
+
+// Comparison operators
 template <typename T>
-inline bool operator<(vec3<T> v, vec3<T> f) {
+inline bool operator<(const vec3<T>& v, const vec3<T>& f) {
     return v.x < f.x && v.y < f.y && v.z < f.z;
 }
+
 template <typename T>
-inline bool operator<(vec3<T> v, T f) {
+inline bool operator<(const vec3<T>& v, T f) {
     return v.x < f && v.y < f && v.z < f;
 }
+
 template <typename T>
-inline bool operator>(vec3<T> v, vec3<T> f) {
+inline bool operator<(T f, const vec3<T>& v) {
+    return f < v.x && f < v.y && f < v.z;
+}
+
+template <typename T>
+inline bool operator>(const vec3<T>& v, const vec3<T>& f) {
     return v.x > f.x && v.y > f.y && v.z > f.z;
 }
+
 template <typename T>
-inline bool operator>(vec3<T> v, T f) {
+inline bool operator>(const vec3<T>& v, T f) {
     return v.x > f && v.y > f && v.z > f;
 }
+
 template <typename T>
-inline bool operator<=(vec3<T> v, vec3<T> f) {
+inline bool operator>(T f, const vec3<T>& v) {
+    return f > v.x && f > v.y && f > v.z;
+}
+
+template <typename T>
+inline bool operator<=(const vec3<T>& v, const vec3<T>& f) {
     return v.x <= f.x && v.y <= f.y && v.z <= f.z;
 }
+
 template <typename T>
-inline bool operator<=(vec3<T> v, T f) {
+inline bool operator<=(const vec3<T>& v, T f) {
     return v.x <= f && v.y <= f && v.z <= f;
 }
+
 template <typename T>
-inline bool operator>=(vec3<T> v, vec3<T> f) {
+inline bool operator<=(T f, const vec3<T>& v) {
+    return f <= v.x && f <= v.y && f <= v.z;
+}
+
+template <typename T>
+inline bool operator>=(const vec3<T>& v, const vec3<T>& f) {
     return v.x >= f.x && v.y >= f.y && v.z >= f.z;
 }
+
 template <typename T>
-inline bool operator>=(vec3<T> v, T f) {
+inline bool operator>=(const vec3<T>& v, T f) {
     return v.x >= f && v.y >= f && v.z >= f;
 }
+
 template <typename T>
-inline bool operator!=(vec3<T> v, vec3<T> f) {
-    return f.x != v.x || f.y != v.y || f.z != v.z;
+inline bool operator>=(T f, const vec3<T>& v) {
+    return f >= v.x && f >= v.y && f >= v.z;
 }
+
 template <typename T>
-inline bool operator==(vec3<T> v, vec3<T> f) {
-    return f.x == v.x && f.y == v.y && f.z == v.z;
+inline bool operator!=(const vec3<T>& v, const vec3<T>& f) {
+    return v.x != f.x || v.y != f.y || v.z != f.z;
 }
+
 template <typename T>
-inline vec3<T> mini(vec3<T> a, vec3<T> b) {
-    return vec3<T>(mini<T>(a.x, b.x), mini<T>(a.y, b.y), mini<T>(a.z, b.z));
+inline bool operator!=(const vec3<T>& v, T f) {
+    return v.x != f || v.y != f || v.z != f;
 }
+
 template <typename T>
-inline vec3<T> maxi(vec3<T> a, vec3<T> b) {
-    return vec3<T>(maxi<T>(a.x, b.x), maxi<T>(a.y, b.y), maxi<T>(a.z, b.z));
+inline bool operator!=(T f, const vec3<T>& v) {
+    return f != v.x || f != v.y || f != v.z;
 }
+
 template <typename T>
-inline vec3<T> floor(vec3<T> a) {
-    return vec3<T>(floor<T>(a.x), floor<T>(a.y), floor<T>(a.z));
+inline bool operator==(const vec3<T>& v, const vec3<T>& f) {
+    return v.x == f.x && v.y == f.y && v.z == f.z;
 }
+
 template <typename T>
-inline vec3<T> ceil(vec3<T> a) {
-    return vec3<T>(ceil<T>(a.x), ceil<T>(a.y), ceil<T>(a.z));
+inline bool operator==(const vec3<T>& v, T f) {
+    return v.x == f && v.y == f && v.z == f;
 }
+
 template <typename T>
-inline vec2<T> abs(vec2<T> a) {
-    return vec2<T>(abs<T>(a.x), abs<T>(a.y));
+inline bool operator==(T f, const vec3<T>& v) {
+    return f == v.x && f == v.y && f == v.z;
 }
+
+// Utility functions
 template <typename T>
-inline vec3<T> abs(vec3<T> a) {
-    return vec3<T>(abs<T>(a.x), abs<T>(a.y), abs<T>(a.z));
+inline vec3<T> mini(const vec3<T>& a, const vec3<T>& b) {
+    return vec3<T>(std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
 }
+
 template <typename T>
-inline T dotS(vec3<T> a, vec3<T> b) {
+inline vec3<T> maxi(const vec3<T>& a, const vec3<T>& b) {
+    return vec3<T>(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
+}
+
+template <typename T>
+inline vec3<T> floor(const vec3<T>& a) {
+    return vec3<T>(std::floor(a.x), std::floor(a.y), std::floor(a.z));
+}
+
+template <typename T>
+inline vec3<T> ceil(const vec3<T>& a) {
+    return vec3<T>(std::ceil(a.x), std::ceil(a.y), std::ceil(a.z));
+}
+
+template <typename T>
+inline vec3<T> abs(const vec3<T>& a) {
+    return vec3<T>(std::abs(a.x), std::abs(a.y), std::abs(a.z));
+}
+
+template <typename T>
+inline T dotS(const vec3<T>& a, const vec3<T>& b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
+
 template <typename T>
-inline vec3<T> cCross(vec3<T> a, vec3<T> b) {
+inline vec3<T> cCross(const vec3<T>& a, const vec3<T>& b) {
     return vec3<T>(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 }
+
 template <typename T>
-inline vec3<T> cReflect(vec3<T> I, vec3<T> N) {
-    return I - (T)2 * dotS(N, I) * N;
+inline vec3<T> cReflect(const vec3<T>& I, const vec3<T>& N) {
+    return I - static_cast<T>(2) * dotS(N, I) * N;
 }
+
+// Type aliases for common vector types
 using dvec3 = vec3<double>;
 using fvec3 = vec3<float>;
-using bvec3 = vec3<bool>;
 using ivec3 = vec3<int>;
 using i8vec3 = vec3<int8_t>;
 using i16vec3 = vec3<int16_t>;
-using ivec3 = vec3<int32_t>;
 using i32vec3 = vec3<int32_t>;
 using i64vec3 = vec3<int64_t>;
 using u8vec3 = vec3<uint8_t>;
 using u16vec3 = vec3<uint16_t>;
-using uvec3 = vec3<uint32_t>;
 using u32vec3 = vec3<uint32_t>;
 using u64vec3 = vec3<uint64_t>;
 
-// specialization for float32 test to fvec3
+// Specialization for float32 validation
 inline bool valid(const fvec3& a) {
     return floatIsValid(a.x) && floatIsValid(a.y) && floatIsValid(a.z);
 }
-// specialization for fvec2
+
+// Float-specific comparison operators
 inline bool operator==(const fvec3& v, const fvec3& f) {
-    return isFloatEqual(f.x, v.x) && isFloatEqual(f.y, v.y) && isFloatEqual(f.z, v.z);
+    return isEqual(f.x, v.x) && isEqual(f.y, v.y) && isEqual(f.z, v.z);
 }
+
 inline bool operator!=(const fvec3& v, const fvec3& f) {
-    return isFloatDifferent(f.x, v.x) || isFloatDifferent(f.y, v.y) || isFloatDifferent(f.z, v.z);
+    return isDifferent(f.x, v.x) || isDifferent(f.y, v.y) || isDifferent(f.z, v.z);
 }
 
 }  // namespace ez

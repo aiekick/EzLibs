@@ -8,14 +8,41 @@
 #include <cstdint>
 #include <limits>
 
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+// Désactivation des warnings de conversion
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4244)  // Conversion from 'double' to 'float', possible loss of data
+#pragma warning(disable : 4305)  // Truncation from 'double' to 'float'
+#elif defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wfloat-conversion"
+#endif
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
 namespace ez {
+
+template <typename T>
+::std::string toStr(T t) {
+    std::ostringstream os;
+    os << t;
+    return os.str();
+}
 
 // This function rounds a floating-point number to 'n' decimal places.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, std::string>::type round_n(T vvalue, int n) {
+inline std::string round_n(T vValue, int n) {
+    static_assert(std::is_floating_point<T>::value, "round_n is only valid for floating point types");
     std::stringstream tmp;
-    tmp << std::setprecision(n) << std::fixed << vvalue;
+    tmp << std::setprecision(n) << std::fixed << vValue;
     return tmp.str();
 }
 
@@ -28,84 +55,124 @@ inline bool floatIsValid(float x) {
     return (v.i & 0x7f800000) != 0x7f800000;
 }
 
-// Checks if two floating-point numbers are different according to epsilon precision.
-inline bool isFloatDifferent(float vA, float vB) {
+// Checks if two numbers are different according to epsilon precision.
+template <typename T>
+inline bool isDifferent(T vA, T vB) {
+    return vA != vB;
+}
+
+template <>
+inline bool isDifferent(float vA, float vB) {
     return std::fabs(vA - vB) > FLT_EPSILON;
 }
 
-// Checks if two floating-point numbers are equal according to epsilon precision.
-inline bool isFloatEqual(float vA, float vB) {
+template <>
+inline bool isDifferent(double vA, double vB) {
+    return std::abs(vA - vB) > DBL_EPSILON;
+}
+
+// Checks if two numbers are equal according to epsilon precision.
+template <typename T>
+inline bool isEqual(T vA, T vB) {
+    return vA == vB;
+}
+
+template <>
+inline bool isEqual(float vA, float vB) {
     return std::fabs(vA - vB) < FLT_EPSILON;
+}
+
+template <>
+inline bool isEqual(double vA, double vB) {
+    return std::abs(vA - vB) < DBL_EPSILON;
 }
 
 // Rounds a floating-point number to the nearest integer.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type round(T v) {
+inline T round(T v) {
+    static_assert(std::is_floating_point<T>::value, "round is only valid for floating point types");
     return static_cast<T>(std::round(v));
 }
 
 // Returns the largest integer less than or equal to the floating-point number.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type floor(T v) {
+inline T floor(T v) {
+    static_assert(std::is_floating_point<T>::value, "floor is only valid for floating point types");
     return static_cast<T>(std::floor(v));
 }
 
 // Returns the smallest integer greater than or equal to the floating-point number.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type ceil(T v) {
+inline T ceil(T v) {
+    static_assert(std::is_floating_point<T>::value, "ceil is only valid for floating point types");
     return static_cast<T>(std::ceil(v));
 }
 
 // Returns the fractional part of a floating-point number.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type fract(T v) {
+inline T fract(T v) {
+    static_assert(std::is_floating_point<T>::value, "fract is only valid for floating point types");
     return v - floor(v);
 }
 
 // Computes the cosine of a floating-point number.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type cos(T v) {
+inline T cos(T v) {
+    static_assert(std::is_floating_point<T>::value, "cos is only valid for floating point types");
     return std::cos(v);
 }
 
 // Computes the arc cosine of a floating-point number.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type acos(T v) {
+inline T acos(T v) {
+    static_assert(std::is_floating_point<T>::value, "acos is only valid for floating point types");
     return std::acos(v);
 }
 
 // Computes the sine of a floating-point number.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type sin(T v) {
+inline T sin(T v) {
+    static_assert(std::is_floating_point<T>::value, "sin is only valid for floating point types");
     return std::sin(v);
 }
 
 // Computes the arc sine of a floating-point number.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type asin(T v) {
+inline T asin(T v) {
+    static_assert(std::is_floating_point<T>::value, "asin is only valid for floating point types");
     return std::asin(v);
 }
 
 // Computes the tangent of a floating-point number.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type tan(T v) {
+inline T tan(T v) {
+    static_assert(std::is_floating_point<T>::value, "tan is only valid for floating point types");
     return std::tan(v);
 }
 
 // Computes the arc tangent of a floating-point number.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type atan(T v) {
+inline T atan(T v) {
+    static_assert(std::is_floating_point<T>::value, "atan is only valid for floating point types");
     return std::atan(v);
+}
+
+// Computes the sqrt of a floating-point number.
+// Only floating-point types (float, double, long double) are allowed.
+template <typename T>
+inline T sqrt(T v) {
+    static_assert(std::is_floating_point<T>::value, "sqrt is only valid for floating point types");
+    return std::sqrt(v);
 }
 
 // Returns the smaller of two values.
@@ -146,49 +213,56 @@ inline T clamp(T n, T a, T b) {
 // Computes the absolute value of a number.
 // Works with both integral and floating-point types.
 template <typename T>
-inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type abs(T a) {
-    return a < 0 ? a * static_cast<T>(-1) : a;
+inline T abs(T a) {
+    static_assert(std::is_arithmetic<T>::value, "abs is only valid for arithmetic types");
+    return (a < 0) ? a * static_cast<T>(-1) : a;
 }
 
 // Determines the sign of a number (-1 for negative, 1 for positive).
 // Works with both integral and floating-point types.
 template <typename T>
-inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type sign(T a) {
-    return a < 0 ? static_cast<T>(-1) : static_cast<T>(1);
+inline T sign(T a) {
+    static_assert(std::is_signed<T>::value, "sign is only valid for signed types");
+    return (a < 0) ? static_cast<T>(-1) : static_cast<T>(1);
 }
 
 // Returns 0 if b < a, otherwise returns 1.
 // Works with both integral and floating-point types.
 template <typename T>
-inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type step(T a, T b) {
-    return b < a ? static_cast<T>(0) : static_cast<T>(1);
+inline T step(T a, T b) {
+    static_assert(std::is_arithmetic<T>::value, "step is only valid for arithmetic types");
+    return (b < a) ? static_cast<T>(0) : static_cast<T>(1);
 }
 
 // Computes the floating-point remainder of the division operation.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type mod(T v, T l) {
+inline T mod(T v, T l) {
+    static_assert(std::is_floating_point<T>::value, "mod is only valid for floating point types");
     return std::fmod(v, l);
 }
 
 // Computes the inverse of the linear interpolation mix.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type invMix(T i, T s, T r) {
+inline T invMix(T i, T s, T r) {
+    static_assert(std::is_floating_point<T>::value, "invMix is only valid for floating point types");
     return (r - i) / (s - i);
 }
 
 // Linearly interpolates between a and b by t.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type lerp(T a, T b, T t) {
+inline T lerp(T a, T b, T t) {
+    static_assert(std::is_floating_point<T>::value, "lerp is only valid for floating point types");
     return a * (static_cast<T>(1.0) - t) + b * t;
 }
 
 // Exponentially interpolates between a and b by t.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type eerp(T a, T b, T t) {
+inline T eerp(T a, T b, T t) {
+    static_assert(std::is_floating_point<T>::value, "eerp is only valid for floating point types");
     if (a == static_cast<T>(0))
         return static_cast<T>(0);
     return std::pow(a * (b / a), t);
@@ -197,7 +271,8 @@ inline typename std::enable_if<std::is_floating_point<T>::value, T>::type eerp(T
 // Performs linear interpolation (lerp) between a and b by t.
 // Only floating-point types (float, double, long double) are allowed.
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value, T>::type mix(T a, T b, T t) {
+inline T mix(T a, T b, T t) {
+    static_assert(std::is_floating_point<T>::value, "mix is only valid for floating point types");
     return lerp(a, b, t);
 }
 
@@ -212,3 +287,16 @@ inline typename std::enable_if<std::is_floating_point<T>::value, T>::type mix(T 
 #include "EzAABBCC.hpp"
 #include "EzVariant.hpp"
 
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#elif defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
