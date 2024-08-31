@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 namespace ez {
 template <typename T>
 struct vec2 {
@@ -417,7 +419,7 @@ inline T prototype_radAngleContinuousFromVec2(vec2<T> vec, T angleOffset) {
     if (vec.x > T(0))
         angle = atan<T>(vec.y / vec.x);
     if (vec.x < T(0))
-        angle = _pi - atan<T>(-vec.y / vec.x);
+        angle = M_PI - atan<T>(-vec.y / vec.x);
     return angle - angleOffset;
 }
 

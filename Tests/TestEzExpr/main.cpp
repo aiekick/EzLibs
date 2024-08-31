@@ -23,26 +23,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <EzExpr/Test_Expr.h>
-#include <EzExpr/parsings/Test_Expr_Parsings.h>
-#include <EzExpr/builtins/Test_Expr_Builtins.h>
-#include <EzExpr/constants/Test_Expr_Constants.h>
-#include <EzExpr/exceptions/Test_Expr_Exceptions.h>
-#include <EzExpr/perfos/Test_Expr_Perfos.h>
+#include <TestEzExprParsings.h>
+#include <TestEzExprBuiltins.h>
+#include <TestEzExprConstants.h>
+#include <TestEzExprExceptions.h>
+#include <TestEzExprPerfos.h>
 
 ////////////////////////////////////////////////////////////////////////////
-//// ENTRY POINT ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
 #define IfTestCollectionExist(v, str) \
     if (vTest.find(str) != std::string::npos) return v(vTest)
 
-bool Test_Expr(const std::string& vTest) {
-    IfTestCollectionExist(Test_Expr_Parsings_run_test, "Test_Expr_Parsing");
-    else IfTestCollectionExist(Test_Expr_Constants_run_test, "Test_Expr_Constant");
-    else IfTestCollectionExist(Test_Expr_Builtins_run_test, "Test_Expr_Builtin");
-    else IfTestCollectionExist(Test_Expr_Exceptions_run_test, "Test_Expr_Exception");
-    else IfTestCollectionExist(Test_Expr_Perfos_run_test, "Test_Expr_Perfo");
+bool TestEzExpr(const std::string& vTest) {
+    IfTestCollectionExist(TestEzExpr_Parsings_run_test, "TestEzExpr_Parsing");
+    else IfTestCollectionExist(TestEzExpr_Constants_run_test, "TestEzExpr_Constant");
+    else IfTestCollectionExist(TestEzExpr_Builtins_run_test, "TestEzExpr_Builtin");
+    else IfTestCollectionExist(TestEzExpr_Exceptions_run_test, "TestEzExpr_Exception");
+    else IfTestCollectionExist(TestEzExpr_Perfos_run_test, "TestEzExpr_Perfo");
     // default
     return false;
+}
+
+////////////////////////////////////////////////////////////////////////////
+//// ENTRY POINT ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+int main(int argc, char** argv) {
+    if (argc > 1) {
+        printf("Exec test : %s\n", argv[1]);
+        return TestEzExpr(argv[1]) ? 0 : 1;
+    }
+    // User testing
+    return TestEzExpr("") ? 0 : 1;
 }

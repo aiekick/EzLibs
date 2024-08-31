@@ -1,6 +1,5 @@
-#include <EzGraph/core/Test_Graph.h>
-
-#include <EzGraph.hpp>
+#include <TestEzGraph.h>
+#include <EzGraph/EzGraph.hpp>
 
 using namespace ez;
 

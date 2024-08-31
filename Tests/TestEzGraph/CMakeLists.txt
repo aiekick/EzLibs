@@ -18,7 +18,10 @@ set_target_properties(${PROJECT} PROPERTIES FOLDER Tests)
 #############################################################
 #############################################################
 
-target_include_directories(${PROJECT} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT} PRIVATE 
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/.. 
+)
 
 add_definitions(-DTEST_SAMPLES_PATH="${CMAKE_SOURCE_DIR}/test_samples/")
 

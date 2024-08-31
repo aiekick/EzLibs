@@ -23,8 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <EzExpr/perfos/Test_Expr_Perfos.h>
-#include <EzExpr.hpp>
+#include <TestEzExprPerfos.h>
+#include <EzExpr/EzExpr.hpp>
 #include <functional>
 #include <iostream>
 #include <cassert>
@@ -109,7 +109,7 @@ static bool Bench(const std::string& vEzExpr,
 //// PERFOS ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool Test_Expr_Perfo_x_squared(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
+bool TestEzExpr_Perfo_x_squared(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
     double ez_expr_total_time, ez_expr_avg_time;
     double cpp_expr_total_time, cpp_expr_avg_time;
 
@@ -126,7 +126,7 @@ bool Test_Expr_Perfo_x_squared(double slowdownThreshold, int iterations, std::os
         outputStreamPtr);
 }
 
-bool Test_Expr_Perfo_x_cubed(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
+bool TestEzExpr_Perfo_x_cubed(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
     double ez_expr_total_time, ez_expr_avg_time;
     double cpp_expr_total_time, cpp_expr_avg_time;
 
@@ -143,7 +143,7 @@ bool Test_Expr_Perfo_x_cubed(double slowdownThreshold, int iterations, std::ostr
         outputStreamPtr);
 }
 
-bool Test_Expr_Perfo_sin_x(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
+bool TestEzExpr_Perfo_sin_x(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
     double ez_expr_total_time, ez_expr_avg_time;
     double cpp_expr_total_time, cpp_expr_avg_time;
 
@@ -160,7 +160,7 @@ bool Test_Expr_Perfo_sin_x(double slowdownThreshold, int iterations, std::ostrea
         outputStreamPtr);
 }
 
-bool Test_Expr_Perfo_sqrt_x(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
+bool TestEzExpr_Perfo_sqrt_x(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
     double ez_expr_total_time, ez_expr_avg_time;
     double cpp_expr_total_time, cpp_expr_avg_time;
 
@@ -177,7 +177,7 @@ bool Test_Expr_Perfo_sqrt_x(double slowdownThreshold, int iterations, std::ostre
         outputStreamPtr);
 }
 
-bool Test_Expr_Perfo_cos_x_sin_y(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
+bool TestEzExpr_Perfo_cos_x_sin_y(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
     double ez_expr_total_time, ez_expr_avg_time;
     double cpp_expr_total_time, cpp_expr_avg_time;
 
@@ -198,7 +198,7 @@ bool Test_Expr_Perfo_cos_x_sin_y(double slowdownThreshold, int iterations, std::
         outputStreamPtr);
 }
 
-bool Test_Expr_Perfo_a_plus_5(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
+bool TestEzExpr_Perfo_a_plus_5(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
     double ez_expr_total_time, ez_expr_avg_time;
     double cpp_expr_total_time, cpp_expr_avg_time;
 
@@ -215,7 +215,7 @@ bool Test_Expr_Perfo_a_plus_5(double slowdownThreshold, int iterations, std::ost
         outputStreamPtr);
 }
 
-bool Test_Expr_Perfo_5_plus_a_plus_5(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
+bool TestEzExpr_Perfo_5_plus_a_plus_5(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
     double ez_expr_total_time, ez_expr_avg_time;
     double cpp_expr_total_time, cpp_expr_avg_time;
 
@@ -232,7 +232,7 @@ bool Test_Expr_Perfo_5_plus_a_plus_5(double slowdownThreshold, int iterations, s
         outputStreamPtr);
 }
 
-bool Test_Expr_Perfo_abs_a_plus_5(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
+bool TestEzExpr_Perfo_abs_a_plus_5(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
     double ez_expr_total_time, ez_expr_avg_time;
     double cpp_expr_total_time, cpp_expr_avg_time;
 
@@ -249,7 +249,7 @@ bool Test_Expr_Perfo_abs_a_plus_5(double slowdownThreshold, int iterations, std:
         outputStreamPtr);
 }
 
-bool Test_Expr_Perfo_a_plus_5_times_2(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
+bool TestEzExpr_Perfo_a_plus_5_times_2(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
     double ez_expr_total_time, ez_expr_avg_time;
     double cpp_expr_total_time, cpp_expr_avg_time;
 
@@ -266,7 +266,7 @@ bool Test_Expr_Perfo_a_plus_5_times_2(double slowdownThreshold, int iterations, 
         outputStreamPtr);
 }
 
-bool Test_Expr_Perfo_a_plus_5_times_2_alt(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
+bool TestEzExpr_Perfo_a_plus_5_times_2_alt(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
     double ez_expr_total_time, ez_expr_avg_time;
     double cpp_expr_total_time, cpp_expr_avg_time;
 
@@ -283,7 +283,7 @@ bool Test_Expr_Perfo_a_plus_5_times_2_alt(double slowdownThreshold, int iteratio
         outputStreamPtr);
 }
 
-bool Test_Expr_Perfo_sqrt_pow_a(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
+bool TestEzExpr_Perfo_sqrt_pow_a(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
     double ez_expr_total_time, ez_expr_avg_time;
     double cpp_expr_total_time, cpp_expr_avg_time;
 
@@ -300,7 +300,7 @@ bool Test_Expr_Perfo_sqrt_pow_a(double slowdownThreshold, int iterations, std::o
         outputStreamPtr);
 }
 
-bool Test_Expr_Perfo_complex_fraction(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
+bool TestEzExpr_Perfo_complex_fraction(double slowdownThreshold, int iterations, std::ostream* outputStreamPtr) {
     double ez_expr_total_time, ez_expr_avg_time;
     double cpp_expr_total_time, cpp_expr_avg_time;
 
@@ -317,7 +317,7 @@ bool Test_Expr_Perfo_complex_fraction(double slowdownThreshold, int iterations, 
         outputStreamPtr);
 }
 
-bool Test_Expr_Perfo_All(double slowdownThreshold, int iterations) {
+bool TestEzExpr_Perfo_All(double slowdownThreshold, int iterations) {
     bool res = true;
 
     // Ouverture d'un fichier pour enregistrer les résultats
@@ -329,18 +329,18 @@ bool Test_Expr_Perfo_All(double slowdownThreshold, int iterations) {
         resultsFile << "|------------|------------------|-----------------|----------------|--------------|---------------------|-------------------|\n";
 
         // Exécution des tests
-        res &= Test_Expr_Perfo_x_squared(slowdownThreshold, iterations, &resultsFile);
-        res &= Test_Expr_Perfo_x_cubed(slowdownThreshold, iterations, &resultsFile);
-        res &= Test_Expr_Perfo_sin_x(slowdownThreshold, iterations, &resultsFile);
-        res &= Test_Expr_Perfo_sqrt_x(slowdownThreshold, iterations, &resultsFile);
-        res &= Test_Expr_Perfo_cos_x_sin_y(slowdownThreshold, iterations, &resultsFile);
-        res &= Test_Expr_Perfo_a_plus_5(slowdownThreshold, iterations, &resultsFile);
-        res &= Test_Expr_Perfo_5_plus_a_plus_5(slowdownThreshold, iterations, &resultsFile);
-        res &= Test_Expr_Perfo_abs_a_plus_5(slowdownThreshold, iterations, &resultsFile);
-        res &= Test_Expr_Perfo_a_plus_5_times_2(slowdownThreshold, iterations, &resultsFile);
-        res &= Test_Expr_Perfo_a_plus_5_times_2_alt(slowdownThreshold, iterations, &resultsFile);
-        res &= Test_Expr_Perfo_sqrt_pow_a(slowdownThreshold, iterations, &resultsFile);
-        res &= Test_Expr_Perfo_complex_fraction(slowdownThreshold, iterations, &resultsFile);
+        res &= TestEzExpr_Perfo_x_squared(slowdownThreshold, iterations, &resultsFile);
+        res &= TestEzExpr_Perfo_x_cubed(slowdownThreshold, iterations, &resultsFile);
+        res &= TestEzExpr_Perfo_sin_x(slowdownThreshold, iterations, &resultsFile);
+        res &= TestEzExpr_Perfo_sqrt_x(slowdownThreshold, iterations, &resultsFile);
+        res &= TestEzExpr_Perfo_cos_x_sin_y(slowdownThreshold, iterations, &resultsFile);
+        res &= TestEzExpr_Perfo_a_plus_5(slowdownThreshold, iterations, &resultsFile);
+        res &= TestEzExpr_Perfo_5_plus_a_plus_5(slowdownThreshold, iterations, &resultsFile);
+        res &= TestEzExpr_Perfo_abs_a_plus_5(slowdownThreshold, iterations, &resultsFile);
+        res &= TestEzExpr_Perfo_a_plus_5_times_2(slowdownThreshold, iterations, &resultsFile);
+        res &= TestEzExpr_Perfo_a_plus_5_times_2_alt(slowdownThreshold, iterations, &resultsFile);
+        res &= TestEzExpr_Perfo_sqrt_pow_a(slowdownThreshold, iterations, &resultsFile);
+        res &= TestEzExpr_Perfo_complex_fraction(slowdownThreshold, iterations, &resultsFile);
 
         resultsFile.close();  // Fermer le fichier après les tests
     } else {
@@ -360,23 +360,23 @@ bool Test_Expr_Perfo_All(double slowdownThreshold, int iterations) {
 #define IfTestBenchExist(v) \
     if (vTest == std::string(#v)) return v(slowdownThreshold, iterations, nullptr)
 
-bool Test_Expr_Perfos_run_test(const std::string& vTest) {
+bool TestEzExpr_Perfos_run_test(const std::string& vTest) {
     double slowdownThreshold = 5000.0;  // 50% de ralentissement maximum acceptable
     int iterations = 1000;
     // Parsing
-    IfTestExist(Test_Expr_Perfo_All);
-    else IfTestBenchExist(Test_Expr_Perfo_x_squared);
-    else IfTestBenchExist(Test_Expr_Perfo_x_cubed);
-    else IfTestBenchExist(Test_Expr_Perfo_sin_x);
-    else IfTestBenchExist(Test_Expr_Perfo_sqrt_x);
-    else IfTestBenchExist(Test_Expr_Perfo_cos_x_sin_y);
-    else IfTestBenchExist(Test_Expr_Perfo_a_plus_5);
-    else IfTestBenchExist(Test_Expr_Perfo_5_plus_a_plus_5);
-    else IfTestBenchExist(Test_Expr_Perfo_abs_a_plus_5);
-    else IfTestBenchExist(Test_Expr_Perfo_a_plus_5_times_2);
-    else IfTestBenchExist(Test_Expr_Perfo_a_plus_5_times_2_alt);
-    else IfTestBenchExist(Test_Expr_Perfo_sqrt_pow_a);
-    else IfTestBenchExist(Test_Expr_Perfo_complex_fraction);
+    IfTestExist(TestEzExpr_Perfo_All);
+    else IfTestBenchExist(TestEzExpr_Perfo_x_squared);
+    else IfTestBenchExist(TestEzExpr_Perfo_x_cubed);
+    else IfTestBenchExist(TestEzExpr_Perfo_sin_x);
+    else IfTestBenchExist(TestEzExpr_Perfo_sqrt_x);
+    else IfTestBenchExist(TestEzExpr_Perfo_cos_x_sin_y);
+    else IfTestBenchExist(TestEzExpr_Perfo_a_plus_5);
+    else IfTestBenchExist(TestEzExpr_Perfo_5_plus_a_plus_5);
+    else IfTestBenchExist(TestEzExpr_Perfo_abs_a_plus_5);
+    else IfTestBenchExist(TestEzExpr_Perfo_a_plus_5_times_2);
+    else IfTestBenchExist(TestEzExpr_Perfo_a_plus_5_times_2_alt);
+    else IfTestBenchExist(TestEzExpr_Perfo_sqrt_pow_a);
+    else IfTestBenchExist(TestEzExpr_Perfo_complex_fraction);
     // default
     return false;
 }

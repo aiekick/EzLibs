@@ -23,14 +23,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <EzExpr/constants/Test_Expr_Constants.h>
-#include <EzExpr.hpp>
+#include <TestEzExprConstants.h>
+#include <EzExpr/EzExpr.hpp>
 
 ////////////////////////////////////////////////////////////////////////////
 //// CONSTANTS /////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool Test_Expr_Constant_Parsing_PI() {
+bool TestEzExpr_Constant_Parsing_PI() {
     ez::Expr ev;
     try {
         if (!ev.parse("pi").eval().check(M_PI)) return false;
@@ -40,7 +40,7 @@ bool Test_Expr_Constant_Parsing_PI() {
     return true;
 }
 
-bool Test_Expr_Constant_Parsing_E() {
+bool TestEzExpr_Constant_Parsing_E() {
     ez::Expr ev;
     try {
         if (!ev.parse("e").eval().check(M_E)) return false;
@@ -57,10 +57,10 @@ bool Test_Expr_Constant_Parsing_E() {
 #define IfTestExist(v) \
     if (vTest == std::string(#v)) return v()
 
-bool Test_Expr_Constants_run_test(const std::string& vTest) {
+bool TestEzExpr_Constants_run_test(const std::string& vTest) {
     // Constants
-    IfTestExist(Test_Expr_Constant_Parsing_PI);
-    else IfTestExist(Test_Expr_Constant_Parsing_E);
+    IfTestExist(TestEzExpr_Constant_Parsing_PI);
+    else IfTestExist(TestEzExpr_Constant_Parsing_E);
     // default
     return false;
 }

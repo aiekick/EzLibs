@@ -26,4 +26,4 @@ SOFTWARE.
 
 #include <string>
 
-bool Test_Expr(const std::string& vTest);
+bool TestEzExpr_Perfos_run_test(const std::string& vTest);

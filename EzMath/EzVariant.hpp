@@ -86,11 +86,6 @@ public:
         inputtype = "bool";
         datatype = inputtype;
     }
-    variant(const Color<T>& c) {
-        color_value = c;
-        inputtype = "Color";
-        datatype = inputtype;
-    }
     variant(const vec2<T>& c) {
         point_value = c;
         inputtype = "vec2";

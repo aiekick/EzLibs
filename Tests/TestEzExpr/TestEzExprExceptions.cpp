@@ -23,15 +23,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <EzExpr/exceptions/Test_Expr_Exceptions.h>
-#include <EzExpr.hpp>
+#include <TestEzExprExceptions.h>
+#include <EzExpr/EzExpr.hpp>
 
 ////////////////////////////////////////////////////////////////////////////
 //// ERROR CODES ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
 // Test for DIVISION_BY_ZERO exception
-bool Test_Expr_Exception_DivisionByZero() {
+bool TestEzExpr_Exception_DivisionByZero() {
     ez::Expr ev;
     try {
         ev.parse("1 / 0").eval();  // Division by integer zero
@@ -39,7 +39,7 @@ bool Test_Expr_Exception_DivisionByZero() {
     } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO; }
 }
 
-bool Test_Expr_Exception_DivisionByZero_Float() {
+bool TestEzExpr_Exception_DivisionByZero_Float() {
     ez::Expr ev;
     try {
         ev.parse("5.5 / 0.0").eval();  // Division by floating-point zero
@@ -47,7 +47,7 @@ bool Test_Expr_Exception_DivisionByZero_Float() {
     } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO; }
 }
 
-bool Test_Expr_Exception_ModuloByZero() {
+bool TestEzExpr_Exception_ModuloByZero() {
     ez::Expr ev;
     try {
         ev.parse("10 % 0").eval();  // Modulo by zero
@@ -56,7 +56,7 @@ bool Test_Expr_Exception_ModuloByZero() {
 }
 
 // Test for UNMATCHED_PARENTHESIS exception
-bool Test_Expr_Exception_UnmatchedParenthesis_Open() {
+bool TestEzExpr_Exception_UnmatchedParenthesis_Open() {
     ez::Expr ev;
     try {
         ev.parse("1 + (2 * 3").eval();  // Unmatched opening parenthesis
@@ -64,7 +64,7 @@ bool Test_Expr_Exception_UnmatchedParenthesis_Open() {
     } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::UNMATCHED_PARENTHESIS; }
 }
 
-bool Test_Expr_Exception_UnmatchedParenthesis_Close() {
+bool TestEzExpr_Exception_UnmatchedParenthesis_Close() {
     ez::Expr ev;
     try {
         ev.parse("1 + 2) * 3").eval();  // Unmatched closing parenthesis
@@ -73,7 +73,7 @@ bool Test_Expr_Exception_UnmatchedParenthesis_Close() {
 }
 
 // Test for VARIABLE_NOT_FOUND exception
-bool Test_Expr_Exception_VariableNotFound() {
+bool TestEzExpr_Exception_VariableNotFound() {
     ez::Expr ev;
     try {
         ev.parse("x + 1").eval();  // 'x' is not defined
@@ -81,7 +81,7 @@ bool Test_Expr_Exception_VariableNotFound() {
     } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::VARIABLE_NOT_FOUND; }
 }
 
-bool Test_Expr_Exception_VariableNotFound_Multiple() {
+bool TestEzExpr_Exception_VariableNotFound_Multiple() {
     ez::Expr ev;
     try {
         ev.parse("y + x + 1").eval();  // 'x' and 'y' are not defined
@@ -90,7 +90,7 @@ bool Test_Expr_Exception_VariableNotFound_Multiple() {
 }
 
 // Test for FUNCTION_NOT_FOUND exception
-bool Test_Expr_Exception_FunctionNotFound() {
+bool TestEzExpr_Exception_FunctionNotFound() {
     ez::Expr ev;
     try {
         ev.parse("unknownFunc(1)").eval();  // 'unknownFunc' is not defined
@@ -98,7 +98,7 @@ bool Test_Expr_Exception_FunctionNotFound() {
     } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::FUNCTION_NOT_FOUND; }
 }
 
-bool Test_Expr_Exception_FunctionWrongArgs() {
+bool TestEzExpr_Exception_FunctionWrongArgs() {
     ez::Expr ev;
     try {
         ev.parse("sin(1, 2)").eval();  // 'sin' is defined but with wrong number of arguments
@@ -107,14 +107,14 @@ bool Test_Expr_Exception_FunctionWrongArgs() {
 }
 
 // Test for EVALUATION_NAN exception
-bool Test_Expr_Exception_EvaluationNaN_1() {
+bool TestEzExpr_Exception_EvaluationNaN_1() {
     ez::Expr ev;
     try {
         ev.parse("sqrt(-1)").eval();  // sqrt of negative number leads to NaN
         return false;                 // Expected an exception
     } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::EVALUATION_NAN; }
 }
-bool Test_Expr_Exception_EvaluationNaN_2() {
+bool TestEzExpr_Exception_EvaluationNaN_2() {
     ez::Expr ev;
     try {
         ev.parse("(-1)^0.5").eval();  // sqrt of negative number leads to NaN
@@ -122,7 +122,7 @@ bool Test_Expr_Exception_EvaluationNaN_2() {
     } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::EVALUATION_NAN; }
 }
 
-bool Test_Expr_Exception_EvaluationNaN_Log() {
+bool TestEzExpr_Exception_EvaluationNaN_Log() {
     ez::Expr ev;
     try {
         ev.parse("log(-5)").eval();  // Logarithm of negative number leads to NaN
@@ -130,7 +130,7 @@ bool Test_Expr_Exception_EvaluationNaN_Log() {
     } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::EVALUATION_NAN; }
 }
 
-bool Test_Expr_Exception_EvaluationNaN_DivZeroZero() {
+bool TestEzExpr_Exception_EvaluationNaN_DivZeroZero() {
     ez::Expr ev;
     try {
         ev.parse("0 / 0.0").eval();  // 0 divided by 0.0 leads to NaN
@@ -139,7 +139,7 @@ bool Test_Expr_Exception_EvaluationNaN_DivZeroZero() {
 }
 
 // Test for EVALUATION_INF exception
-bool Test_Expr_Exception_EvaluationInf() {
+bool TestEzExpr_Exception_EvaluationInf() {
     ez::Expr ev;
     try {
         ev.parse("1 / 0.0").eval();  // Division by zero should lead to Inf in floating point
@@ -147,7 +147,7 @@ bool Test_Expr_Exception_EvaluationInf() {
     } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO; }
 }
 
-bool Test_Expr_Exception_EvaluationInf_Exp() {
+bool TestEzExpr_Exception_EvaluationInf_Exp() {
     ez::Expr ev;
     try {
         ev.parse("exp(1000)").eval();  // Exponential of a large number may lead to Inf
@@ -155,7 +155,7 @@ bool Test_Expr_Exception_EvaluationInf_Exp() {
     } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::EVALUATION_INF; }
 }
 
-bool Test_Expr_Exception_EvaluationInf_Power() {
+bool TestEzExpr_Exception_EvaluationInf_Power() {
     ez::Expr ev;
     try {
         ev.parse("10^1000").eval();  // Large power leading to Inf
@@ -170,24 +170,24 @@ bool Test_Expr_Exception_EvaluationInf_Power() {
 #define IfTestExist(v) \
     if (vTest == std::string(#v)) return v()
 
-bool Test_Expr_Exceptions_run_test(const std::string& vTest) {
+bool TestEzExpr_Exceptions_run_test(const std::string& vTest) {
     // Errors Codes
-    IfTestExist(Test_Expr_Exception_DivisionByZero);
-    else IfTestExist(Test_Expr_Exception_DivisionByZero_Float);
-    else IfTestExist(Test_Expr_Exception_ModuloByZero);
-    else IfTestExist(Test_Expr_Exception_UnmatchedParenthesis_Open);
-    else IfTestExist(Test_Expr_Exception_UnmatchedParenthesis_Close);
-    else IfTestExist(Test_Expr_Exception_VariableNotFound);
-    else IfTestExist(Test_Expr_Exception_VariableNotFound_Multiple);
-    else IfTestExist(Test_Expr_Exception_FunctionNotFound);
-    else IfTestExist(Test_Expr_Exception_FunctionWrongArgs);
-    else IfTestExist(Test_Expr_Exception_EvaluationNaN_1);
-    else IfTestExist(Test_Expr_Exception_EvaluationNaN_2);
-    else IfTestExist(Test_Expr_Exception_EvaluationNaN_Log);
-    else IfTestExist(Test_Expr_Exception_EvaluationNaN_DivZeroZero);
-    else IfTestExist(Test_Expr_Exception_EvaluationInf);
-    else IfTestExist(Test_Expr_Exception_EvaluationInf_Exp);
-    else IfTestExist(Test_Expr_Exception_EvaluationInf_Power);
+    IfTestExist(TestEzExpr_Exception_DivisionByZero);
+    else IfTestExist(TestEzExpr_Exception_DivisionByZero_Float);
+    else IfTestExist(TestEzExpr_Exception_ModuloByZero);
+    else IfTestExist(TestEzExpr_Exception_UnmatchedParenthesis_Open);
+    else IfTestExist(TestEzExpr_Exception_UnmatchedParenthesis_Close);
+    else IfTestExist(TestEzExpr_Exception_VariableNotFound);
+    else IfTestExist(TestEzExpr_Exception_VariableNotFound_Multiple);
+    else IfTestExist(TestEzExpr_Exception_FunctionNotFound);
+    else IfTestExist(TestEzExpr_Exception_FunctionWrongArgs);
+    else IfTestExist(TestEzExpr_Exception_EvaluationNaN_1);
+    else IfTestExist(TestEzExpr_Exception_EvaluationNaN_2);
+    else IfTestExist(TestEzExpr_Exception_EvaluationNaN_Log);
+    else IfTestExist(TestEzExpr_Exception_EvaluationNaN_DivZeroZero);
+    else IfTestExist(TestEzExpr_Exception_EvaluationInf);
+    else IfTestExist(TestEzExpr_Exception_EvaluationInf_Exp);
+    else IfTestExist(TestEzExpr_Exception_EvaluationInf_Power);
     // default
     return false;
 }

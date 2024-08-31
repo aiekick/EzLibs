@@ -23,14 +23,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <EzExpr/parsings/Test_Expr_Parsings.h>
-#include <EzExpr.hpp>
+#include <TestEzExprParsings.h>
+#include <EzExpr/EzExpr.hpp>
 
 ////////////////////////////////////////////////////////////////////////////
 //// PARSING ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool Test_Expr_Parsing_OperatorWithoutOperands() {
+bool TestEzExpr_Parsing_OperatorWithoutOperands() {
     ez::Expr ev;
     try {
         if (!ev.parse("+").eval().check(0)) return false;
@@ -40,7 +40,7 @@ bool Test_Expr_Parsing_OperatorWithoutOperands() {
     return true;
 }
 
-bool Test_Expr_Parsing_UnaryOperatorWithoutOperand() {
+bool TestEzExpr_Parsing_UnaryOperatorWithoutOperand() {
     ez::Expr ev;
     try {
         if (!ev.parse("!").eval().check(0)) return false;
@@ -50,7 +50,7 @@ bool Test_Expr_Parsing_UnaryOperatorWithoutOperand() {
     return true;
 }
 
-bool Test_Expr_Parsing_UnmatchedOpeningParenthesis() {
+bool TestEzExpr_Parsing_UnmatchedOpeningParenthesis() {
     ez::Expr ev;
     try {
         if (!ev.parse("(5 + 3").eval().check(0)) return false;
@@ -60,7 +60,7 @@ bool Test_Expr_Parsing_UnmatchedOpeningParenthesis() {
     return true;
 }
 
-bool Test_Expr_Parsing_UnmatchedClosingParenthesis() {
+bool TestEzExpr_Parsing_UnmatchedClosingParenthesis() {
     ez::Expr ev;
     try {
         if (!ev.parse("5 + 3)").eval().check(0)) return false;
@@ -70,7 +70,7 @@ bool Test_Expr_Parsing_UnmatchedClosingParenthesis() {
     return true;
 }
 
-bool Test_Expr_Parsing_DoubleBinaryOperator() {
+bool TestEzExpr_Parsing_DoubleBinaryOperator() {
     ez::Expr ev;
     try {
         if (!ev.parse("5 ++ 3").eval().check(0)) return false;
@@ -80,7 +80,7 @@ bool Test_Expr_Parsing_DoubleBinaryOperator() {
     return true;
 }
 
-bool Test_Expr_Parsing_DoubleUnaryOperator() {
+bool TestEzExpr_Parsing_DoubleUnaryOperator() {
     ez::Expr ev;
     try {
         if (!ev.parse("--5").eval().check(0)) return false;
@@ -90,7 +90,7 @@ bool Test_Expr_Parsing_DoubleUnaryOperator() {
     return true;
 }
 
-bool Test_Expr_Parsing_UndefinedVariable() {
+bool TestEzExpr_Parsing_UndefinedVariable() {
     ez::Expr ev;
     try {
         if (!ev.parse("x + 5").eval().check(0)) return false;
@@ -100,7 +100,7 @@ bool Test_Expr_Parsing_UndefinedVariable() {
     return true;
 }
 
-bool Test_Expr_Parsing_BinaryOperatorWithoutRightOperand() {
+bool TestEzExpr_Parsing_BinaryOperatorWithoutRightOperand() {
     ez::Expr ev;
     try {
         if (!ev.parse("5 + ").eval().check(0)) return false;
@@ -110,7 +110,7 @@ bool Test_Expr_Parsing_BinaryOperatorWithoutRightOperand() {
     return true;
 }
 
-bool Test_Expr_Parsing_DoubleOperandWithoutOperator() {
+bool TestEzExpr_Parsing_DoubleOperandWithoutOperator() {
     ez::Expr ev;
     try {
         if (!ev.parse("5 5").eval().check(0)) return false;
@@ -120,7 +120,7 @@ bool Test_Expr_Parsing_DoubleOperandWithoutOperator() {
     return true;
 }
 
-bool Test_Expr_Parsing_FunctionWithoutParentheses() {
+bool TestEzExpr_Parsing_FunctionWithoutParentheses() {
     ez::Expr ev;
     try {
         if (!ev.parse("sin 5").eval().check(0)) return false;
@@ -130,7 +130,7 @@ bool Test_Expr_Parsing_FunctionWithoutParentheses() {
     return true;
 }
 
-bool Test_Expr_Parsing_FunctionWithoutArguments() {
+bool TestEzExpr_Parsing_FunctionWithoutArguments() {
     ez::Expr ev;
     try {
         if (!ev.parse("sin()").eval().check(0)) return false;
@@ -140,7 +140,7 @@ bool Test_Expr_Parsing_FunctionWithoutArguments() {
     return true;
 }
 
-bool Test_Expr_Parsing_FunctionWithTooManyArguments() {
+bool TestEzExpr_Parsing_FunctionWithTooManyArguments() {
     ez::Expr ev;
     try {
         if (!ev.parse("atan2(1, 2, 3)").eval().check(0)) return false;
@@ -150,7 +150,7 @@ bool Test_Expr_Parsing_FunctionWithTooManyArguments() {
     return true;
 }
 
-bool Test_Expr_Parsing_FunctionWithOneArgumentInsteadOfTwo() {
+bool TestEzExpr_Parsing_FunctionWithOneArgumentInsteadOfTwo() {
     ez::Expr ev;
     try {
         if (!ev.parse("atan2(1)").eval().check(0)) return false;
@@ -160,7 +160,7 @@ bool Test_Expr_Parsing_FunctionWithOneArgumentInsteadOfTwo() {
     return true;
 }
 
-bool Test_Expr_Parsing_DivisionByZero() {
+bool TestEzExpr_Parsing_DivisionByZero() {
     ez::Expr ev;
     try {
         if (!ev.parse("1 / 0").eval().check(0)) return false;
@@ -170,7 +170,7 @@ bool Test_Expr_Parsing_DivisionByZero() {
     return true;
 }
 
-bool Test_Expr_Parsing_MisplacedComma() {
+bool TestEzExpr_Parsing_MisplacedComma() {
     ez::Expr ev;
     try {
         if (!ev.parse("1,2 + 3").eval().check(0)) return false;
@@ -180,7 +180,7 @@ bool Test_Expr_Parsing_MisplacedComma() {
     return true;
 }
 
-bool Test_Expr_Parsing_UndefinedOperator() {
+bool TestEzExpr_Parsing_UndefinedOperator() {
     ez::Expr ev;
     try {
         if (!ev.parse("5 $ 3").eval().check(0)) return false;
@@ -190,7 +190,7 @@ bool Test_Expr_Parsing_UndefinedOperator() {
     return true;
 }
 
-bool Test_Expr_Parsing_MisuseOfFactorialOperator() {
+bool TestEzExpr_Parsing_MisuseOfFactorialOperator() {
     ez::Expr ev;
     try {
         if (!ev.parse("5 ! 3").eval().check(0)) return false;
@@ -200,7 +200,7 @@ bool Test_Expr_Parsing_MisuseOfFactorialOperator() {
     return true;
 }
 
-bool Test_Expr_Parsing_UnaryOperatorBeforeParenthesis() {
+bool TestEzExpr_Parsing_UnaryOperatorBeforeParenthesis() {
     ez::Expr ev;
     try {
         if (!ev.parse("!(5)").eval().check(0)) return false;
@@ -210,7 +210,7 @@ bool Test_Expr_Parsing_UnaryOperatorBeforeParenthesis() {
     return true;
 }
 
-bool Test_Expr_Parsing_EmptyParenthesis() {
+bool TestEzExpr_Parsing_EmptyParenthesis() {
     ez::Expr ev;
     try {
         if (!ev.parse("()").eval().check(0)) return false;
@@ -220,7 +220,7 @@ bool Test_Expr_Parsing_EmptyParenthesis() {
     return true;
 }
 
-bool Test_Expr_Parsing_DoubleComma() {
+bool TestEzExpr_Parsing_DoubleComma() {
     ez::Expr ev;
     try {
         if (!ev.parse("atan2(1,,1)").eval().check(0)) return false;
@@ -230,7 +230,7 @@ bool Test_Expr_Parsing_DoubleComma() {
     return true;
 }
 
-bool Test_Expr_Parsing_DoubleBinaryOperatorAtStart() {
+bool TestEzExpr_Parsing_DoubleBinaryOperatorAtStart() {
     ez::Expr ev;
     try {
         if (!ev.parse("++1").eval().check(0)) return false;
@@ -240,7 +240,7 @@ bool Test_Expr_Parsing_DoubleBinaryOperatorAtStart() {
     return true;
 }
 
-bool Test_Expr_Parsing_DoubleBinaryOperatorAtEnd() {
+bool TestEzExpr_Parsing_DoubleBinaryOperatorAtEnd() {
     ez::Expr ev;
     try {
         if (!ev.parse("1++").eval().check(0)) return false;
@@ -250,7 +250,7 @@ bool Test_Expr_Parsing_DoubleBinaryOperatorAtEnd() {
     return true;
 }
 
-bool Test_Expr_Parsing_EmptyExpression() {
+bool TestEzExpr_Parsing_EmptyExpression() {
     ez::Expr ev;
     try {
         if (!ev.parse("").eval().check(0)) return false;
@@ -260,7 +260,7 @@ bool Test_Expr_Parsing_EmptyExpression() {
     return true;
 }
 
-bool Test_Expr_Parsing_UnknownFunctionName() {
+bool TestEzExpr_Parsing_UnknownFunctionName() {
     ez::Expr ev;
     try {
         if (!ev.parse("unknownFunction(5)").eval().check(0)) return false;
@@ -270,7 +270,7 @@ bool Test_Expr_Parsing_UnknownFunctionName() {
     return true;
 }
 
-bool Test_Expr_Parsing_MissingParenthesisInComplexExpression() {
+bool TestEzExpr_Parsing_MissingParenthesisInComplexExpression() {
     ez::Expr ev;
     try {
         if (!ev.parse("5 + 3 * 2 )").eval().check(0)) return false;
@@ -280,7 +280,7 @@ bool Test_Expr_Parsing_MissingParenthesisInComplexExpression() {
     return true;
 }
 
-bool Test_Expr_Parsing_OperatorWithoutOperandsInParenthesis() {
+bool TestEzExpr_Parsing_OperatorWithoutOperandsInParenthesis() {
     ez::Expr ev;
     try {
         if (!ev.parse("( + )").eval().check(0)) return false;
@@ -290,7 +290,7 @@ bool Test_Expr_Parsing_OperatorWithoutOperandsInParenthesis() {
     return true;
 }
 
-bool Test_Expr_Parsing_NumberFollowedByVariable() {
+bool TestEzExpr_Parsing_NumberFollowedByVariable() {
     ez::Expr ev;
     try {
         if (!ev.parse("5x + 3").eval().check(0)) return false;
@@ -300,7 +300,7 @@ bool Test_Expr_Parsing_NumberFollowedByVariable() {
     return true;
 }
 
-bool Test_Expr_Parsing_IncorrectUseOfComma() {
+bool TestEzExpr_Parsing_IncorrectUseOfComma() {
     ez::Expr ev;
     try {
         if (!ev.parse("5, 3").eval().check(0)) return false;
@@ -310,7 +310,7 @@ bool Test_Expr_Parsing_IncorrectUseOfComma() {
     return true;
 }
 
-bool Test_Expr_Parsing_UnrecognizedCharacter() {
+bool TestEzExpr_Parsing_UnrecognizedCharacter() {
     ez::Expr ev;
     try {
         if (!ev.parse("5 + @").eval().check(0)) return false;
@@ -320,7 +320,7 @@ bool Test_Expr_Parsing_UnrecognizedCharacter() {
     return true;
 }
 
-bool Test_Expr_Parsing_OperatorAtEndOfParenthesis() {
+bool TestEzExpr_Parsing_OperatorAtEndOfParenthesis() {
     ez::Expr ev;
     try {
         if (!ev.parse("(5 + 3 + )").eval().check(0)) return false;
@@ -330,7 +330,7 @@ bool Test_Expr_Parsing_OperatorAtEndOfParenthesis() {
     return true;
 }
 
-bool Test_Expr_Parsing_NumberFollowedByParenthesisWithoutOperator() {
+bool TestEzExpr_Parsing_NumberFollowedByParenthesisWithoutOperator() {
     ez::Expr ev;
     try {
         if (!ev.parse("5(3 + 2)").eval().check(0)) return false;
@@ -340,7 +340,7 @@ bool Test_Expr_Parsing_NumberFollowedByParenthesisWithoutOperator() {
     return true;
 }
 
-bool Test_Expr_Parsing_VariableFollowedByExpressionWithoutOperator() {
+bool TestEzExpr_Parsing_VariableFollowedByExpressionWithoutOperator() {
     ez::Expr ev;
     try {
         if (!ev.parse("x(3 + 2)").eval().check(0)) return false;
@@ -350,7 +350,7 @@ bool Test_Expr_Parsing_VariableFollowedByExpressionWithoutOperator() {
     return true;
 }
 
-bool Test_Expr_Parsing_MisplacedCommaAfterFunction() {
+bool TestEzExpr_Parsing_MisplacedCommaAfterFunction() {
     ez::Expr ev;
     try {
         if (!ev.parse("sin(,pi / 2)").set("pi", 3.14159).eval().check(0)) return false;
@@ -360,7 +360,7 @@ bool Test_Expr_Parsing_MisplacedCommaAfterFunction() {
     return true;
 }
 
-bool Test_Expr_Parsing_BinaryOperatorMisplacedInFunction() {
+bool TestEzExpr_Parsing_BinaryOperatorMisplacedInFunction() {
     ez::Expr ev;
     try {
         if (!ev.parse("atan2(,1)").eval().check(0)) return false;
@@ -370,7 +370,7 @@ bool Test_Expr_Parsing_BinaryOperatorMisplacedInFunction() {
     return true;
 }
 
-bool Test_Expr_Parsing_IncompleteExpression() {
+bool TestEzExpr_Parsing_IncompleteExpression() {
     ez::Expr ev;
     try {
         if (!ev.parse("3 +").eval().check(0)) return false;
@@ -380,7 +380,7 @@ bool Test_Expr_Parsing_IncompleteExpression() {
     return true;
 }
 
-bool Test_Expr_Parsing_MisuseOfFactorialOperator_2() {
+bool TestEzExpr_Parsing_MisuseOfFactorialOperator_2() {
     ez::Expr ev;
     try {
         if (!ev.parse("5!3").eval().check(0)) return false;
@@ -390,7 +390,7 @@ bool Test_Expr_Parsing_MisuseOfFactorialOperator_2() {
     return true;
 }
 
-bool Test_Expr_Parsing_NumberFollowedByBinaryOperator() {
+bool TestEzExpr_Parsing_NumberFollowedByBinaryOperator() {
     ez::Expr ev;
     try {
         if (!ev.parse("5*").eval().check(0)) return false;
@@ -400,7 +400,7 @@ bool Test_Expr_Parsing_NumberFollowedByBinaryOperator() {
     return true;
 }
 
-bool Test_Expr_Parsing_IncorrectUseOfOpeningParenthesis() {
+bool TestEzExpr_Parsing_IncorrectUseOfOpeningParenthesis() {
     ez::Expr ev;
     try {
         if (!ev.parse("((5)").eval().check(0)) return false;
@@ -410,7 +410,7 @@ bool Test_Expr_Parsing_IncorrectUseOfOpeningParenthesis() {
     return true;
 }
 
-bool Test_Expr_Parsing_IncorrectVariableName() {
+bool TestEzExpr_Parsing_IncorrectVariableName() {
     ez::Expr ev;
     try {
         if (!ev.parse("5 + x$").eval().check(0)) return false;
@@ -420,7 +420,7 @@ bool Test_Expr_Parsing_IncorrectVariableName() {
     return true;
 }
 
-bool Test_Expr_Parsing_IncorrectUseOfMultipleOperators() {
+bool TestEzExpr_Parsing_IncorrectUseOfMultipleOperators() {
     ez::Expr ev;
     try {
         if (!ev.parse("5 + - * 3").eval().check(0)) return false;
@@ -437,48 +437,48 @@ bool Test_Expr_Parsing_IncorrectUseOfMultipleOperators() {
 #define IfTestExist(v) \
     if (vTest == std::string(#v)) return v()
 
-bool Test_Expr_Parsings_run_test(const std::string& vTest) {
+bool TestEzExpr_Parsings_run_test(const std::string& vTest) {
     // Parsing
-    IfTestExist(Test_Expr_Parsing_OperatorWithoutOperands);
-    else IfTestExist(Test_Expr_Parsing_UnaryOperatorWithoutOperand);
-    else IfTestExist(Test_Expr_Parsing_UnmatchedOpeningParenthesis);
-    else IfTestExist(Test_Expr_Parsing_UnmatchedClosingParenthesis);
-    else IfTestExist(Test_Expr_Parsing_DoubleBinaryOperator);
-    else IfTestExist(Test_Expr_Parsing_DoubleUnaryOperator);
-    else IfTestExist(Test_Expr_Parsing_UndefinedVariable);
-    else IfTestExist(Test_Expr_Parsing_BinaryOperatorWithoutRightOperand);
-    else IfTestExist(Test_Expr_Parsing_DoubleOperandWithoutOperator);
-    else IfTestExist(Test_Expr_Parsing_FunctionWithoutParentheses);
-    else IfTestExist(Test_Expr_Parsing_FunctionWithoutArguments);
-    else IfTestExist(Test_Expr_Parsing_FunctionWithTooManyArguments);
-    else IfTestExist(Test_Expr_Parsing_FunctionWithOneArgumentInsteadOfTwo);
-    else IfTestExist(Test_Expr_Parsing_DivisionByZero);
-    else IfTestExist(Test_Expr_Parsing_MisplacedComma);
-    else IfTestExist(Test_Expr_Parsing_UndefinedOperator);
-    else IfTestExist(Test_Expr_Parsing_MisuseOfFactorialOperator);
-    else IfTestExist(Test_Expr_Parsing_UnaryOperatorBeforeParenthesis);
-    else IfTestExist(Test_Expr_Parsing_EmptyParenthesis);
-    else IfTestExist(Test_Expr_Parsing_DoubleComma);
-    else IfTestExist(Test_Expr_Parsing_DoubleBinaryOperatorAtStart);
-    else IfTestExist(Test_Expr_Parsing_DoubleBinaryOperatorAtEnd);
-    else IfTestExist(Test_Expr_Parsing_EmptyExpression);
-    else IfTestExist(Test_Expr_Parsing_UnknownFunctionName);
-    else IfTestExist(Test_Expr_Parsing_MissingParenthesisInComplexExpression);
-    else IfTestExist(Test_Expr_Parsing_OperatorWithoutOperandsInParenthesis);
-    else IfTestExist(Test_Expr_Parsing_NumberFollowedByVariable);
-    else IfTestExist(Test_Expr_Parsing_IncorrectUseOfComma);
-    else IfTestExist(Test_Expr_Parsing_UnrecognizedCharacter);
-    else IfTestExist(Test_Expr_Parsing_OperatorAtEndOfParenthesis);
-    else IfTestExist(Test_Expr_Parsing_NumberFollowedByParenthesisWithoutOperator);
-    else IfTestExist(Test_Expr_Parsing_VariableFollowedByExpressionWithoutOperator);
-    else IfTestExist(Test_Expr_Parsing_MisplacedCommaAfterFunction);
-    else IfTestExist(Test_Expr_Parsing_BinaryOperatorMisplacedInFunction);
-    else IfTestExist(Test_Expr_Parsing_IncompleteExpression);
-    else IfTestExist(Test_Expr_Parsing_MisuseOfFactorialOperator_2);
-    else IfTestExist(Test_Expr_Parsing_NumberFollowedByBinaryOperator);
-    else IfTestExist(Test_Expr_Parsing_IncorrectUseOfOpeningParenthesis);
-    else IfTestExist(Test_Expr_Parsing_IncorrectVariableName);
-    else IfTestExist(Test_Expr_Parsing_IncorrectUseOfMultipleOperators);
+    IfTestExist(TestEzExpr_Parsing_OperatorWithoutOperands);
+    else IfTestExist(TestEzExpr_Parsing_UnaryOperatorWithoutOperand);
+    else IfTestExist(TestEzExpr_Parsing_UnmatchedOpeningParenthesis);
+    else IfTestExist(TestEzExpr_Parsing_UnmatchedClosingParenthesis);
+    else IfTestExist(TestEzExpr_Parsing_DoubleBinaryOperator);
+    else IfTestExist(TestEzExpr_Parsing_DoubleUnaryOperator);
+    else IfTestExist(TestEzExpr_Parsing_UndefinedVariable);
+    else IfTestExist(TestEzExpr_Parsing_BinaryOperatorWithoutRightOperand);
+    else IfTestExist(TestEzExpr_Parsing_DoubleOperandWithoutOperator);
+    else IfTestExist(TestEzExpr_Parsing_FunctionWithoutParentheses);
+    else IfTestExist(TestEzExpr_Parsing_FunctionWithoutArguments);
+    else IfTestExist(TestEzExpr_Parsing_FunctionWithTooManyArguments);
+    else IfTestExist(TestEzExpr_Parsing_FunctionWithOneArgumentInsteadOfTwo);
+    else IfTestExist(TestEzExpr_Parsing_DivisionByZero);
+    else IfTestExist(TestEzExpr_Parsing_MisplacedComma);
+    else IfTestExist(TestEzExpr_Parsing_UndefinedOperator);
+    else IfTestExist(TestEzExpr_Parsing_MisuseOfFactorialOperator);
+    else IfTestExist(TestEzExpr_Parsing_UnaryOperatorBeforeParenthesis);
+    else IfTestExist(TestEzExpr_Parsing_EmptyParenthesis);
+    else IfTestExist(TestEzExpr_Parsing_DoubleComma);
+    else IfTestExist(TestEzExpr_Parsing_DoubleBinaryOperatorAtStart);
+    else IfTestExist(TestEzExpr_Parsing_DoubleBinaryOperatorAtEnd);
+    else IfTestExist(TestEzExpr_Parsing_EmptyExpression);
+    else IfTestExist(TestEzExpr_Parsing_UnknownFunctionName);
+    else IfTestExist(TestEzExpr_Parsing_MissingParenthesisInComplexExpression);
+    else IfTestExist(TestEzExpr_Parsing_OperatorWithoutOperandsInParenthesis);
+    else IfTestExist(TestEzExpr_Parsing_NumberFollowedByVariable);
+    else IfTestExist(TestEzExpr_Parsing_IncorrectUseOfComma);
+    else IfTestExist(TestEzExpr_Parsing_UnrecognizedCharacter);
+    else IfTestExist(TestEzExpr_Parsing_OperatorAtEndOfParenthesis);
+    else IfTestExist(TestEzExpr_Parsing_NumberFollowedByParenthesisWithoutOperator);
+    else IfTestExist(TestEzExpr_Parsing_VariableFollowedByExpressionWithoutOperator);
+    else IfTestExist(TestEzExpr_Parsing_MisplacedCommaAfterFunction);
+    else IfTestExist(TestEzExpr_Parsing_BinaryOperatorMisplacedInFunction);
+    else IfTestExist(TestEzExpr_Parsing_IncompleteExpression);
+    else IfTestExist(TestEzExpr_Parsing_MisuseOfFactorialOperator_2);
+    else IfTestExist(TestEzExpr_Parsing_NumberFollowedByBinaryOperator);
+    else IfTestExist(TestEzExpr_Parsing_IncorrectUseOfOpeningParenthesis);
+    else IfTestExist(TestEzExpr_Parsing_IncorrectVariableName);
+    else IfTestExist(TestEzExpr_Parsing_IncorrectUseOfMultipleOperators);
     // default
     return false;
 }

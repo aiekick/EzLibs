@@ -38,8 +38,9 @@ endif()
 target_link_libraries(${PROJECT} PRIVATE ${GLAD_LIBRARIES})
 
 target_include_directories(${PROJECT} PRIVATE 
-	${CMAKE_CURRENT_SOURCE_DIR}/../../EzGL 
 	${GLAD_INCLUDE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/.. 
 )
 
 set_target_properties(${PROJECT} PROPERTIES FOLDER Tests)

@@ -2,4 +2,5 @@
 
 #include <string>
 
-int Test_EzMath_run_test(const std::string& vTestCode);
+bool TestEzMath(const std::string& vTest);
+
