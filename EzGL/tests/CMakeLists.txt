@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-set(PROJECT glApi_Test)
+set(PROJECT EzGL_Test)
 enable_language(C CXX)
 project(${PROJECT} CXX)
 
@@ -36,12 +36,17 @@ if(NOT GLAD_LIBRARIES)
 endif() 
 
 target_link_libraries(${PROJECT} PRIVATE ${GLAD_LIBRARIES})
+
 target_include_directories(${PROJECT} PRIVATE 
-	${CMAKE_CURRENT_SOURCE_DIR}/../glApi 
+	${CMAKE_CURRENT_SOURCE_DIR}/../EzGL 
 	${GLAD_INCLUDE_DIR}
 )
 
 set_target_properties(${PROJECT} PROPERTIES FOLDER Tests)
+
+target_compile_definitions(${PROJECT} PRIVATE 
+	-DOPENGL_LOADER="${GLAD_INCLUDE_DIR}/glad/glad.h"
+)
 
 #############################################################
 #############################################################
@@ -54,27 +59,27 @@ endfunction()
 ##########################################################
 ##########################################################
 
-## glAPi::Uniforms
-SetTest("Test_glApi_Uniforms_Parsing_Good_Syntax_0")
-SetTest("Test_glApi_Uniforms_Parsing_Good_Syntax_1")
-SetTest("Test_glApi_Uniforms_Parsing_Good_Syntax_2")
-SetTest("Test_glApi_Uniforms_Parsing_Good_Syntax_3")
-SetTest("Test_glApi_Uniforms_Parsing_Good_Syntax_4")
-SetTest("Test_glApi_Uniforms_Parsing_Good_Syntax_5")
-SetTest("Test_glApi_Uniforms_Parsing_Good_Syntax_6")
-SetTest("Test_glApi_Uniforms_Parsing_Good_Syntax_7")
-SetTest("Test_glApi_Uniforms_Parsing_Good_Syntax_8")
-SetTest("Test_glApi_Uniforms_Parsing_Good_Syntax_9")
-SetTest("Test_glApi_Uniforms_Parsing_Good_Syntax_10")
-SetTest("Test_glApi_Uniforms_Parsing_Good_Syntax_11")
-SetTest("Test_glApi_Uniforms_Parsing_Bad_Syntax_0")
-SetTest("Test_glApi_Uniforms_Parsing_Bad_Syntax_1")
-SetTest("Test_glApi_Uniforms_Parsing_Bad_Syntax_2")
-SetTest("Test_glApi_Uniforms_Parsing_Bad_Syntax_3")
-SetTest("Test_glApi_Uniforms_Parsing_Bad_Syntax_4")
-SetTest("Test_glApi_Uniforms_Parsing_Bad_Syntax_5")
-SetTest("Test_glApi_Uniforms_Parsing_Bad_Syntax_6")
-SetTest("Test_glApi_Uniforms_Parsing_Bad_Syntax_7")
-SetTest("Test_glApi_Uniforms_Parsing_Time_Widget_0")
-SetTest("Test_glApi_Uniforms_Parsing_Buffer_Widget_0")
-SetTest("Test_glApi_Uniforms_Parsing_Slider_Widget_0")
+## ez::gl::Uniforms
+SetTest("Test_EzGL_Uniforms_Parsing_Good_Syntax_0")
+SetTest("Test_EzGL_Uniforms_Parsing_Good_Syntax_1")
+SetTest("Test_EzGL_Uniforms_Parsing_Good_Syntax_2")
+SetTest("Test_EzGL_Uniforms_Parsing_Good_Syntax_3")
+SetTest("Test_EzGL_Uniforms_Parsing_Good_Syntax_4")
+SetTest("Test_EzGL_Uniforms_Parsing_Good_Syntax_5")
+SetTest("Test_EzGL_Uniforms_Parsing_Good_Syntax_6")
+SetTest("Test_EzGL_Uniforms_Parsing_Good_Syntax_7")
+SetTest("Test_EzGL_Uniforms_Parsing_Good_Syntax_8")
+SetTest("Test_EzGL_Uniforms_Parsing_Good_Syntax_9")
+SetTest("Test_EzGL_Uniforms_Parsing_Good_Syntax_10")
+SetTest("Test_EzGL_Uniforms_Parsing_Good_Syntax_11")
+SetTest("Test_EzGL_Uniforms_Parsing_Bad_Syntax_0")
+SetTest("Test_EzGL_Uniforms_Parsing_Bad_Syntax_1")
+SetTest("Test_EzGL_Uniforms_Parsing_Bad_Syntax_2")
+SetTest("Test_EzGL_Uniforms_Parsing_Bad_Syntax_3")
+SetTest("Test_EzGL_Uniforms_Parsing_Bad_Syntax_4")
+SetTest("Test_EzGL_Uniforms_Parsing_Bad_Syntax_5")
+SetTest("Test_EzGL_Uniforms_Parsing_Bad_Syntax_6")
+SetTest("Test_EzGL_Uniforms_Parsing_Bad_Syntax_7")
+SetTest("Test_EzGL_Uniforms_Parsing_Time_Widget_0")
+SetTest("Test_EzGL_Uniforms_Parsing_Buffer_Widget_0")
+SetTest("Test_EzGL_Uniforms_Parsing_Slider_Widget_0")
