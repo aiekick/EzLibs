@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 cmake_policy(SET CMP0110 OLD) ## for use [] in test names like "EzMath.double.Vec2.[]"
 
-set(PROJECT EzMath_Test)
+set(PROJECT TestEzMath)
 enable_language(C CXX)
 project(${PROJECT} CXX)
 
@@ -11,8 +11,8 @@ file(GLOB_RECURSE PROJECT_TEST_SRC_RECURSE
 	${CMAKE_CURRENT_SOURCE_DIR}/*.cpp 
 	${CMAKE_CURRENT_SOURCE_DIR}/*.h 
 )
-
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${PROJECT_TEST_SRC_RECURSE})
+
 include_directories(${EzMath_INCLUDE_DIR})
 add_executable(${PROJECT} ${PROJECT_TEST_SRC_RECURSE})
 target_link_libraries(${PROJECT} ${EzMath_LIBRARIES})

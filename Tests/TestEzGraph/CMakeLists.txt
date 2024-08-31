@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-set(PROJECT EzGraph_Test)
+set(PROJECT TestEzGraph)
 enable_language(C CXX)
 project(${PROJECT} CXX)
 

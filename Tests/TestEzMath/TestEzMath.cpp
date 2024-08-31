@@ -1,10 +1,9 @@
-#include "TestCode.h"
+#include "EzMath.h"
 #include "cTools/Test_cTools.h"
 #include "FileHelper/Test_FileHelper.h"
 #include "Logger/Test_Logger.h"
 
-int run_test(const std::string& vTestCode)
-{
+int Test_EzMath_run_test(const std::string& vTestCode) {
 	if (vTestCode.find("cTools.") != std::string::npos)
 	{
 		return Test_cTools_run_test(vTestCode);

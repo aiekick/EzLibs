@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-set(PROJECT EzGL_Test)
+set(PROJECT TestEzGL)
 enable_language(C CXX)
 project(${PROJECT} CXX)
 
@@ -23,9 +23,9 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${PROJECT_TEST_SRC_RECURSE})
 add_executable(${PROJECT} ${PROJECT_TEST_SRC_RECURSE})
 
 if(NOT GLAD_LIBRARIES)
-	set(GLAD_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/glad/include)
-	file(GLOB GLAD_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/glad/src/glad.c)
-	file(GLOB GLAD_HEADERS ${GLAD_INCLUDE_DIR}/glad/glad.h)
+	set(GLAD_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glad/include)
+	file(GLOB GLAD_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glad/src/glad.c)
+	file(GLOB GLAD_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glad/glad.h)
 	add_library(glad STATIC ${GLAD_HEADERS} ${GLAD_SOURCES})
 	set_target_properties(glad PROPERTIES LINKER_LANGUAGE C)
 	if(WIN32)
@@ -38,7 +38,7 @@ endif()
 target_link_libraries(${PROJECT} PRIVATE ${GLAD_LIBRARIES})
 
 target_include_directories(${PROJECT} PRIVATE 
-	${CMAKE_CURRENT_SOURCE_DIR}/../EzGL 
+	${CMAKE_CURRENT_SOURCE_DIR}/../../EzGL 
 	${GLAD_INCLUDE_DIR}
 )
 
