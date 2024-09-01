@@ -59,7 +59,7 @@ inline bool isDifferent(T vA, T vB) {
 
 template <>
 inline bool isDifferent(float vA, float vB) {
-    return std::fabs(vA - vB) > std::numeric_limits<float>::epsilon();
+     return std::fabs(vA - vB) > std::numeric_limits<float>::epsilon();
 }
 
 template <>

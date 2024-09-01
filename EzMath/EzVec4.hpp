@@ -239,7 +239,7 @@ struct vec4 {
 
     // Length of the vector
     T length() const {
-        return static_cast<T>(std::sqrt(lengthSquared()));
+        return static_cast<T>(ez::sqrt(lengthSquared()));
     }
 
     // Squared length of the vector
@@ -284,12 +284,12 @@ struct vec4 {
 
     // Sum of absolute values of components
     T sumAbs() const {
-        return std::abs(x) + std::abs(y) + std::abs(z) + std::abs(w);
+        return ez::abs(x) + ez::abs(y) + ez::abs(z) + ez::abs(w);
     }
 
     // Convert to string
     std::string string(char c = ';') const {
-        return toStr(x) + c + toStr(y) + c + toStr(z) + c + toStr(w);
+        return ez::toStr(x) + c + ez::toStr(y) + c + ez::toStr(z) + c + ez::toStr(w);
     }
 
     // Minimum component
@@ -458,27 +458,27 @@ inline bool operator!=(T f, vec4<T> v) {
 // Utility functions
 template <typename T>
 inline vec4<T> mini(vec4<T> a, vec4<T> b) {
-    return vec4<T>(std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z), std::min(a.w, b.w));
+    return vec4<T>(ez::min(a.x, b.x), ez::min(a.y, b.y), ez::min(a.z, b.z), ez::min(a.w, b.w));
 }
 
 template <typename T>
 inline vec4<T> maxi(vec4<T> a, vec4<T> b) {
-    return vec4<T>(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z), std::max(a.w, b.w));
+    return vec4<T>(ez::max(a.x, b.x), ez::max(a.y, b.y), ez::max(a.z, b.z), ez::max(a.w, b.w));
 }
 
 template <typename T>
 inline vec4<T> floor(vec4<T> a) {
-    return vec4<T>(std::floor(a.x), std::floor(a.y), std::floor(a.z), std::floor(a.w));
+    return vec4<T>(ez::floor(a.x), ez::floor(a.y), ez::floor(a.z), ez::floor(a.w));
 }
 
 template <typename T>
 inline vec4<T> ceil(vec4<T> a) {
-    return vec4<T>(std::ceil(a.x), std::ceil(a.y), std::ceil(a.z), std::ceil(a.w));
+    return vec4<T>(ez::ceil(a.x), ez::ceil(a.y), ez::ceil(a.z), ez::ceil(a.w));
 }
 
 template <typename T>
 inline vec4<T> abs(vec4<T> a) {
-    return vec4<T>(std::abs(a.x), std::abs(a.y), std::abs(a.z), std::abs(a.w));
+    return vec4<T>(ez::abs(a.x), ez::abs(a.y), ez::abs(a.z), ez::abs(a.w));
 }
 
 template <typename T>
@@ -491,17 +491,17 @@ inline vec4<T> sign(vec4<T> a) {
 
 template <typename T>
 inline vec4<T> sin(vec4<T> a) {
-    return vec4<T>(std::sin(a.x), std::sin(a.y), std::sin(a.z), std::sin(a.w));
+    return vec4<T>(ez::sin(a.x), ez::sin(a.y), ez::sin(a.z), ez::sin(a.w));
 }
 
 template <typename T>
 inline vec4<T> cos(vec4<T> a) {
-    return vec4<T>(std::cos(a.x), std::cos(a.y), std::cos(a.z), std::cos(a.w));
+    return vec4<T>(ez::cos(a.x), ez::cos(a.y), ez::cos(a.z), ez::cos(a.w));
 }
 
 template <typename T>
 inline vec4<T> tan(vec4<T> a) {
-    return vec4<T>(std::tan(a.x), std::tan(a.y), std::tan(a.z), std::tan(a.w));
+    return vec4<T>(ez::tan(a.x), ez::tan(a.y), ez::tan(a.z), ez::tan(a.w));
 }
 
 // Type aliases for common vector types

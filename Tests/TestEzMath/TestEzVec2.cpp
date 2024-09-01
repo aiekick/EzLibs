@@ -21,7 +21,9 @@ template <typename T>
 bool TestEzVec2Offset() {
     ez::vec2<T> v(1, 2);
     ez::vec2<T> result = v.Offset(1, 2);
-    if (result.x != 2 || result.y != 4)
+    if (!ez::isEqual(result.x, static_cast<T>(2)))
+        return false;
+    if (!ez::isEqual(result.y, static_cast<T>(4)))
         return false;
     return true;
 }
@@ -30,7 +32,9 @@ template <typename T>
 bool TestEzVec2Negate() {
     ez::vec2<T> v(1, 2);
     ez::vec2<T> result = -v;
-    if (result.x != -1 || result.y != -2)
+    if (!ez::isEqual(result.x, static_cast<T>(-1)))
+        return false;
+    if (!ez::isEqual(result.y, static_cast<T>(-2)))
         return false;
     return true;
 }
@@ -38,7 +42,7 @@ bool TestEzVec2Negate() {
 template <typename T>
 bool TestEzVec2Length() {
     ez::vec2<T> v(3, 4);
-    if (std::abs(v.length() - 5) >= std::numeric_limits<T>::epsilon())
+    if (ez::isDifferent(v.length(), static_cast<T>(5)))
         return false;
     return true;
 }
@@ -47,7 +51,7 @@ template <typename T>
 bool TestEzVec2Normalize() {
     ez::vec2<T> v(3, 4);
     v.normalize();
-    if (std::abs(v.length() - 1) >= std::numeric_limits<T>::epsilon())
+    if (ez::isDifferent(v.length(), static_cast<T>(1)))
         return false;
     return true;
 }
@@ -55,7 +59,7 @@ bool TestEzVec2Normalize() {
 template <typename T>
 bool TestEzVec2Sum() {
     ez::vec2<T> v(1, 2);
-    if (v.sum() != static_cast<T>(3))
+    if (!ez::isEqual(v.sum(), static_cast<T>(3)))
         return false;
     return true;
 }
@@ -67,15 +71,21 @@ bool TestEzVec2OperatorAdd() {
     T scalar = 1;
 
     ez::vec2<T> result1 = v1 + scalar;
-    if (result1.x != 2 || result1.y != 3)
+    if (!ez::isEqual(result1.x, static_cast<T>(2)))
+        return false;
+    if (!ez::isEqual(result1.y, static_cast<T>(3)))
         return false;
 
     ez::vec2<T> result2 = scalar + v1;
-    if (result2.x != 2 || result2.y != 3)
+    if (!ez::isEqual(result2.x, static_cast<T>(2)))
+        return false;
+    if (!ez::isEqual(result2.y, static_cast<T>(3)))
         return false;
 
     ez::vec2<T> result3 = v1 + v2;
-    if (result3.x != 4 || result3.y != 6)
+    if (!ez::isEqual(result3.x, static_cast<T>(4)))
+        return false;
+    if (!ez::isEqual(result3.y, static_cast<T>(6)))
         return false;
 
     return true;
@@ -88,15 +98,21 @@ bool TestEzVec2OperatorSubtract() {
     T scalar = 1;
 
     ez::vec2<T> result1 = v1 - scalar;
-    if (result1.x != 2 || result1.y != 3)
+    if (!ez::isEqual(result1.x, static_cast<T>(2)))
+        return false;
+    if (!ez::isEqual(result1.y, static_cast<T>(3)))
         return false;
 
     ez::vec2<T> result2 = scalar - v1;
-    if (result2.x != -2 || result2.y != -3)
+    if (!ez::isEqual(result2.x, static_cast<T>(-2)))
+        return false;
+    if (!ez::isEqual(result2.y, static_cast<T>(-3)))
         return false;
 
     ez::vec2<T> result3 = v1 - v2;
-    if (result3.x != 2 || result3.y != 2)
+    if (!ez::isEqual(result3.x, static_cast<T>(2)))
+        return false;
+    if (!ez::isEqual(result3.y, static_cast<T>(2)))
         return false;
 
     return true;
@@ -109,15 +125,21 @@ bool TestEzVec2OperatorMultiply() {
     T scalar = 2;
 
     ez::vec2<T> result1 = v1 * scalar;
-    if (result1.x != 4 || result1.y != 6)
+    if (!ez::isEqual(result1.x, static_cast<T>(4)))
+        return false;
+    if (!ez::isEqual(result1.y, static_cast<T>(6)))
         return false;
 
     ez::vec2<T> result2 = scalar * v1;
-    if (result2.x != 4 || result2.y != 6)
+    if (!ez::isEqual(result2.x, static_cast<T>(4)))
+        return false;
+    if (!ez::isEqual(result2.y, static_cast<T>(6)))
         return false;
 
     ez::vec2<T> result3 = v1 * v2;
-    if (result3.x != 8 || result3.y != 15)
+    if (!ez::isEqual(result3.x, static_cast<T>(8)))
+        return false;
+    if (!ez::isEqual(result3.y, static_cast<T>(15)))
         return false;
 
     return true;
@@ -130,11 +152,15 @@ bool TestEzVec2OperatorDivide() {
     T scalar = 2;
 
     ez::vec2<T> result1 = v1 / scalar;
-    if (result1.x != 2 || result1.y != 3)
+    if (!ez::isEqual(result1.x, static_cast<T>(2)))
+        return false;
+    if (!ez::isEqual(result1.y, static_cast<T>(3)))
         return false;
 
     ez::vec2<T> result3 = v1 / v2;
-    if (result3.x != 2 || result3.y != 2)
+    if (!ez::isEqual(result3.x, static_cast<T>(2)))
+        return false;
+    if (!ez::isEqual(result3.y, static_cast<T>(2)))
         return false;
 
     return true;
@@ -147,7 +173,9 @@ bool TestEzVec2OperatorDivide<float>() {
     float scalar = 2.0f;
 
     ez::vec2<float> result2 = scalar / v1;
-    if (result2.x != 0.5f || ez::isDifferent(result2.y, 1.0f / 3.0f))
+    if (!ez::isEqual(result2.x, 0.5f))
+        return false;
+    if (ez::isDifferent(result2.y, 1.0f / 3.0f))
         return false;
 
     return true;
@@ -160,7 +188,9 @@ bool TestEzVec2OperatorDivide<double>() {
     double scalar = 2.0;
 
     ez::vec2<double> result2 = scalar / v1;
-    if (result2.x != 0.5 || ez::isDifferent(result2.y, 1.0 / 3.0))
+    if (!ez::isEqual(result2.x, 0.5))
+        return false;
+    if (ez::isDifferent(result2.y, 1.0 / 3.0))
         return false;
 
     return true;
@@ -192,7 +222,13 @@ bool TestEzVec2EmptyOR() {
     ez::vec2<T> v3(0, 1);
     ez::vec2<T> v4(1, 1);
 
-    if (!v1.emptyOR() || !v2.emptyOR() || !v3.emptyOR() || v4.emptyOR())
+    if (!v1.emptyOR())
+        return false;
+    if (!v2.emptyOR())
+        return false;
+    if (!v3.emptyOR())
+        return false;
+    if (v4.emptyOR())
         return false;
 
     return true;
@@ -201,7 +237,7 @@ bool TestEzVec2EmptyOR() {
 template <typename T>
 bool TestEzVec2Min() {
     ez::vec2<T> v(1, 2);
-    if (v.min() != 1)
+    if (!ez::isEqual(v.min(), static_cast<T>(1)))
         return false;
     return true;
 }
@@ -209,7 +245,7 @@ bool TestEzVec2Min() {
 template <typename T>
 bool TestEzVec2Max() {
     ez::vec2<T> v(1, 2);
-    if (v.max() != 2)
+    if (!ez::isEqual(v.max(), static_cast<T>(2)))
         return false;
     return true;
 }
@@ -218,7 +254,7 @@ template <typename T>
 bool TestEzVec2GetNormalized() {
     ez::vec2<T> v(3, 4);
     ez::vec2<T> normalized = v.GetNormalized();
-    if (std::abs(normalized.length() - 1) >= std::numeric_limits<T>::epsilon())
+    if (ez::isDifferent(normalized.length(), static_cast<T>(1)))
         return false;
     return true;
 }
@@ -230,22 +266,48 @@ bool TestEzVec2ComparisonOperators() {
     ez::vec2<T> v3(1, 2);
     T scalar = 2;
 
-    if (!(v1 < v2) || v2 < v1 || !(v1 < scalar) || v2 < scalar)
+    if (!(v1 < v2))
+        return false;
+    if (v2 < v1)
+        return false;
+    if (!(v1 < scalar))
+        return false;
+    if (v2 < scalar)
         return false;
 
-    if (v1 > v2 || !(v2 > v1) || v1 > scalar || !(v2 > scalar))
+    if (v1 > v2)
+        return false;
+    if (!(v2 > v1))
+        return false;
+    if (v1 > scalar)
+        return false;
+    if (!(v2 > scalar))
         return false;
 
-    if (!(v1 <= v2) || !(v1 <= v3) || v2 <= v1 || !(v1 <= scalar))
+    if (!(v1 <= v2))
+        return false;
+    if (!(v1 <= v3))
+        return false;
+    if (v2 <= v1)
+        return false;
+    if (!(v1 <= scalar))
         return false;
 
-    if (v1 >= v2 || !(v2 >= v1) || !(v2 >= scalar))
+    if (v1 >= v2)
+        return false;
+    if (!(v2 >= v1))
+        return false;
+    if (!(v2 >= scalar))
         return false;
 
-    if (!(v1.operator==(v3)) || v1.operator==(v2))
+    if (!(v1.operator==(v3)))
+        return false;
+    if (v1.operator==(v2))
         return false;
 
-    if (!(v1.operator!=(v2)) || v1.operator!=(v3))
+    if (!(v1.operator!=(v2)))
+        return false;
+    if (v1.operator!=(v3))
         return false;
 
     return true;
@@ -255,7 +317,9 @@ template <typename T>
 bool TestEzVec2Floor() {
     ez::vec2<T> v(1.5, 2.7);
     ez::vec2<T> floorResult = ez::floor<T>(v);
-    if (floorResult.x != 1 || floorResult.y != 2)
+    if (!ez::isEqual(floorResult.x, static_cast<T>(1)))
+        return false;
+    if (!ez::isEqual(floorResult.y, static_cast<T>(2)))
         return false;
     return true;
 }
@@ -275,7 +339,9 @@ template <typename T>
 bool TestEzVec2Ceil() {
     ez::vec2<T> v(1.5, 2.7);
     ez::vec2<T> ceilResult = ez::ceil<T>(v);
-    if (ceilResult.x != 2 || ceilResult.y != 3)
+    if (!ez::isEqual(ceilResult.x, static_cast<T>(2)))
+        return false;
+    if (!ez::isEqual(ceilResult.y, static_cast<T>(3)))
         return false;
     return true;
 }
@@ -285,7 +351,9 @@ bool TestEzVec2Mini() {
     ez::vec2<T> v1(1, 3);
     ez::vec2<T> v2(2, 4);
     ez::vec2<T> miniResult = ez::mini<T>(v1, v2);
-    if (miniResult.x != 1 || miniResult.y != 3)
+    if (!ez::isEqual(miniResult.x, static_cast<T>(1)))
+        return false;
+    if (!ez::isEqual(miniResult.y, static_cast<T>(3)))
         return false;
     return true;
 }
@@ -295,7 +363,9 @@ bool TestEzVec2Maxi() {
     ez::vec2<T> v1(1, 3);
     ez::vec2<T> v2(2, 4);
     ez::vec2<T> maxiResult = ez::maxi<T>(v1, v2);
-    if (maxiResult.x != 2 || maxiResult.y != 4)
+    if (!ez::isEqual(maxiResult.x, static_cast<T>(2)))
+        return false;
+    if (!ez::isEqual(maxiResult.y, static_cast<T>(4)))
         return false;
     return true;
 }
@@ -305,7 +375,7 @@ bool TestEzVec2Dot() {
     ez::vec2<T> v1(1, 3);
     ez::vec2<T> v2(2, 4);
     T dotResult = ez::dot<T>(v1, v2);
-    if (dotResult != 14)
+    if (!ez::isEqual(dotResult, static_cast<T>(14)))
         return false;
     return true;
 }
@@ -315,7 +385,7 @@ bool TestEzVec2Det() {
     ez::vec2<T> v1(1, 3);
     ez::vec2<T> v2(2, 4);
     T detResult = ez::det<T>(v1, v2);
-    if (detResult != -2)
+    if (!ez::isEqual(detResult, static_cast<T>(-2)))
         return false;
     return true;
 }
@@ -325,7 +395,7 @@ bool TestEzVec2Reflect() {
     ez::vec2<T> v1(1, 3);
     ez::vec2<T> v2(2, 4);
     ez::vec2<T> reflectResult = ez::reflect<T>(v1, v2);
-    if (ez::isDifferent(reflectResult.x , static_cast<T>(-55.0)))
+    if (ez::isDifferent(reflectResult.x, static_cast<T>(-55.0)))
         return false;
     if (ez::isDifferent(reflectResult.y, static_cast<T>(-109.0)))
         return false;
@@ -336,12 +406,18 @@ template <typename T>
 bool TestEzVec2Sign() {
     ez::vec2<T> v(5, 3);
     ez::vec2<T> signResult = ez::sign<T>(v);
-    if (signResult.x != 1 || signResult.y != 1)
+    if (!ez::isEqual(signResult.x, static_cast<T>(1)))
         return false;
+    if (!ez::isEqual(signResult.y, static_cast<T>(1)))
+        return false;
+
     v = ez::vec2<T>(0, 0);
     signResult = ez::sign(v);
-    if (signResult.x != 0 || signResult.y != 0)
+    if (!ez::isEqual(signResult.x, static_cast<T>(0)))
         return false;
+    if (!ez::isEqual(signResult.y, static_cast<T>(0)))
+        return false;
+
     return true;
 }
 
@@ -349,9 +425,9 @@ template <typename T>
 bool TestEzVec2Sin() {
     ez::vec2<T> v(1.5, 2.7);
     ez::vec2<T> sinResult = ez::sin<T>(v);
-    if (sinResult.x != std::sin(1.5))
+    if (ez::isDifferent(sinResult.x, std::sin(static_cast<T>(1.5))))
         return false;
-    if ( sinResult.y != std::sin(2.7))
+    if (ez::isDifferent(sinResult.y, std::sin(static_cast<T>(2.7))))
         return false;
     return true;
 }
@@ -360,7 +436,9 @@ template <typename T>
 bool TestEzVec2Cos() {
     ez::vec2<T> v(1.5, 2.7);
     ez::vec2<T> cosResult = ez::cos<T>(v);
-    if (cosResult.x != std::cos(1.5) || cosResult.y != std::cos(2.7))
+    if (ez::isDifferent(cosResult.x, std::cos(static_cast<T>(1.5))))
+        return false;
+    if (ez::isDifferent(cosResult.y, std::cos(static_cast<T>(2.7))))
         return false;
     return true;
 }
@@ -369,7 +447,9 @@ template <typename T>
 bool TestEzVec2Tan() {
     ez::vec2<T> v(1.5, 2.7);
     ez::vec2<T> tanResult = ez::tan<T>(v);
-    if (tanResult.x != std::tan(1.5) || tanResult.y != std::tan(2.7))
+    if (ez::isDifferent(tanResult.x, std::tan(static_cast<T>(1.5))))
+        return false;
+    if (ez::isDifferent(tanResult.y, std::tan(static_cast<T>(2.7))))
         return false;
     return true;
 }
@@ -378,7 +458,9 @@ template <typename T>
 bool TestEzVec2Atan() {
     ez::vec2<T> v(1.5, 2.7);
     ez::vec2<T> atanResult = ez::atan<T>(v);
-    if (atanResult.x != std::atan(1.5) || atanResult.y != std::atan(2.7))
+    if (ez::isDifferent(atanResult.x, std::atan(static_cast<T>(1.5))))
+        return false;
+    if (ez::isDifferent(atanResult.y, std::atan(static_cast<T>(2.7))))
         return false;
     return true;
 }

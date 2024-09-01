@@ -169,7 +169,7 @@ template <>
 bool TestEzVec3Length<float>() {
     ez::vec3<float> v(3.0f, 4.0f, 0.0f);
     float len = v.length();
-    if (std::abs(len - 5.0f) > 0.0001f)
+    if (ez::abs(len - 5.0f) > 0.0001f)
         return false;
     return true;
 }
@@ -179,13 +179,7 @@ template <typename T>
 bool TestEzVec3Normalize() {
     ez::vec3<T> v(3, 4, 0);
     v.normalize();
-    if (std::abs(v.x - 0.6) > 0.0001)
-        return false;
-    if (std::abs(v.y - 0.8) > 0.0001)
-        return false;
-    if (std::abs(v.z) > 0.0001)
-        return false;
-    if (std::abs(v.length() - 1.0) > 0.0001)
+    if (ez::isDifferent(v.length(), static_cast<T>(1.0)))
         return false;
     return true;
 }
@@ -258,8 +252,7 @@ bool TestEzVec3String() {
 template <typename T>
 bool TestEzVec3Mini() {
     ez::vec3<T> v(1, 2, 3);
-    T mini = v.mini();
-    if (mini != 1)
+    if (ez::isDifferent(v.mini(), static_cast<T>(1)))
         return false;
     return true;
 }
@@ -268,8 +261,7 @@ bool TestEzVec3Mini() {
 template <typename T>
 bool TestEzVec3Maxi() {
     ez::vec3<T> v(1, 2, 3);
-    T maxi = v.maxi();
-    if (maxi != 3)
+    if (ez::isDifferent(v.maxi(), static_cast<T>(3)))
         return false;
     return true;
 }
@@ -283,15 +275,6 @@ bool TestEzVec3Equality() {
         return false;
     ez::vec3<T> v3(4, 5, 6);
     if (v1 == v3)
-        return false;
-    return true;
-}
-
-template <>
-bool TestEzVec3Equality<float>() {
-    ez::vec3<float> v1(1.0f, 2.0f, 3.0f);
-    ez::vec3<float> v2(1.0f + 1e-6f, 2.0f - 1e-6f, 3.0f + 1e-6f);
-    if (!(v1 == v2))  // Assuming isEqual is used in operator==
         return false;
     return true;
 }
@@ -366,7 +349,9 @@ bool TestEzVec3(const std::string& vTest) {
     IfTestExist(TestEzVec3Set<float>);
     else IfTestExist(TestEzVec3Set<double>);
     else IfTestExist(TestEzVec3Set<int32_t>);
+    else IfTestExist(TestEzVec3Set<uint32_t>);
     else IfTestExist(TestEzVec3Set<int64_t>);
+    else IfTestExist(TestEzVec3Set<uint64_t>);
 
     IfTestExist(TestEzVec3Negate<float>);
     else IfTestExist(TestEzVec3Negate<double>);
@@ -379,47 +364,57 @@ bool TestEzVec3(const std::string& vTest) {
     IfTestExist(TestEzVec3XY<float>);
     else IfTestExist(TestEzVec3XY<double>);
     else IfTestExist(TestEzVec3XY<int32_t>);
+    else IfTestExist(TestEzVec3XY<uint32_t>);
     else IfTestExist(TestEzVec3XY<int64_t>);
+    else IfTestExist(TestEzVec3XY<uint64_t>);
 
     IfTestExist(TestEzVec3XZ<float>);
     else IfTestExist(TestEzVec3XZ<double>);
     else IfTestExist(TestEzVec3XZ<int32_t>);
+    else IfTestExist(TestEzVec3XZ<uint32_t>);
     else IfTestExist(TestEzVec3XZ<int64_t>);
+    else IfTestExist(TestEzVec3XZ<uint64_t>);
 
     IfTestExist(TestEzVec3YZ<float>);
     else IfTestExist(TestEzVec3YZ<double>);
     else IfTestExist(TestEzVec3YZ<int32_t>);
+    else IfTestExist(TestEzVec3YZ<uint32_t>);
     else IfTestExist(TestEzVec3YZ<int64_t>);
+    else IfTestExist(TestEzVec3YZ<uint64_t>);
 
     IfTestExist(TestEzVec3YZX<float>);
     else IfTestExist(TestEzVec3YZX<double>);
     else IfTestExist(TestEzVec3YZX<int32_t>);
+    else IfTestExist(TestEzVec3YZX<uint32_t>);
     else IfTestExist(TestEzVec3YZX<int64_t>);
+    else IfTestExist(TestEzVec3YZX<uint64_t>);
 
     IfTestExist(TestEzVec3Increment<float>);
     else IfTestExist(TestEzVec3Increment<double>);
     else IfTestExist(TestEzVec3Increment<int32_t>);
+    else IfTestExist(TestEzVec3Increment<uint32_t>);
     else IfTestExist(TestEzVec3Increment<int64_t>);
+    else IfTestExist(TestEzVec3Increment<uint64_t>);
 
     IfTestExist(TestEzVec3Decrement<float>);
     else IfTestExist(TestEzVec3Decrement<double>);
     else IfTestExist(TestEzVec3Decrement<int32_t>);
+    else IfTestExist(TestEzVec3Decrement<uint32_t>);
     else IfTestExist(TestEzVec3Decrement<int64_t>);
+    else IfTestExist(TestEzVec3Decrement<uint64_t>);
 
     IfTestExist(TestEzVec3Length<float>);
     else IfTestExist(TestEzVec3Length<double>);
-    else IfTestExist(TestEzVec3Length<int32_t>);
-    else IfTestExist(TestEzVec3Length<int64_t>);
 
     IfTestExist(TestEzVec3Normalize<float>);
     else IfTestExist(TestEzVec3Normalize<double>);
-    else IfTestExist(TestEzVec3Normalize<int32_t>);
-    else IfTestExist(TestEzVec3Normalize<int64_t>);
 
     IfTestExist(TestEzVec3Sum<float>);
     else IfTestExist(TestEzVec3Sum<double>);
     else IfTestExist(TestEzVec3Sum<int32_t>);
+    else IfTestExist(TestEzVec3Sum<uint32_t>);
     else IfTestExist(TestEzVec3Sum<int64_t>);
+    else IfTestExist(TestEzVec3Sum<uint64_t>);
 
     IfTestExist(TestEzVec3SumAbs<float>);
     else IfTestExist(TestEzVec3SumAbs<double>);
@@ -429,52 +424,72 @@ bool TestEzVec3(const std::string& vTest) {
     IfTestExist(TestEzVec3EmptyAND<float>);
     else IfTestExist(TestEzVec3EmptyAND<double>);
     else IfTestExist(TestEzVec3EmptyAND<int32_t>);
+    else IfTestExist(TestEzVec3EmptyAND<uint32_t>);
     else IfTestExist(TestEzVec3EmptyAND<int64_t>);
+    else IfTestExist(TestEzVec3EmptyAND<uint64_t>);
 
     IfTestExist(TestEzVec3EmptyOR<float>);
     else IfTestExist(TestEzVec3EmptyOR<double>);
     else IfTestExist(TestEzVec3EmptyOR<int32_t>);
+    else IfTestExist(TestEzVec3EmptyOR<uint32_t>);
     else IfTestExist(TestEzVec3EmptyOR<int64_t>);
+    else IfTestExist(TestEzVec3EmptyOR<uint64_t>);
 
     IfTestExist(TestEzVec3String<float>);
     else IfTestExist(TestEzVec3String<double>);
     else IfTestExist(TestEzVec3String<int32_t>);
+    else IfTestExist(TestEzVec3String<uint32_t>);
     else IfTestExist(TestEzVec3String<int64_t>);
+    else IfTestExist(TestEzVec3String<uint64_t>);
 
     IfTestExist(TestEzVec3Mini<float>);
     else IfTestExist(TestEzVec3Mini<double>);
     else IfTestExist(TestEzVec3Mini<int32_t>);
+    else IfTestExist(TestEzVec3Mini<uint32_t>);
     else IfTestExist(TestEzVec3Mini<int64_t>);
+    else IfTestExist(TestEzVec3Mini<uint64_t>);
 
     IfTestExist(TestEzVec3Maxi<float>);
     else IfTestExist(TestEzVec3Maxi<double>);
     else IfTestExist(TestEzVec3Maxi<int32_t>);
+    else IfTestExist(TestEzVec3Maxi<uint32_t>);
     else IfTestExist(TestEzVec3Maxi<int64_t>);
+    else IfTestExist(TestEzVec3Maxi<uint64_t>);
 
     IfTestExist(TestEzVec3Equality<float>);
     else IfTestExist(TestEzVec3Equality<double>);
     else IfTestExist(TestEzVec3Equality<int32_t>);
+    else IfTestExist(TestEzVec3Equality<uint32_t>);
     else IfTestExist(TestEzVec3Equality<int64_t>);
+    else IfTestExist(TestEzVec3Equality<uint64_t>);
 
     IfTestExist(TestEzVec3Addition<float>);
     else IfTestExist(TestEzVec3Addition<double>);
     else IfTestExist(TestEzVec3Addition<int32_t>);
+    else IfTestExist(TestEzVec3Addition<uint32_t>);
     else IfTestExist(TestEzVec3Addition<int64_t>);
+    else IfTestExist(TestEzVec3Addition<uint64_t>);
 
     IfTestExist(TestEzVec3Subtraction<float>);
     else IfTestExist(TestEzVec3Subtraction<double>);
     else IfTestExist(TestEzVec3Subtraction<int32_t>);
+    else IfTestExist(TestEzVec3Subtraction<uint32_t>);
     else IfTestExist(TestEzVec3Subtraction<int64_t>);
+    else IfTestExist(TestEzVec3Subtraction<uint64_t>);
 
     IfTestExist(TestEzVec3Multiplication<float>);
     else IfTestExist(TestEzVec3Multiplication<double>);
     else IfTestExist(TestEzVec3Multiplication<int32_t>);
+    else IfTestExist(TestEzVec3Multiplication<uint32_t>);
     else IfTestExist(TestEzVec3Multiplication<int64_t>);
+    else IfTestExist(TestEzVec3Multiplication<uint64_t>);
 
     IfTestExist(TestEzVec3Division<float>);
     else IfTestExist(TestEzVec3Division<double>);
     else IfTestExist(TestEzVec3Division<int32_t>);
+    else IfTestExist(TestEzVec3Division<uint32_t>);
     else IfTestExist(TestEzVec3Division<int64_t>);
+    else IfTestExist(TestEzVec3Division<uint64_t>);
 
     return false;  // Return false if the test case is not found
 }

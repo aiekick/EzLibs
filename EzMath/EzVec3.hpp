@@ -43,7 +43,7 @@ struct vec3 {
             y = def->y;
             z = def->z;
         }
-        std::vector<T> result = StringToNumberVector<T>(vec, c);
+        ez::vector<T> result = StringToNumberVector<T>(vec, c);
         const size_t s = result.size();
         if (s > 0)
             x = result[0];
@@ -179,7 +179,7 @@ struct vec3 {
 
     // Length of the vector
     T length() const {
-        return static_cast<T>(std::sqrt(lengthSquared()));
+        return static_cast<T>(ez::sqrt(lengthSquared()));
     }
 
     // Squared length of the vector
@@ -213,7 +213,7 @@ struct vec3 {
 
     // Sum of absolute values of components
     T sumAbs() const {
-        return std::abs(x) + std::abs(y) + std::abs(z);
+        return ez::abs(x) + ez::abs(y) + ez::abs(z);
     }
 
     // Check if all components are zero (AND)
@@ -228,7 +228,7 @@ struct vec3 {
 
     // Convert to string
     std::string string(char c = ';') const {
-        return toStr(x) + c + toStr(y) + c + toStr(z);
+        return ez::toStr(x) + c + ez::toStr(y) + c + ez::toStr(z);
     }
 
     // Minimum component
@@ -369,6 +369,16 @@ inline bool operator!=(const vec3<T>& v, const vec3<T>& f) {
     return v.x != f.x || v.y != f.y || v.z != f.z;
 }
 
+template <>
+inline bool operator!=(const vec3<float>& v, const vec3<float>& f) {
+    return ez::isDifferent(v.x, f.x) || ez::isDifferent(v.y, f.y) || ez::isDifferent(v.z, f.z);
+}
+
+template <>
+inline bool operator!=(const vec3<double>& v, const vec3<double>& f) {
+    return ez::isDifferent(v.x, f.x) || ez::isDifferent(v.y, f.y) || ez::isDifferent(v.z, f.z);
+}
+
 template <typename T>
 inline bool operator!=(const vec3<T>& v, T f) {
     return v.x != f || v.y != f || v.z != f;
@@ -384,6 +394,16 @@ inline bool operator==(const vec3<T>& v, const vec3<T>& f) {
     return v.x == f.x && v.y == f.y && v.z == f.z;
 }
 
+template <>
+inline bool operator==(const vec3<float>& v, const vec3<float>& f) {
+    return ez::isEqual(v.x, f.x) && ez::isEqual(v.y, f.y) && ez::isEqual(v.z, f.z);
+}
+
+template <>
+inline bool operator==(const vec3<double>& v, const vec3<double>& f) {
+    return ez::isEqual(v.x, f.x) && ez::isEqual(v.y, f.y) && ez::isEqual(v.z, f.z);
+}
+
 template <typename T>
 inline bool operator==(const vec3<T>& v, T f) {
     return v.x == f && v.y == f && v.z == f;
@@ -397,27 +417,27 @@ inline bool operator==(T f, const vec3<T>& v) {
 // Utility functions
 template <typename T>
 inline vec3<T> mini(const vec3<T>& a, const vec3<T>& b) {
-    return vec3<T>(std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
+    return vec3<T>(ez::mini(a.x, b.x), ez::mini(a.y, b.y), ez::mini(a.z, b.z));
 }
 
 template <typename T>
 inline vec3<T> maxi(const vec3<T>& a, const vec3<T>& b) {
-    return vec3<T>(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
+    return vec3<T>(ez::maxi(a.x, b.x), ez::maxi(a.y, b.y), ez::maxi(a.z, b.z));
 }
 
 template <typename T>
 inline vec3<T> floor(const vec3<T>& a) {
-    return vec3<T>(std::floor(a.x), std::floor(a.y), std::floor(a.z));
+    return vec3<T>(ez::floor(a.x), ez::floor(a.y), ez::floor(a.z));
 }
 
 template <typename T>
 inline vec3<T> ceil(const vec3<T>& a) {
-    return vec3<T>(std::ceil(a.x), std::ceil(a.y), std::ceil(a.z));
+    return vec3<T>(ez::ceil(a.x), ez::ceil(a.y), ez::ceil(a.z));
 }
 
 template <typename T>
 inline vec3<T> abs(const vec3<T>& a) {
-    return vec3<T>(std::abs(a.x), std::abs(a.y), std::abs(a.z));
+    return vec3<T>(ez::abs(a.x), ez::abs(a.y), ez::abs(a.z));
 }
 
 template <typename T>
@@ -451,15 +471,6 @@ using u64vec3 = vec3<uint64_t>;
 // Specialization for float32 validation
 inline bool valid(const fvec3& a) {
     return floatIsValid(a.x) && floatIsValid(a.y) && floatIsValid(a.z);
-}
-
-// Float-specific comparison operators
-inline bool operator==(const fvec3& v, const fvec3& f) {
-    return isEqual(f.x, v.x) && isEqual(f.y, v.y) && isEqual(f.z, v.z);
-}
-
-inline bool operator!=(const fvec3& v, const fvec3& f) {
-    return isDifferent(f.x, v.x) || isDifferent(f.y, v.y) || isDifferent(f.z, v.z);
 }
 
 }  // namespace ez
