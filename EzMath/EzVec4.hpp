@@ -294,12 +294,12 @@ struct vec4 {
 
     // Minimum component
     T mini() const {
-        return std::min({x, y, z, w});
+        return ez::mini(x, ez::mini(y, ez::mini(z, w)));
     }
 
     // Maximum component
     T maxi() const {
-        return std::max({x, y, z, w});
+        return ez::maxi(x, ez::maxi(y, ez::maxi(z, w)));
     }
 };
 

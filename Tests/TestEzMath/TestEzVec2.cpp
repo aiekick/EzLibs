@@ -173,7 +173,13 @@ bool TestEzVec2EmptyAND() {
     ez::vec2<T> v3(0, 1);
     ez::vec2<T> v4(1, 1);
 
-    if (!v1.emptyAND() || v2.emptyAND() || v3.emptyAND() || v4.emptyAND())
+    if (!v1.emptyAND())
+        return false;
+    if (v2.emptyAND())
+        return false;
+    if (v3.emptyAND())
+        return false;
+    if (v4.emptyAND())
         return false;
 
     return true;
@@ -258,7 +264,9 @@ template <typename T>
 bool TestEzVec2Fract() {
     ez::vec2<T> v(1.5, 2.7);
     ez::vec2<T> fractResult = ez::fract<T>(v);
-    if (fractResult.x != 0.5 || fractResult.y != 0.7)
+    if (ez::isDifferent(fractResult.x, static_cast<T>(0.5)))
+        return false;
+    if (ez::isDifferent(fractResult.y, static_cast<T>(0.7)))
         return false;
     return true;
 }
@@ -317,7 +325,9 @@ bool TestEzVec2Reflect() {
     ez::vec2<T> v1(1, 3);
     ez::vec2<T> v2(2, 4);
     ez::vec2<T> reflectResult = ez::reflect<T>(v1, v2);
-    if (reflectResult.x != -71 || reflectResult.y != -143)
+    if (ez::isDifferent(reflectResult.x , static_cast<T>(-55.0)))
+        return false;
+    if (ez::isDifferent(reflectResult.y, static_cast<T>(-109.0)))
         return false;
     return true;
 }
@@ -328,7 +338,6 @@ bool TestEzVec2Sign() {
     ez::vec2<T> signResult = ez::sign<T>(v);
     if (signResult.x != 1 || signResult.y != 1)
         return false;
-
     v = ez::vec2<T>(0, 0);
     signResult = ez::sign(v);
     if (signResult.x != 0 || signResult.y != 0)
@@ -340,7 +349,9 @@ template <typename T>
 bool TestEzVec2Sin() {
     ez::vec2<T> v(1.5, 2.7);
     ez::vec2<T> sinResult = ez::sin<T>(v);
-    if (sinResult.x != std::sin(1.5) || sinResult.y != std::sin(2.7))
+    if (sinResult.x != std::sin(1.5))
+        return false;
+    if ( sinResult.y != std::sin(2.7))
         return false;
     return true;
 }
@@ -432,6 +443,7 @@ bool TestEzVec2(const std::string& vTest) {
 
     IfTestExist(TestEzVec2EmptyAND<float>);
     else IfTestExist(TestEzVec2EmptyAND<double>);
+    else IfTestExist(TestEzVec2EmptyAND<int32_t>);
     else IfTestExist(TestEzVec2EmptyAND<int64_t>);
     else IfTestExist(TestEzVec2EmptyAND<uint32_t>);
     else IfTestExist(TestEzVec2EmptyAND<uint64_t>);
@@ -499,17 +511,11 @@ bool TestEzVec2(const std::string& vTest) {
 
     IfTestExist(TestEzVec2Reflect<float>);
     else IfTestExist(TestEzVec2Reflect<double>);
-    else IfTestExist(TestEzVec2Reflect<int32_t>);
-    else IfTestExist(TestEzVec2Reflect<int64_t>);
-    else IfTestExist(TestEzVec2Reflect<uint32_t>);
-    else IfTestExist(TestEzVec2Reflect<uint64_t>);
 
     IfTestExist(TestEzVec2Sign<float>);
     else IfTestExist(TestEzVec2Sign<double>);
     else IfTestExist(TestEzVec2Sign<int32_t>);
     else IfTestExist(TestEzVec2Sign<int64_t>);
-    else IfTestExist(TestEzVec2Sign<uint32_t>);
-    else IfTestExist(TestEzVec2Sign<uint64_t>);
 
     IfTestExist(TestEzVec2Sin<float>);
     else IfTestExist(TestEzVec2Sin<double>);

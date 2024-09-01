@@ -33,5 +33,5 @@ int main(int argc, char** argv) {
         return TestMain(argv[1]) ? 0 : 1;
     }
     // User testing
-    return TestMain("TestEzMathRound<int32_t>") ? 0 : 1;
+    return TestMain("TestEzVec2Sin<float>") ? 0 : 1;
 }

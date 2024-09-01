@@ -10,7 +10,10 @@ namespace ez {
 
 // Disable specific types for template functions
 template <typename T>
-struct is_valid_type : std::bool_constant<(std::is_floating_point_v<T> || (std::is_integral_v<T>)&&(sizeof(T) > 1))> {};
+struct is_valid_type :
+    std::integral_constant<bool,
+                           (std::is_floating_point<T>::value ||
+                            (std::is_integral<T>::value && sizeof(T) > 1))> {};
 
 // Vector 2D template class
 template <typename T>
@@ -40,7 +43,7 @@ struct vec2 {
             x = def->x;
             y = def->y;
         }
-        ez::vector<T> result = StringToNumberVector<T>(vec, c);
+        std::vector<T> result = StringToNumberVector<T>(vec, c);
         const size_t s = result.size();
         if (s > 0)
             x = result[0];
@@ -72,7 +75,7 @@ struct vec2 {
 
     // Logical NOT operator
     vec2 operator!() const {
-        static_assert(std::is_integral_v<T>, "Logical NOT is only valid for integral types");
+        static_assert(std::is_integral<T>::value, "Logical NOT is only valid for integral types");
         return vec2(!x, !y);
     }
 
@@ -352,7 +355,7 @@ inline vec2<T> floor(const vec2<T>& a) {
 
 template <typename T>
 inline vec2<T> fract(const vec2<T>& a) {
-    static_assert(std::is_floating_point_v<T>, "fract is only valid for theses types : float, double, long double");
+    static_assert(std::is_floating_point<T>::value, "fract is only valid for theses types : float, double, long double");
     return vec2<T>(fract(a.x), fract(a.y));
 }
 
@@ -389,12 +392,13 @@ inline vec2<T> cross(const vec2<T>& a, const vec2<T>& b) {
 
 template <typename T>
 inline vec2<T> reflect(const vec2<T>& I, const vec2<T>& N) {
+    static_assert(std::is_floating_point<T>::value, "fract is only valid for floating point types");
     return I - static_cast<T>(2) * ez::dot(N, I) * N;
 }
 
 template <typename T>
 inline vec2<T> sign(const vec2<T>& a) {
-    return vec2<T>(a.x < static_cast<T>(0) ? static_cast<T>(-1) : static_cast<T>(1), a.y < static_cast<T>(0) ? static_cast<T>(-1) : static_cast<T>(1));
+    return vec2<T>(ez::sign(a.x), ez::sign(a.y));
 }
 
 template <typename T>

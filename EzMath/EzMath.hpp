@@ -12,7 +12,6 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-// Désactivation des warnings de conversion
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4244)  // Conversion from 'double' to 'float', possible loss of data
@@ -29,12 +28,9 @@
 
 namespace ez {
 
-template <typename T>
-::std::string toStr(T t) {
-    std::ostringstream os;
-    os << t;
-    return os.str();
-}
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 // This function rounds a floating-point number to 'n' decimal places.
 // Only floating-point types (float, double, long double) are allowed.
@@ -63,12 +59,12 @@ inline bool isDifferent(T vA, T vB) {
 
 template <>
 inline bool isDifferent(float vA, float vB) {
-    return std::fabs(vA - vB) > FLT_EPSILON;
+    return std::fabs(vA - vB) > std::numeric_limits<float>::epsilon();
 }
 
 template <>
 inline bool isDifferent(double vA, double vB) {
-    return std::abs(vA - vB) > DBL_EPSILON;
+    return std::abs(vA - vB) > std::numeric_limits<double>::epsilon();
 }
 
 // Checks if two numbers are equal according to epsilon precision.
@@ -79,12 +75,12 @@ inline bool isEqual(T vA, T vB) {
 
 template <>
 inline bool isEqual(float vA, float vB) {
-    return std::fabs(vA - vB) < FLT_EPSILON;
+    return std::fabs(vA - vB) < std::numeric_limits<float>::epsilon();
 }
 
 template <>
 inline bool isEqual(double vA, double vB) {
-    return std::abs(vA - vB) < DBL_EPSILON;
+    return std::abs(vA - vB) < std::numeric_limits<double>::epsilon();
 }
 
 // Rounds a floating-point number to the nearest integer.
@@ -223,7 +219,12 @@ inline T abs(T a) {
 template <typename T>
 inline T sign(T a) {
     static_assert(std::is_signed<T>::value, "sign is only valid for signed types");
-    return (a < 0) ? static_cast<T>(-1) : static_cast<T>(1);
+    if (a < 0) {
+        return static_cast<T>(-1);
+    } else if (a > 0) {
+        return static_cast<T>(1);
+    }
+    return static_cast<T>(0);
 }
 
 // Returns 0 if b < a, otherwise returns 1.
@@ -278,6 +279,7 @@ inline T mix(T a, T b, T t) {
 
 }  // namespace ez
 
+#include "EzStr.hpp"
 #include "EzVec2.hpp"
 #include "EzVec3.hpp"
 #include "EzVec4.hpp"

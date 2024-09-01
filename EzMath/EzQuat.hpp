@@ -48,7 +48,8 @@ struct quat {
         w = vQuat.w;
     }
     void normalize() {
-        assert(0);  // not supported by other types thant float and double
+        static_assert(std::is_floating_point<T>::value, "Only valid for floating point types");
+        // to do
     }
     void scale(T s) {
         x *= s;

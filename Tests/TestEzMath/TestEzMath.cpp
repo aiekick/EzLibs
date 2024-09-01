@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-// Désactivation des warnings de conversion
+// Dï¿½sactivation des warnings de conversion
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4244)  // Conversion from 'double' to 'float', possible loss of data
@@ -54,43 +54,41 @@ bool TestEzMathFloatIsValid() {
 
 template <typename T>
 bool TestEzMathIsDifferent() {
+    if (!ez::isDifferent<T>(-5, 5))
+        return false;
     if (!ez::isDifferent<T>(0, 5))
         return false;
     if (ez::isDifferent<T>(-0, 0))
         return false;
-    if (ez::isDifferent<T>(1, 1 + 1))
+    if (!ez::isDifferent<T>(1, 1 + 1))
         return false;
-    if (ez::isDifferent<T>(1, 1 - 1))
-        return false;
-    return true;
-}
-
-template <>
-bool TestEzMathIsDifferent<int32_t>() {
-    if (!ez::isDifferent<int32_t>(-5, 5))
-        return false;
-    if (!ez::isDifferent<int32_t>(0, 5))
-        return false;
-    if (ez::isDifferent<int32_t>(-0, 0))
-        return false;
-    if (!ez::isDifferent<int32_t>(1, 1 + 1))
-        return false;
-    if (!ez::isDifferent<int32_t>(1, 1 - 1))
+    if (!ez::isDifferent<T>(1, 1 - 1))
         return false;
     return true;
 }
 
 template <>
-bool TestEzMathIsDifferent<int64_t>() {
-    if (!ez::isDifferent<int64_t>(-5, 5))
+bool TestEzMathIsDifferent<uint32_t>() {
+    if (!ez::isDifferent<uint32_t>(0, 5))
         return false;
-    if (!ez::isDifferent<int64_t>(0, 5))
+    if (ez::isDifferent<uint32_t>(-0, 0))
         return false;
-    if (ez::isDifferent<int64_t>(-0, 0))
+    if (!ez::isDifferent<uint32_t>(1, 1 + 1))
         return false;
-    if (!ez::isDifferent<int64_t>(1, 1 + 1))
+    if (!ez::isDifferent<uint32_t>(1, 1 - 1))
         return false;
-    if (!ez::isDifferent<int64_t>(1, 1 - 1))
+    return true;
+}
+
+template <>
+bool TestEzMathIsDifferent<uint64_t>() {
+    if (!ez::isDifferent<uint64_t>(0, 5))
+        return false;
+    if (ez::isDifferent<uint64_t>(-0, 0))
+        return false;
+    if (!ez::isDifferent<uint64_t>(1, 1 + 1))
+        return false;
+    if (!ez::isDifferent<uint64_t>(1, 1 - 1))
         return false;
     return true;
 }
@@ -103,24 +101,24 @@ bool TestEzMathIsDifferent<float>() {
         return false;
     if (ez::isDifferent<float>(-0.0f, 0.0f))
         return false;
-    if (!ez::isDifferent<float>(1.0f, 1.0f + FLT_EPSILON))
+    if (!ez::isDifferent<float>(1.0f, 1.0f + std::numeric_limits<float>::epsilon() * 2.0f))
         return false;
-    if (!ez::isDifferent<float>(1.0f, 1.0f - FLT_EPSILON))
+    if (!ez::isDifferent<float>(1.0f, 1.0f - std::numeric_limits<float>::epsilon() * 2.0f))
         return false;
     return true;
 }
 
 template <>
 bool TestEzMathIsDifferent<double>() {
-    if (!ez::isDifferent<float>(-5.0, 5.0))
+    if (!ez::isDifferent<double>(-5.0, 5.0))
         return false;
-    if (!ez::isDifferent<float>(0.0, 5.0))
+    if (!ez::isDifferent<double>(0.0, 5.0))
         return false;
-    if (ez::isDifferent<float>(-0.0, 0.0))
+    if (ez::isDifferent<double>(-0.0, 0.0))
         return false;
-    if (!ez::isDifferent<float>(1.0, 1.0 + DBL_EPSILON))
+    if (!ez::isDifferent<double>(1.0, 1.0 + std::numeric_limits<double>::epsilon() * 2.0))
         return false;
-    if (!ez::isDifferent<float>(1.0, 1.0 - DBL_EPSILON))
+    if (!ez::isDifferent<double>(1.0, 1.0 - std::numeric_limits<double>::epsilon() * 2.0))
         return false;
     return true;
 }
@@ -129,11 +127,11 @@ template <typename T>
 bool TestEzMathIsEqual() {
     if (ez::isEqual<T>(0, 5))
         return false;
-    if (ez::isEqual<T>(-0, 0))
+    if (!ez::isEqual<T>(-0, 0))
         return false;
-    if (!ez::isEqual<T>(1, 1 + 1))
+    if (ez::isEqual<T>(1, 1 + 1))
         return false;
-    if (!ez::isEqual<T>(1, 1 - 1))
+    if (ez::isEqual<T>(1, 1 - 1))
         return false;
     return true;
 }
@@ -144,11 +142,11 @@ bool TestEzMathIsEqual() {
         return false;
     if (ez::isEqual<int32_t>(0, 5))
         return false;
-    if (ez::isEqual<int32_t>(-0, 0))
+    if (!ez::isEqual<int32_t>(-0, 0))
         return false;
-    if (!ez::isEqual<int32_t>(1, 1 + 1))
+    if (ez::isEqual<int32_t>(1, 1 + 1))
         return false;
-    if (!ez::isEqual<int32_t>(1, 1 - 1))
+    if (ez::isEqual<int32_t>(1, 1 - 1))
         return false;
     return true;
 }
@@ -159,11 +157,11 @@ bool TestEzMathIsEqual() {
         return false;
     if (ez::isEqual<int64_t>(0, 5))
         return false;
-    if (ez::isEqual<int64_t>(-0, 0))
+    if (!ez::isEqual<int64_t>(-0, 0))
         return false;
-    if (!ez::isEqual<int64_t>(1, 1 + 1))
+    if (ez::isEqual<int64_t>(1, 1 + 1))
         return false;
-    if (!ez::isEqual<int64_t>(1, 1 - 1))
+    if (ez::isEqual<int64_t>(1, 1 - 1))
         return false;
     return true;
 }
@@ -174,11 +172,11 @@ bool TestEzMathIsEqual<float>() {
         return false;
     if (ez::isEqual<float>(0.0f, 5.0f))
         return false;
-    if (ez::isEqual<float>(-0.0f, 0.0f))
+    if (!ez::isEqual<float>(-0.0f, 0.0f))
         return false;
-    if (!ez::isEqual<float>(1.0f, 1.0f + FLT_EPSILON))
+    if (ez::isEqual<float>(1.0f, 1.0f + std::numeric_limits<float>::epsilon()))
         return false;
-    if (!ez::isEqual<float>(1.0f, 1.0f - FLT_EPSILON))
+    if (ez::isEqual<float>(1.0f, 1.0f - std::numeric_limits<float>::epsilon()))
         return false;
     return true;
 }
@@ -189,11 +187,11 @@ bool TestEzMathIsEqual<double>() {
         return false;
     if (ez::isEqual<double>(0, 5))
         return false;
-    if (ez::isEqual<double>(-0, 0))
+    if (!ez::isEqual<double>(-0, 0))
         return false;
-    if (!ez::isEqual<double>(1, 1 + DBL_EPSILON))
+    if (ez::isEqual<double>(1, 1 + std::numeric_limits<double>::epsilon()))
         return false;
-    if (!ez::isEqual<double>(1, 1 - DBL_EPSILON))
+    if (ez::isEqual<double>(1, 1 - std::numeric_limits<double>::epsilon()))
         return false;
     return true;
 }

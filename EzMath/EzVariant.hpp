@@ -1,10 +1,10 @@
 #pragma once
 
-#include <cstdint>
+#include <set>
 #include <string>
 #include <vector>
 #include <cstdio>
-#include <set>
+#include <cstdint>
 
 namespace ez {
 
@@ -148,16 +148,16 @@ public:
                 return v3_value == v.v3_value;
             if (inputtype == "vec2")
                 return point_value == v.point_value;
-            if (inputtype == "AABB") == acreer pour AABB
+            if (inputtype == "AABB")
             	return aabb_value == v.aabb_value;
             if (inputtype == "AABBCC")
                 return aabbcc_value == v.aabbcc_value;
             if (inputtype == "bool")
                 return bool_value == v.bool_value;
             if (inputtype == "float")
-                return IS_FLOAT_EQUAL(float_value, v.float_value);
+                return ez::isEqual(float_value, v.float_value);
             if (inputtype == "double")
-                return IS_DOUBLE_EQUAL(double_value, v.double_value);
+                return ez::isEqual(double_value, v.double_value);
             if (inputtype == "int")
                 return int_value == v.int_value;
             if (inputtype == "long")
@@ -297,12 +297,12 @@ public:
     }
     std::vector<std::string> GetVectorString(char c = ';') const {
         if (inputtype == "string")
-            return splitStringToVector(string_value, c);
+            return SplitStringToVector(string_value, c);
         return vector_string_value;
     }
     std::set<std::string> GetSetString(char c = ';') const {
         if (inputtype == "string")
-            return splitStringToSet(string_value, c);
+            return SplitStringToSet(string_value, c);
         return set_string_value;
     }
     float GetF(const char* vLocalToRetablish = nullptr) const {
