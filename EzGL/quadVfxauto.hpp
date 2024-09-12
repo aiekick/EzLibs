@@ -201,7 +201,8 @@ public:
             return;
         }
 #ifdef PROFILER_SCOPED
-        PROFILER_SCOPED("VFX", "Render %s", m_Name.c_str());
+        auto name_c_str = m_Name.c_str();  // remvoe some warnings
+        PROFILER_SCOPED("VFX", "Render %s", name_c_str);
 #endif
         auto quad_ptr = m_QuadMesh.lock();
         assert(quad_ptr != nullptr);

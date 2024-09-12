@@ -34,5 +34,6 @@ endfunction()
 ##########################################################
 
 ## Test_Graph
-SetTest(Test_Graph_Building_0)
-SetTest(Test_Graph_Evaluation_0)
+## SetTest(TestEzGraph_Uuids)
+SetTest(TestEzGraph_Building)
+SetTest(TestEzGraph_Evaluation)

@@ -1,27 +1,106 @@
 #include <TestEzGraph.h>
+#include <TestEzGraphSlot.h>
+#include <TestEzGraphNode.h>
 #include <EzGraph/EzGraph.hpp>
 
-using namespace ez;
+class TestSlot;
+typedef std::shared_ptr<TestSlot> TestSlotPtr;
+typedef std::weak_ptr<TestSlot> TestSlotWeak;
+
+class TestSlot : public ez::Node {
+public:
+    static TestSlotPtr create(const ez::NodeDatas& vNodeDatas) {
+        auto node_ptr = std::make_shared<TestSlot>();
+        if (!node_ptr->initNode(vNodeDatas, node_ptr)) {
+            node_ptr.reset();
+        }
+        return node_ptr;
+    }
+
+    template <typename U>
+    TestSlotWeak createChildNode(const ez::NodeDatas& vNodeDatas) {
+        auto node_ptr = std::make_shared<U>();
+        if (!node_ptr->initNode(vNodeDatas, node_ptr)) {
+            node_ptr.reset();
+        } else {
+            if (m_addNode(node_ptr) != ez::RetCodes::SUCCESS) {
+                node_ptr.reset();
+            }
+        }
+        return node_ptr;
+    }
+};
+
+class TestNode;
+typedef std::shared_ptr<TestNode> TestNodePtr;
+typedef std::weak_ptr<TestNode> TestNodeWeak;
+
+class TestNode : public ez::Node {
+public:
+    static TestNodePtr create(const ez::NodeDatas& vNodeDatas) {
+        auto node_ptr = std::make_shared<TestNode>();
+        if (!node_ptr->initNode(vNodeDatas, node_ptr)) {
+            node_ptr.reset();
+        }
+        return node_ptr;
+    }
+
+public:
+    template <typename U, typename = std::enable_if<std::is_base_of<ez::Node, U>::value>>
+    std::weak_ptr<U> createChildNode(const ez::NodeDatas& vNodeDatas) {
+        auto node_ptr = std::make_shared<U>();
+        if (!node_ptr->initNode(vNodeDatas, node_ptr)) {
+            node_ptr.reset();
+        } else {
+            if (m_addNode(node_ptr) != ez::RetCodes::SUCCESS) {
+                node_ptr.reset();
+            }
+        }
+        return node_ptr;
+    }
+    template <typename U, typename = std::enable_if<std::is_base_of<ez::Slot, U>::value>>
+    std::weak_ptr<U> addSlot(const ez::SlotDatas& vSlotDatas) {
+        auto slot_ptr = std::make_shared<U>();
+        if (!slot_ptr->initSlot(vSlotDatas, slot_ptr)) {
+            slot_ptr.reset();
+        } else {
+            if (m_addSlot(slot_ptr) != ez::RetCodes::SUCCESS) {
+                slot_ptr.reset();
+            }
+        }
+        return slot_ptr;
+    }
+
+public:
+    ez::RetCodes connectSlots(ez::SlotWeak vFrom, ez::SlotWeak vTo) {
+        return m_connectSlots(vFrom, vTo);
+    }
+};
 
 class NodeNumber;
 typedef std::shared_ptr<NodeNumber> NodeNumberPtr;
 typedef std::weak_ptr<NodeNumber> NodeNumberWeak;
 
-class NodeNumber : public Node {
+class NodeNumber : public TestNode {
 public:
-    static NodeNumberPtr create(const NodeDatas& vNodeDatas) {
-        auto ret = std::make_shared<NodeNumber>();
-        ret->m_setThis(ret);
-        if (!ret->init(vNodeDatas)) { ret.reset(); }
-        return ret;
+    static NodeNumberPtr create(const ez::NodeDatas& vNodeDatas) {
+        auto node_ptr = std::make_shared<NodeNumber>();
+        if (!node_ptr->initNode(vNodeDatas, node_ptr)) {
+            node_ptr.reset();
+        }
+        return node_ptr;
     }
 
 private:
     float m_Value = 0.0f;
 
 public:
-    void setValue(const float vValue) { m_Value = vValue; }
-    float getValue() { return m_Value; }
+    void setValue(const float vValue) {
+        m_Value = vValue;
+    }
+    float getValue() {
+        return m_Value;
+    }
 };
 
 class NodeOpAdd;
@@ -30,15 +109,16 @@ typedef std::weak_ptr<NodeOpAdd> NodeOpAddWeak;
 
 class NodeOpAdd : public NodeNumber {
 public:
-    static NNodeOpAddPtr create(const NodeDatas& vNodeDatas) {
-        auto ret = std::make_shared<NodeOpAdd>();
-        ret->m_setThis(ret);
-        if (!ret->init(vNodeDatas)) { ret.reset(); }
-        return ret;
+    static NNodeOpAddPtr create(const ez::NodeDatas& vNodeDatas) {
+        auto node_ptr = std::make_shared<NodeOpAdd>();
+        if (!node_ptr->initNode(vNodeDatas, node_ptr)) {
+            node_ptr.reset();
+        }
+        return node_ptr;
     }
 
-    RetCodes eval(const size_t vFrame, const SlotWeak& vFrom) final {
-        auto ret = RetCodes::SUCCESS;
+    ez::RetCodes eval(const size_t vFrame, const ez::SlotWeak& vFrom) final {
+        auto ret = ez::RetCodes::SUCCESS;
         float sum = 0.0f;
         auto outSlotPtr = vFrom.lock();
         if (outSlotPtr != nullptr) {
@@ -46,14 +126,14 @@ public:
             if (outNodePtr != nullptr) {
                 for (auto inSlotPtr : m_getInputsRef()) {
                     if (inSlotPtr != nullptr) {
-                        for (const auto& conSlot : inSlotPtr->getConnectedSlots()) {
+                        for (const auto& conSlot : inSlotPtr->m_getConnectedSlots()) {
                             auto conSlotPtr = conSlot.lock();
                             if (conSlotPtr != nullptr) {
                                 auto inNodePtr = std::dynamic_pointer_cast<NodeNumber>(conSlotPtr->getParentNode().lock());
                                 if (inNodePtr != nullptr) {
                                     sum += inNodePtr->getValue();
                                 } else {
-                                    ret = RetCodes::FAILED_SLOT_PTR_NULL;
+                                    ret = ez::RetCodes::FAILED_SLOT_PTR_NULL;
                                     break;
                                 }
                             }
@@ -61,84 +141,89 @@ public:
                     }
                 }
                 outNodePtr->setValue(sum);
-                EvalDatas datas;
+                ez::EvalDatas datas;
                 datas.frame = vFrame;
                 outSlotPtr->setLastEvaluatedDatas(datas);
             } else {
-                ret = RetCodes::FAILED_SLOT_PTR_NULL;
+                ret = ez::RetCodes::FAILED_SLOT_PTR_NULL;
             }
         } else {
-            ret = RetCodes::FAILED_SLOT_PTR_NULL;
+            ret = ez::RetCodes::FAILED_SLOT_PTR_NULL;
         }
         return ret;
     }
 };
 
-static SlotPtr createOutputSlot() {
-    SlotDatas datas;
-    datas.m_Dir = SlotDir::OUTPUT;
-    return Slot::create(datas);
-}
-
-static SlotPtr createInputSlot() {
-    SlotDatas datas;
-    datas.m_Dir = SlotDir::INPUT;
-    return Slot::create(datas);
-}
-
-static GraphPtr createGraph() {
-    GraphDatas datas;
-    return Graph::create(datas);
-}
-
 ////////////////////////////////////////////////////////////////////////////
 ////  Graph ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool Test_Graph_Building_0() { return true; }
+#define CTEST_ASSERT(cond) \
+    if (!(cond))           \
+    return false
 
-bool Test_Graph_Evaluation_0() {
-    NodeDatas datas;
-    auto graphPtr = createGraph();
-    if (graphPtr == nullptr) { return false; }
-    auto nodeNumASlotOutputPtr = createOutputSlot();
-    if (nodeNumASlotOutputPtr == nullptr) { return false; }
-    auto nodaNumAPtr = NodeNumber::create(datas);
-    if (nodaNumAPtr == nullptr) { return false; }
-    if (graphPtr->addNode(nodaNumAPtr) != RetCodes::SUCCESS) { return false; }
-    if (nodaNumAPtr->addSlot(nodeNumASlotOutputPtr) != RetCodes::SUCCESS) { return false; }
-    nodaNumAPtr->setValue(5.0f);
-    if (nodaNumAPtr->getValue() != 5.0f) { return false; }
-    auto nodeNumBSlotOutputPtr = createOutputSlot();
-    if (nodeNumBSlotOutputPtr == nullptr) { return false; }
-    auto nodaNumBPtr = NodeNumber::create(datas);
-    if (nodaNumBPtr == nullptr) { return false; }
-    if (graphPtr->addNode(nodaNumBPtr) != RetCodes::SUCCESS) { return false; }
-    if (nodaNumBPtr->addSlot(nodeNumBSlotOutputPtr) != RetCodes::SUCCESS) { return false; }
-    nodaNumBPtr->setValue(200.0f);
-    if (nodaNumBPtr->getValue() != 200.0f) { return false; }
-    auto nodeOpAddSlotInputAPtr = createInputSlot();
-    if (nodeOpAddSlotInputAPtr == nullptr) { return false; }
-    auto nodeOpAddSlotInputBPtr = createInputSlot();
-    if (nodeOpAddSlotInputBPtr == nullptr) { return false; }
-    auto nodeOpAddSlotOutputPtr = createOutputSlot();
-    if (nodeOpAddSlotOutputPtr == nullptr) { return false; }
-    auto nodaOpAddPtr = NodeOpAdd::create(datas);
-    if (graphPtr->addNode(nodaOpAddPtr) != RetCodes::SUCCESS) { return false; }
-    if (nodaOpAddPtr == nullptr) { return false; }
-    if (nodaOpAddPtr->addSlot(nodeOpAddSlotInputAPtr) != RetCodes::SUCCESS) { return false; }
-    if (nodaOpAddPtr->addSlot(nodeOpAddSlotInputBPtr) != RetCodes::SUCCESS) { return false; }
-    if (nodaOpAddPtr->addSlot(nodeOpAddSlotOutputPtr) != RetCodes::SUCCESS) { return false; }
-    if (graphPtr->connectSlots(nodeNumASlotOutputPtr, nodeOpAddSlotInputAPtr) != RetCodes::SUCCESS) { return false; }
-    if (graphPtr->connectSlots(nodeNumBSlotOutputPtr, nodeOpAddSlotInputBPtr) != RetCodes::SUCCESS) { return false; }
-    if (nodaNumAPtr != nullptr && nodaNumBPtr != nullptr && nodaOpAddPtr != nullptr) {
-        if (nodaOpAddPtr->eval(10, nodeOpAddSlotOutputPtr) != RetCodes::SUCCESS) {
-            return false;
-        } else {
-            if (nodaOpAddPtr->getValue() != 205.0f) { return false; }
-            if (nodeOpAddSlotOutputPtr->getLastEvaluatedDatas().frame != 10) { return false; }
-        }
-    }
+/*bool TestEzGraph_Uuids() {
+    ez::UuidBank bank;
+    CTEST_ASSERT(bank.add() == 1);
+    CTEST_ASSERT(bank.add() == 2);
+    CTEST_ASSERT(bank.add() == 3);
+    CTEST_ASSERT(bank.del(2) == true);
+    CTEST_ASSERT(bank.del(4) == false);
+    CTEST_ASSERT(bank.add() == 2);
+    CTEST_ASSERT(bank.add() == 4);
+    return true;
+}*/
+
+bool TestEzGraph_Building() {
+    return true;
+}
+
+bool TestEzGraph_Evaluation() {
+    ez::NodeDatas node_datas;
+    ez::SlotDatas output_slot_datas;
+    output_slot_datas.dir = ez::SlotDir::OUTPUT;
+    ez::SlotDatas input_slot_datas;
+    input_slot_datas.dir = ez::SlotDir::INPUT;
+
+    auto graphPtr = TestNode::create({});  // a graph is just a node who have node childs
+    CTEST_ASSERT(graphPtr != nullptr);
+
+    auto nodaNumA = graphPtr->createChildNode<NodeNumber>(node_datas);
+    CTEST_ASSERT(nodaNumA.expired() == false);
+    CTEST_ASSERT(nodaNumA.lock() != nullptr);
+    auto nodeNumASlotOutput = nodaNumA.lock()->addSlot<ez::Slot>(output_slot_datas);
+    CTEST_ASSERT(nodeNumASlotOutput.expired() == false);
+    CTEST_ASSERT(nodeNumASlotOutput.lock() != nullptr);
+    nodaNumA.lock()->setValue(5.0f);
+    CTEST_ASSERT(nodaNumA.lock()->getValue() == 5.0f);
+
+    auto nodaNumB = graphPtr->createChildNode<NodeNumber>(node_datas);
+    CTEST_ASSERT(nodaNumB.expired() == false);
+    CTEST_ASSERT(nodaNumB.lock() != nullptr);
+    auto nodeNumBSlotOutput = nodaNumB.lock()->addSlot<ez::Slot>(output_slot_datas);
+    CTEST_ASSERT(nodeNumBSlotOutput.expired() == false);
+    CTEST_ASSERT(nodeNumBSlotOutput.lock() != nullptr);
+    nodaNumB.lock()->setValue(200.0f);
+    CTEST_ASSERT(nodaNumB.lock()->getValue() == 200.0f);
+
+    auto nodaOpAdd = graphPtr->createChildNode<NodeOpAdd>(node_datas);
+    CTEST_ASSERT(nodaOpAdd.expired() == false);
+    CTEST_ASSERT(nodaOpAdd.lock() != nullptr);
+    auto nodeOpAddSlotInputA = nodaOpAdd.lock()->addSlot<ez::Slot>(input_slot_datas);
+    CTEST_ASSERT(nodeOpAddSlotInputA.expired() == false);
+    CTEST_ASSERT(nodeOpAddSlotInputA.lock() != nullptr);
+    auto nodeOpAddSlotInputB = nodaOpAdd.lock()->addSlot<ez::Slot>(input_slot_datas);
+    CTEST_ASSERT(nodeOpAddSlotInputB.expired() == false);
+    CTEST_ASSERT(nodeOpAddSlotInputB.lock() != nullptr);
+    auto nodeOpAddSlotOutput = nodaOpAdd.lock()->addSlot<ez::Slot>(output_slot_datas);
+    CTEST_ASSERT(nodeOpAddSlotOutput.expired() == false);
+    CTEST_ASSERT(nodeOpAddSlotOutput.lock() != nullptr);
+    CTEST_ASSERT(graphPtr->connectSlots(nodeNumASlotOutput.lock(), nodeOpAddSlotInputA.lock()) == ez::RetCodes::SUCCESS);
+    CTEST_ASSERT(graphPtr->connectSlots(nodeNumBSlotOutput.lock(), nodeOpAddSlotInputB.lock()) == ez::RetCodes::SUCCESS);
+    CTEST_ASSERT(nodaOpAdd.lock()->eval(10, nodeOpAddSlotOutput.lock()) == ez::RetCodes::SUCCESS);
+    CTEST_ASSERT(nodaOpAdd.lock()->getValue() == 205.0f);
+    CTEST_ASSERT(nodeOpAddSlotOutput.lock()->getLastEvaluatedDatas().frame == 10);
+
     return true;
 }
 
@@ -146,14 +231,20 @@ bool Test_Graph_Evaluation_0() {
 //// ENTRY POINT ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-#define IfTestExist(v) \
-    if (vTest == std::string(#v)) return v()
+#define IfTestExist(v)            \
+    if (vTest == std::string(#v)) \
+    return v()
 
-#define IfTestCollectionExist(v, str) \
-    if (vTest.find(#v) != std::string::npos) return v(str)
+#define IfTestCollectionExist(v, str)        \
+    if (vTest.find(#v) != std::string::npos) \
+    return v(str)
 
-bool Test_Graph(const std::string& vTest) {
-    IfTestExist(Test_Graph_Building_0);
-    else IfTestExist(Test_Graph_Evaluation_0);
-    return true;
+bool TestEzGraph(const std::string& vTest) {
+    IfTestCollectionExist(TestEzGraphSlot, vTest);
+    else IfTestCollectionExist(TestEzGraphNode, vTest);
+
+    IfTestExist(TestEzGraph_Building);
+    else IfTestExist(TestEzGraph_Evaluation);
+
+    return false;
 }

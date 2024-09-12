@@ -43,7 +43,7 @@ struct vec3 {
             y = def->y;
             z = def->z;
         }
-        ez::vector<T> result = StringToNumberVector<T>(vec, c);
+        std::vector<T> result = StringToNumberVector<T>(vec, c);
         const size_t s = result.size();
         if (s > 0)
             x = result[0];

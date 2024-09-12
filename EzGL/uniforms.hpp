@@ -354,7 +354,7 @@ protected:
                 const auto& uniform_code = datas.getFinalUniformCode();
                 size_t pos = _uniform_datas.first - offset;
                 final_code.replace(pos, datas.uniform_line.size(), uniform_code);
-                offset += datas.uniform_line.size() - uniform_code.size();  // le nouveau code sera frocemment plus court
+                offset += datas.uniform_line.size() - uniform_code.size();  // le nouveau code sera forcemment plus court
                 assert(offset != std::string::npos);
             }
         }

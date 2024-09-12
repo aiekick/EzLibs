@@ -51,7 +51,7 @@ public:
         uint32_t* datas_u = nullptr;  // uint
         bool* datas_b = nullptr;      // bool
         int32_t data_s2d = -1;        // sampler2D
-        int32_t matrix_size = 0;       // matricSize 2,3,4
+        int32_t matrix_size = 0;      // matricSize 2,3,4
         GLint loc = -1;
         GLuint channels = 0U;
         bool used = false;
@@ -189,8 +189,12 @@ public:
         assert(itUniformName != itShaderType->second.end());
         itUniformName->second.datas_f = vUniformPtr;
     }
-    void addUniformInt(const GLenum vShaderType, const std::string& vUniformName, int32_t* vUniformPtr, const GLuint vCountChannels,
-                       const bool vShowWidget, const UniformWidgetFunctor& vWidgetFunctor) {
+    void addUniformInt(const GLenum vShaderType,
+                       const std::string& vUniformName,
+                       int32_t* vUniformPtr,
+                       const GLuint vCountChannels,
+                       const bool vShowWidget,
+                       const UniformWidgetFunctor& vWidgetFunctor) {
         assert(vShaderType > 0);
         assert(!vUniformName.empty());
         assert(vUniformPtr != nullptr);
@@ -282,29 +286,32 @@ public:
                     m_UniformPreUploadFunctor(vFBOPipeLinePtr, uni.second);
                 }
                 if (uni.second.used) {
+#ifdef PROFILER_SCOPED_PTR
+                    auto name_c_str = uni.second.name.c_str(); // remove some warnings
+#endif
                     if (uni.second.datas_f != nullptr) {
                         switch (uni.second.channels) {
                             case 1U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload float", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload float", "%s", name_c_str);
 #endif
                                 glUniform1fv(uni.second.loc, 1, uni.second.datas_f);
                             } break;
                             case 2U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload vec2", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload vec2", "%s", name_c_str);
 #endif
                                 glUniform2fv(uni.second.loc, 1, uni.second.datas_f);
                             } break;
                             case 3U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload vec3", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload vec3", "%s", name_c_str);
 #endif
                                 glUniform3fv(uni.second.loc, 1, uni.second.datas_f);
                             } break;
                             case 4U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload vec4", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload vec4", "%s", name_c_str);
 #endif
                                 glUniform4fv(uni.second.loc, 1, uni.second.datas_f);
                             } break;
@@ -312,19 +319,19 @@ public:
                         switch (uni.second.matrix_size) {
                             case 2U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload mat2", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload mat2", "%s", name_c_str);
 #endif
                                 glUniformMatrix2fv(uni.second.loc, 1, GL_FALSE, uni.second.datas_f);
                             } break;
                             case 3U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload mat3", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload mat3", "%s", name_c_str);
 #endif
                                 glUniformMatrix3fv(uni.second.loc, 1, GL_FALSE, uni.second.datas_f);
                             } break;
                             case 4U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload mat4", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload mat4", "%s", name_c_str);
 #endif
                                 glUniformMatrix4fv(uni.second.loc, 1, GL_FALSE, uni.second.datas_f);
                             } break;
@@ -334,25 +341,25 @@ public:
                         switch (uni.second.channels) {
                             case 1U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload int", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload int", "%s", name_c_str);
 #endif
                                 glUniform1iv(uni.second.loc, 1, uni.second.datas_i);
                             } break;
                             case 2U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload iec2", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload iec2", "%s", name_c_str);
 #endif
                                 glUniform2iv(uni.second.loc, 1, uni.second.datas_i);
                             } break;
                             case 3U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload ivec3", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload ivec3", "%s", name_c_str);
 #endif
                                 glUniform3iv(uni.second.loc, 1, uni.second.datas_i);
                             } break;
                             case 4U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload ivec4", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload ivec4", "%s", name_c_str);
 #endif
                                 glUniform4iv(uni.second.loc, 1, uni.second.datas_i);
                             } break;
@@ -362,25 +369,25 @@ public:
                         switch (uni.second.channels) {
                             case 1U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload uint", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload uint", "%s", name_c_str);
 #endif
                                 glUniform1uiv(uni.second.loc, 1, uni.second.datas_u);
                             } break;
                             case 2U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload uvec2", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload uvec2", "%s", name_c_str);
 #endif
                                 glUniform2uiv(uni.second.loc, 1, uni.second.datas_u);
                             } break;
                             case 3U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload uvec3", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload uvec3", "%s", name_c_str);
 #endif
                                 glUniform3uiv(uni.second.loc, 1, uni.second.datas_u);
                             } break;
                             case 4U: {
 #ifdef PROFILER_SCOPED_PTR
-                                PROFILER_SCOPED_PTR(&uni, "upload uvec4", "%s", uni.second.name.c_str());
+                                PROFILER_SCOPED_PTR(&uni, "upload uvec4", "%s", name_c_str);
 #endif
                                 glUniform4uiv(uni.second.loc, 1, uni.second.datas_u);
                             } break;
@@ -388,7 +395,7 @@ public:
                         CheckGLErrors;
                     } else if (uni.second.data_s2d > -1) {
 #ifdef PROFILER_SCOPED_PTR
-                        PROFILER_SCOPED_PTR(&uni, "upload sampler2D", "%s", uni.second.name.c_str());
+                        PROFILER_SCOPED_PTR(&uni, "upload sampler2D", "%s", name_c_str);
 #endif
                         glActiveTexture(GL_TEXTURE0 + textureSlotId);
                         CheckGLErrors;

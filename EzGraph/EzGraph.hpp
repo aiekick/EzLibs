@@ -1,5 +1,6 @@
 #pragma once
 
+#include <set>
 #include <vector>
 #include <string>
 #include <memory>
@@ -81,14 +82,6 @@ typedef std::shared_ptr<Node> NodePtr;
 typedef std::weak_ptr<Node> NodeWeak;
 typedef std::function<RetCodes(const size_t, const std::vector<SlotPtr>&, const SlotWeak&)> NodeFunctor;
 
-class Graph;
-typedef std::shared_ptr<Graph> GraphPtr;
-typedef std::weak_ptr<Graph> GraphWeak;
-
-class Node;
-typedef std::shared_ptr<Node> NodePtr;
-typedef std::weak_ptr<Node> NodeWeak;
-
 typedef void* UserDatas;
 
 /////////////////////////////////////
@@ -96,10 +89,10 @@ typedef void* UserDatas;
 /////////////////////////////////////
 
 struct SlotDatas {
-    std::string m_Name;
-    std::string m_Type;
-    UserDatas m_UserDatas = nullptr;
-    SlotDir m_Dir = SlotDir::INPUT;
+    std::string name;
+    std::string type;
+    UserDatas userDatas = nullptr;
+    SlotDir dir = SlotDir::INPUT;
 };
 
 struct EvalDatas {
@@ -107,54 +100,30 @@ struct EvalDatas {
 };
 
 class Slot {
-public:
-    static SlotPtr create(const SlotDatas& vDatas) {
-        auto ret = std::make_shared<Slot>();
-        ret->m_This = ret;
-        if (!ret->init(vDatas)) {
-            ret.reset();
-        }
-        return ret;
-    }
+    friend class Node;
 
-private:
+protected:
     SlotWeak m_This;
     NodeWeak m_ParentNode;
-    SlotDatas m_Datas;
+    SlotDatas m_SlotDatas;
     std::vector<SlotWeak> m_ConnectedSlots;
     EvalDatas m_LastEvaluatedDatas;
 
 public:
-    virtual bool init(const SlotDatas& vDatas) {
-        m_Datas = vDatas;
+    virtual bool initSlot(const SlotDatas& vDatas, const SlotWeak& vThis) {
+        m_SlotDatas = vDatas;
+        m_This = vThis;
         return true;
     }
-    virtual void unit() {
-        m_Datas = {};
+    virtual void unitSlot() {
+        m_SlotDatas = {};
         m_ConnectedSlots.clear();
     }
-    RetCodes connectSlot(SlotWeak vSlot) {
-        RetCodes ret = RetCodes::FAILED_SLOT_PTR_NULL;
-        if (!vSlot.expired()) {
-            m_ConnectedSlots.push_back(vSlot);
-            ret = RetCodes::SUCCESS;
-        }
-        return ret;
+    const SlotDatas& getSlotDatas() {
+        return m_SlotDatas;
     }
-    RetCodes disconnectSlot(SlotWeak vSlot) {
-        RetCodes ret = RetCodes::FAILED_SLOT_ALREADY_EXIST;
-        auto it = Utils::isWeakPtrExistInVector(vSlot, m_ConnectedSlots);
-        if (it != m_ConnectedSlots.end()) {
-            m_ConnectedSlots.erase(it);
-            ret = RetCodes::SUCCESS;
-        }
-        return ret;
-    }
-    void disconnect() {
-        m_ConnectedSlots.clear();
-    }
-    const SlotDatas& getDatas() {
-        return m_Datas;
+    SlotDatas& getSlotDatasRef() {
+        return m_SlotDatas;
     }
     void setParentNode(NodeWeak vNodeWeak) {
         m_ParentNode = vNodeWeak;
@@ -162,7 +131,7 @@ public:
     NodeWeak getParentNode() {
         return m_ParentNode;
     }
-    const std::vector<SlotWeak>& getConnectedSlots() {
+    const std::vector<SlotWeak>& m_getConnectedSlots() {
         return m_ConnectedSlots;
     }
     void setLastEvaluatedDatas(const EvalDatas vUserDatas) {
@@ -171,51 +140,128 @@ public:
     const EvalDatas& getLastEvaluatedDatas() {
         return m_LastEvaluatedDatas;
     }
+
+protected:
+    RetCodes m_connectSlot(SlotWeak vSlot) {
+        RetCodes ret = RetCodes::FAILED_SLOT_PTR_NULL;
+        if (!vSlot.expired()) {
+            m_ConnectedSlots.push_back(vSlot);
+            ret = RetCodes::SUCCESS;
+        }
+        return ret;
+    }
+    RetCodes m_disconnectSlot(SlotWeak vSlot) {
+        RetCodes ret = RetCodes::FAILED_SLOT_ALREADY_EXIST;
+        auto it = Utils::isWeakPtrExistInVector(vSlot, m_ConnectedSlots);
+        if (it != m_ConnectedSlots.end()) {
+            m_ConnectedSlots.erase(it);
+            ret = RetCodes::SUCCESS;
+        }
+        return ret;
+    }
+    void m_disconnect() {
+        m_ConnectedSlots.clear();
+    }
 };
 
 /////////////////////////////////////
-///// NODE //////////////////////////
+///// NODE / GRAPH //////////////////
 /////////////////////////////////////
 
 struct NodeDatas {
     std::string name;
     std::string type;
+    bool dirty = false;
     UserDatas userDatas = nullptr;
     NodeFunctor functor = nullptr;
 };
 
 class Node {
-public:
-    static NodePtr create(const NodeDatas& vNodeDatas) {
-        auto ret = std::make_shared<Node>();
-        ret->m_This = ret;
-        if (!ret->init(vNodeDatas)) {
-            ret.reset();
-        }
-        return ret;
-    }
-
 private:
     NodeWeak m_This;
+    NodeWeak m_ParentNode;
+    NodeDatas m_NodeDatas;
+    std::vector<NodePtr> m_Nodes;
     std::vector<SlotPtr> m_Inputs;
     std::vector<SlotPtr> m_Outputs;
-    NodeDatas m_NodeDatas;
 
-public:
-    virtual bool init(const NodeDatas& vNodeDatas) {
+public:  // CTor / DTor
+    virtual bool initNode(const NodeDatas& vNodeDatas, const NodeWeak& vThis) {
         m_NodeDatas = vNodeDatas;
+        m_This = vThis;
         return true;
     }
-    virtual void unit() {
+    virtual void unitNode() {
         m_NodeDatas = {};
         m_Inputs.clear();
         m_Outputs.clear();
     }
-    RetCodes addSlot(SlotPtr vSlotPtr) {
+
+public:  // Eval
+    virtual RetCodes eval(const size_t vFrame, const SlotWeak& vFrom) {
+        RetCodes ret = RetCodes::FAILED_NODE_NO_FUNCTOR;
+        if (m_NodeDatas.functor != nullptr) {
+            ret = m_NodeDatas.functor(vFrame, m_Inputs, vFrom);
+        }
+        return ret;
+    }
+
+public:  // Datas
+    void setParentNode(const NodeWeak& vParentNode) {
+        m_ParentNode = vParentNode;
+    }
+    NodeWeak getParentNode() {
+        return m_ParentNode;
+    }
+    const NodeDatas& getNodeDatas() {
+        return m_NodeDatas;
+    }
+    NodeDatas& NodeDatasRef() {
+        return m_NodeDatas;
+    }
+    const std::vector<NodePtr>& getNodes() const {
+        return m_Nodes;
+    }
+    std::vector<NodePtr>& getNodesRef() {
+        return m_Nodes;
+    }
+    NodeWeak m_getThis() {
+        return m_This;
+    }
+    void setDirty(bool vFlag) {
+        m_NodeDatas.dirty = vFlag;
+    }
+    bool isDirty() {
+        return m_NodeDatas.dirty;
+    }
+
+protected:  // Node
+    RetCodes m_addNode(NodePtr vNodePtr) {
+        RetCodes ret = RetCodes::FAILED_NODE_PTR_NULL;
+        if (vNodePtr != nullptr) {
+            vNodePtr->setParentNode(m_This);
+            m_Nodes.push_back(vNodePtr);
+            ret = RetCodes::SUCCESS;
+        }
+        return ret;
+    }
+    RetCodes m_delNode(NodePtr vNodePtr) {
+        RetCodes ret = RetCodes::FAILED_NODE_NOT_FOUND;
+        auto it = Utils::isSharedPtrExistInVector(vNodePtr, m_Nodes);
+        if (it != m_Nodes.end()) {
+            (*it)->unitNode();
+            m_Nodes.erase(it);
+            ret = RetCodes::SUCCESS;
+        }
+        return ret;
+    }
+
+protected:  // Slots
+    RetCodes m_addSlot(SlotPtr vSlotPtr) {
         RetCodes ret = RetCodes::FAILED;
         if (vSlotPtr != nullptr) {
-            const auto& datas = vSlotPtr->getDatas();
-            if (datas.m_Dir == SlotDir::INPUT) {
+            const auto& datas = vSlotPtr->getSlotDatas();
+            if (datas.dir == SlotDir::INPUT) {
                 auto it = Utils::isSharedPtrExistInVector(vSlotPtr, m_Inputs);
                 if (it == m_Inputs.end()) {
                     vSlotPtr->setParentNode(m_This);
@@ -224,9 +270,9 @@ public:
                 } else {
                     ret = RetCodes::FAILED_SLOT_ALREADY_EXIST;
                 }
-            } else if (datas.m_Dir == SlotDir::OUTPUT) {
-                auto it = Utils::isSharedPtrExistInVector(vSlotPtr, m_Inputs);
-                if (it == m_Inputs.end()) {
+            } else if (datas.dir == SlotDir::OUTPUT) {
+                auto it = Utils::isSharedPtrExistInVector(vSlotPtr, m_Outputs);
+                if (it == m_Outputs.end()) {
                     vSlotPtr->setParentNode(m_This);
                     m_Outputs.push_back(vSlotPtr);
                     ret = RetCodes::SUCCESS;
@@ -237,7 +283,22 @@ public:
         }
         return ret;
     }
-    RetCodes delSlot(SlotPtr vSlotPtr) {
+    SlotPtr m_addSlot(const SlotDatas& vSlotDatas, RetCodes* vOutRetCodes) {
+        if (vOutRetCodes != nullptr) {
+            *vOutRetCodes = RetCodes::FAILED_NODE_PTR_NULL;
+        }
+        auto slot_ptr = std::make_shared<Slot>();
+        if (!slot_ptr->initSlot(vSlotDatas, slot_ptr)) {
+            slot_ptr.reset();
+        } else {
+            auto ret_code = m_addSlot(slot_ptr);
+            if (vOutRetCodes != nullptr) {
+                *vOutRetCodes = ret_code;
+            }
+        }
+        return slot_ptr;
+    }
+    RetCodes m_delSlot(SlotPtr vSlotPtr) {
         RetCodes ret = RetCodes::FAILED_SLOT_NOT_FOUND;
         ret = m_delInputSlot(vSlotPtr);
         if (ret != RetCodes::SUCCESS) {
@@ -245,41 +306,66 @@ public:
         }
         return ret;
     }
-    RetCodes connectSlots(SlotPtr vFrom, SlotPtr vTo) {
-        RetCodes ret = RetCodes::FAILED;
-        if (vFrom != nullptr && vTo != nullptr) {
-            if (vFrom->connectSlot(vTo) == RetCodes::SUCCESS) {
-                if (vTo->connectSlot(vFrom) == RetCodes::SUCCESS) {
-                    ret = RetCodes::SUCCESS;
-                } else {
-                    vFrom->disconnectSlot(vTo);
+    RetCodes m_connectSlots(SlotWeak vFrom, SlotWeak vTo) {
+        RetCodes ret = RetCodes::FAILED_SLOT_PTR_NULL;
+        if (!vFrom.expired() && !vTo.expired()) {
+            auto fromPtr = vFrom.lock();
+            auto toPtr = vTo.lock();
+            if (fromPtr != nullptr && toPtr != nullptr) {
+                ret = fromPtr->m_connectSlot(vTo);
+                if (ret == RetCodes::SUCCESS) {
+                    ret = toPtr->m_connectSlot(vFrom);
+                    if (ret != RetCodes::SUCCESS) {
+                        fromPtr->m_connectSlot(vTo);
+                    }
                 }
             }
         }
         return ret;
     }
-    RetCodes disconnectSlot(SlotPtr vFrom) {
-        vFrom->disconnect();
-        return RetCodes::SUCCESS;
+    RetCodes m_disconnectSlot(SlotWeak vFrom) {
+        RetCodes ret = RetCodes::FAILED_SLOT_NOT_FOUND;
+        // INPUTS
+        auto it = Utils::isSharedPtrExistInVector(vFrom.lock(), m_Inputs);
+        if (it != m_Inputs.end()) {
+            (*it)->m_disconnect();
+            ret = RetCodes::SUCCESS;
+        }
+        // OUTPUTS
+        it = Utils::isSharedPtrExistInVector(vFrom.lock(), m_Outputs);
+        if (it != m_Outputs.end()) {
+            assert(ret != RetCodes::SUCCESS);  // if the slot exist both in INPUTS and PUTPUTS. => FAIL
+            (*it)->m_disconnect();
+            ret = RetCodes::SUCCESS;
+        }
+        if (ret != RetCodes::SUCCESS) {
+            auto fromPtr = vFrom.lock();
+            if (fromPtr != nullptr) {
+                fromPtr->m_disconnect();
+            }
+        }
+        return ret;
     }
-    virtual RetCodes eval(const size_t vFrame, const SlotWeak& vFrom) {
-        RetCodes ret = RetCodes::FAILED_NODE_NO_FUNCTOR;
-        if (m_NodeDatas.functor != nullptr) {
-            ret = m_NodeDatas.functor(vFrame, m_Inputs, vFrom);
+    RetCodes m_disconnectSlots(SlotWeak vFrom, SlotWeak vTo) {
+        RetCodes ret = RetCodes::FAILED_SLOT_PTR_NULL;
+        if (!vFrom.expired() && !vTo.expired()) {
+            auto fromPtr = vFrom.lock();
+            auto toPtr = vTo.lock();
+            if (fromPtr != nullptr && toPtr != nullptr) {
+                ret = fromPtr->m_disconnectSlot(vTo);
+                // meme si le dernier est en erreur on tente la deco
+                ret = toPtr->m_disconnectSlot(vFrom);
+            }
         }
         return ret;
     }
 
 protected:
-    void m_setThis(NodeWeak vThis) {
-        assert(m_This.expired());
-        m_This = vThis;
-    }
     RetCodes m_delInputSlot(SlotPtr vSlotPtr) {
         RetCodes ret = RetCodes::FAILED_SLOT_NOT_FOUND;
         auto it = Utils::isSharedPtrExistInVector(vSlotPtr, m_Inputs);
         if (it != m_Inputs.end()) {
-            (*it)->unit();
+            (*it)->unitSlot();
             m_Inputs.erase(it);
             ret = RetCodes::SUCCESS;
         }
@@ -289,7 +375,7 @@ protected:
         RetCodes ret = RetCodes::FAILED_SLOT_NOT_FOUND;
         auto it = Utils::isSharedPtrExistInVector(vSlotPtr, m_Outputs);
         if (it != m_Outputs.end()) {
-            (*it)->unit();
+            (*it)->unitSlot();
             m_Outputs.erase(it);
             ret = RetCodes::SUCCESS;
         }
@@ -300,112 +386,6 @@ protected:
     }
     std::vector<SlotPtr>& m_getOutputsRef() {
         return m_Outputs;
-    }
-};
-/////////////////////////////////////
-///// GRAPH /////////////////////////
-/////////////////////////////////////
-
-struct GraphDatas {};
-
-class Graph {
-public:
-    static GraphPtr create(const GraphDatas& vGraphDatas) {
-        auto ret = std::make_shared<Graph>();
-        ret->m_This = ret;
-        if (!ret->init(vGraphDatas)) {
-            ret.reset();
-        }
-        return ret;
-    }
-
-private:
-    GraphWeak m_This;
-    std::vector<SlotPtr> m_Inputs;
-    std::vector<SlotPtr> m_Outputs;
-    std::vector<NodePtr> m_Nodes;
-    GraphDatas m_GraphDatas;
-
-public:
-    virtual bool init(const GraphDatas& vGraphDatas) {
-        m_GraphDatas = vGraphDatas;
-        return true;
-    }
-    virtual void unit() {
-    }
-    RetCodes addNode(NodePtr vNodePtr) {
-        RetCodes ret = RetCodes::FAILED_NODE_PTR_NULL;
-        if (vNodePtr != nullptr) {
-            m_Nodes.push_back(vNodePtr);
-            ret = RetCodes::SUCCESS;
-        }
-        return ret;
-    }
-    RetCodes delNode(NodePtr vNodePtr) {
-        RetCodes ret = RetCodes::FAILED_NODE_PTR_NULL;
-        if (vNodePtr != nullptr) {
-            auto it = Utils::isSharedPtrExistInVector(vNodePtr, m_Nodes);
-            if (it != m_Nodes.end()) {
-                (*it)->unit();
-                m_Nodes.erase(it);
-            } else {
-                ret = RetCodes::FAILED_NODE_NOT_FOUND;
-            }
-        }
-        return ret;
-    }
-    RetCodes connectSlots(SlotWeak vFrom, SlotWeak vTo) {
-        RetCodes ret = RetCodes::FAILED_SLOT_PTR_NULL;
-        if (!vFrom.expired() && !vTo.expired()) {
-            auto fromPtr = vFrom.lock();
-            auto toPtr = vTo.lock();
-            if (fromPtr != nullptr && toPtr != nullptr) {
-                ret = fromPtr->connectSlot(vTo);
-                if (ret == RetCodes::SUCCESS) {
-                    ret = toPtr->connectSlot(vFrom);
-                    if (ret != RetCodes::SUCCESS) {
-                        fromPtr->disconnectSlot(vTo);
-                    }
-                }
-            }
-        }
-        return ret;
-    }
-    RetCodes disconnectSlots(SlotWeak vFrom, SlotWeak vTo) {
-        RetCodes ret = RetCodes::FAILED_SLOT_PTR_NULL;
-        if (!vFrom.expired() && !vTo.expired()) {
-            auto fromPtr = vFrom.lock();
-            auto toPtr = vTo.lock();
-            if (fromPtr != nullptr && toPtr != nullptr) {
-                ret = fromPtr->disconnectSlot(vTo);
-                // meme si le dernier est en erreur on tente la deco
-                ret = toPtr->disconnectSlot(vFrom);
-            }
-        }
-        return ret;
-    }
-    RetCodes disconnectSlot(SlotWeak vFrom) {
-        RetCodes ret = RetCodes::FAILED_SLOT_NOT_FOUND;
-        // INPUTS
-        auto it = Utils::isSharedPtrExistInVector(vFrom.lock(), m_Inputs);
-        if (it != m_Inputs.end()) {
-            (*it)->disconnect();
-            ret = RetCodes::SUCCESS;
-        }
-        // OUTPUTS
-        it = Utils::isSharedPtrExistInVector(vFrom.lock(), m_Outputs);
-        if (it != m_Outputs.end()) {
-            assert(ret != RetCodes::SUCCESS);  // if the slot exist both in INPUTS and PUTPUTS. => FAIL
-            (*it)->disconnect();
-            ret = RetCodes::SUCCESS;
-        }
-        if (ret != RetCodes::SUCCESS) {
-            auto fromPtr = vFrom.lock();
-            if (fromPtr != nullptr) {
-                fromPtr->disconnect();
-            }
-        }
-        return ret;
     }
 };
 

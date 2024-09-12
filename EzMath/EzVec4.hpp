@@ -458,12 +458,12 @@ inline bool operator!=(T f, vec4<T> v) {
 // Utility functions
 template <typename T>
 inline vec4<T> mini(vec4<T> a, vec4<T> b) {
-    return vec4<T>(ez::min(a.x, b.x), ez::min(a.y, b.y), ez::min(a.z, b.z), ez::min(a.w, b.w));
+    return vec4<T>(ez::mini(a.x, b.x), ez::mini(a.y, b.y), ez::mini(a.z, b.z), ez::mini(a.w, b.w));
 }
 
 template <typename T>
 inline vec4<T> maxi(vec4<T> a, vec4<T> b) {
-    return vec4<T>(ez::max(a.x, b.x), ez::max(a.y, b.y), ez::max(a.z, b.z), ez::max(a.w, b.w));
+    return vec4<T>(ez::maxi(a.x, b.x), ez::maxi(a.y, b.y), ez::maxi(a.z, b.z), ez::maxi(a.w, b.w));
 }
 
 template <typename T>
