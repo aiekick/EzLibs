@@ -1,0 +1,391 @@
+#pragma once
+
+#include <ios>
+#include <set>
+#include <list>
+#include <cmath>
+#include <vector>
+#include <limits>
+#include <string>
+#include <sstream>
+#include <iomanip>
+#include <cstdint>
+#include <cstdarg>
+#include <clocale>  // std::setlocale
+#include <locale>   // toupper, tolower (with locale)
+
+#ifdef MSVC
+#include <cwchar>
+#endif
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4244)  // Conversion from 'double' to 'float', possible loss of data
+#pragma warning(disable : 4305)  // Truncation from 'double' to 'float'
+#elif defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wfloat-conversion"
+#endif
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+namespace ez {
+
+inline std::list<std::string> splitStringToList(const std::string& text, const std::string& delimiters, bool pushEmpty = false, bool vInversion = false) {
+    std::list<std::string> arr;
+    if (!text.empty()) {
+        std::string::size_type start = 0;
+        std::string::size_type end = text.find_first_of(delimiters, start);
+        while (end != std::string::npos) {
+            std::string token = text.substr(start, end - start);
+            if (!token.empty() || (token.empty() && pushEmpty)) {
+                if (vInversion)
+                    arr.emplace_front(token);
+                else
+                    arr.emplace_back(token);
+            }
+            start = end + 1;
+            end = text.find_first_of(delimiters, start);
+        }
+        std::string token = text.substr(start);
+        if (!token.empty() || (token.empty() && pushEmpty)) {
+            if (vInversion)
+                arr.emplace_front(token);
+            else
+                arr.emplace_back(token);
+        }
+    }
+    return arr;
+}
+
+inline std::vector<std::string> splitStringToVector(const std::string& text, const std::string& delimiters, bool pushEmpty = false) {
+    std::vector<std::string> arr;
+    if (!text.empty()) {
+        std::string::size_type start = 0;
+        std::string::size_type end = text.find_first_of(delimiters, start);
+        while (end != std::string::npos) {
+            std::string token = text.substr(start, end - start);
+            if (!token.empty() || (token.empty() && pushEmpty))
+                arr.emplace_back(token);
+            start = end + 1;
+            end = text.find_first_of(delimiters, start);
+        }
+        std::string token = text.substr(start);
+        if (!token.empty() || (token.empty() && pushEmpty))
+            arr.emplace_back(token);
+    }
+    return arr;
+}
+
+inline std::set<std::string> splitStringToSet(const std::string& text, const std::string& delimiters, bool pushEmpty = false) {
+    std::set<std::string> arr;
+    if (!text.empty()) {
+        std::string::size_type start = 0;
+        std::string::size_type end = text.find_first_of(delimiters, start);
+        while (end != std::string::npos) {
+            std::string token = text.substr(start, end - start);
+            if (!token.empty() || (token.empty() && pushEmpty))
+                arr.emplace(token);
+            start = end + 1;
+            end = text.find_first_of(delimiters, start);
+        }
+        std::string token = text.substr(start);
+        if (!token.empty() || (token.empty() && pushEmpty))
+            arr.emplace(token);
+    }
+    return arr;
+}
+
+inline std::list<std::string> splitStringToList(const std::string& text, char delimiter, bool pushEmpty = false, bool vInversion = false) {
+    std::list<std::string> arr;
+    if (!text.empty()) {
+        std::string::size_type start = 0;
+        std::string::size_type end = text.find(delimiter, start);
+        while (end != std::string::npos) {
+            std::string token = text.substr(start, end - start);
+            if (!token.empty() || (token.empty() && pushEmpty)) {
+                if (vInversion)
+                    arr.emplace_front(token);
+                else
+                    arr.emplace_back(token);
+            }
+            start = end + 1;
+            end = text.find(delimiter, start);
+        }
+        std::string token = text.substr(start);
+        if (!token.empty() || (token.empty() && pushEmpty)) {
+            if (vInversion)
+                arr.emplace_front(token);
+            else
+                arr.emplace_back(token);
+        }
+    }
+    return arr;
+}
+
+inline std::vector<std::string> splitStringToVector(const std::string& text, char delimiter, bool pushEmpty = false) {
+    std::vector<std::string> arr;
+    if (!text.empty()) {
+        std::string::size_type start = 0;
+        std::string::size_type end = text.find(delimiter, start);
+        while (end != std::string::npos) {
+            std::string token = text.substr(start, end - start);
+            if (!token.empty() || (token.empty() && pushEmpty))
+                arr.emplace_back(token);
+            start = end + 1;
+            end = text.find(delimiter, start);
+        }
+        std::string token = text.substr(start);
+        if (!token.empty() || (token.empty() && pushEmpty))
+            arr.emplace_back(token);
+    }
+    return arr;
+}
+
+inline std::set<std::string> splitStringToSet(const std::string& text, char delimiter, bool pushEmpty = false) {
+    std::set<std::string> arr;
+    if (!text.empty()) {
+        std::string::size_type start = 0;
+        std::string::size_type end = text.find(delimiter, start);
+        while (end != std::string::npos) {
+            std::string token = text.substr(start, end - start);
+            if (!token.empty() || (token.empty() && pushEmpty))
+                arr.emplace(token);
+            start = end + 1;
+            end = text.find(delimiter, start);
+        }
+        std::string token = text.substr(start);
+        if (!token.empty() || (token.empty() && pushEmpty))
+            arr.emplace(token);
+    }
+    return arr;
+}
+
+template <typename T>
+inline bool stringToNumber(const std::string& vText, T& vNumber) {
+    try {
+        std::stringstream ss(vText);
+        ss >> vNumber;
+    } catch (std::exception&) {
+        return false;
+    }
+    return true;
+}
+
+template <typename T>
+inline std::vector<T> stringToNumberVector(const std::string& text, char delimiter) {
+    std::vector<T> arr;
+    std::string::size_type start = 0;
+    std::string::size_type end = text.find(delimiter, start);
+    T value = 0;
+    while (end != std::string::npos) {
+        std::string token = text.substr(start, end - start);
+        if (stringToNumber<T>(token, value)) {
+            arr.emplace_back(value);
+        }
+        start = end + 1;
+        end = text.find(delimiter, start);
+    }
+    if (stringToNumber<T>(text.substr(start).c_str(), value)) {
+        arr.emplace_back(value);    
+    }
+    return arr;
+}
+
+inline std::string toStr(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    char TempBuffer[3072 + 1];  // 3072 = 1024 * 3
+    const int w = vsnprintf(TempBuffer, 3072, fmt, args);
+    va_end(args);
+    if (w) {
+        return std::string(TempBuffer, (size_t)w);
+    }
+    return std::string();
+}
+
+inline std::string toUpper(const std::string& vStr, const std::locale& vLocale) {
+    std::string str = vStr;
+    for (size_t i = 0U; i < str.size(); ++i) {
+        str[i] = ::std::toupper(str[i], vLocale);
+    }
+    return str;
+}
+
+inline std::string toLower(const std::string& vStr, const std::locale& vLocale) {
+    std::string str = vStr;
+    for (size_t i = 0U; i < str.size(); ++i) {
+        str[i] = ::std::tolower(str[i], vLocale);
+    }
+    return str;
+}
+
+inline std::string toHex(const std::string& vStr) {
+    if (!vStr.empty()) {
+        std::stringstream ss;
+        ss << std::setfill('0') << std::setw(2) << std::hex;
+        for (const auto& c : vStr) {
+            ss << (0xff & (unsigned int)c);
+        }
+        return ss.str();
+    }
+    return {};
+}
+
+template <typename T>
+inline std::string toStrFromArray(T* arr, size_t n, char delimiter = ';') {
+    if (arr) {
+        std::ostringstream os;
+        for (size_t i = 0; i < n; ++i) {
+            os << arr[i];
+            if (i < n - 1)
+                os << delimiter;
+        }
+        return os.str();
+    }
+    return "";
+}
+
+template <typename T>
+inline std::string toStr(T t) {
+    std::ostringstream os;
+    os << t;
+    return os.str();
+}
+
+template <typename T>
+inline std::string toHexStr(T t) {
+    std::ostringstream os;
+    os << std::hex << t;
+    return os.str();
+}
+
+template <typename T>
+inline std::string toDecStr(T t) {
+    std::ostringstream os;
+    os << std::dec << t;
+    return os.str();
+}
+
+inline std::vector<std::string::size_type> strContains(const std::string& text, const std::string& word) {
+    std::vector<std::string::size_type> result;
+    std::string::size_type loc = 0;
+    while ((loc = text.find(word, loc)) != std::string::npos) {
+        result.emplace_back(loc);
+        loc += word.size();
+    }
+    return result;
+}
+
+inline bool replaceString(std::string& str, const std::string& oldStr, const std::string& newStr) {
+    bool found = false;
+    size_t pos = 0;
+    while ((pos = str.find(oldStr, pos)) != std::string::npos) {
+        found = true;
+        str.replace(pos, oldStr.length(), newStr);
+        pos += newStr.length();
+    }
+    return found;
+}
+
+inline size_t getCountOccurence(const std::string& vSrcString, const std::string& vStringToCount) {
+    size_t count = 0;
+    size_t pos = 0;
+    const auto len = vStringToCount.length();
+    while ((pos = vSrcString.find(vStringToCount, pos)) != std::string::npos) {
+        ++count;
+        pos += len;
+    }
+    return count;
+}
+inline size_t getCountOccurenceInSection(const std::string& vSrcString, size_t vStartPos, size_t vEndpos, const std::string& vStringToCount) {
+    size_t count = 0;
+    size_t pos = vStartPos;
+    const auto len = vStringToCount.length();
+    while (pos < vEndpos && (pos = vSrcString.find(vStringToCount, pos)) != std::string::npos) {
+        if (pos < vEndpos) {
+            ++count;
+            pos += len;
+        }
+    }
+    return count;
+}
+
+// can be more fast if char is used
+inline size_t getCountOccurence(const std::string& vSrcString, const char& vStringToCount) {
+    size_t count = 0;
+    size_t pos = 0;
+    while ((pos = vSrcString.find(vStringToCount, pos)) != std::string::npos) {
+        ++count;
+        pos++;
+    }
+    return count;
+}
+
+// can be more fast if char is used
+inline size_t getCountOccurenceInSection(const std::string& vSrcString, size_t vStartPos, size_t vEndpos, const char& vStringToCount) {
+    size_t count = 0;
+    size_t pos = vStartPos;
+    while (pos < vEndpos && (pos = vSrcString.find(vStringToCount, pos)) != std::string::npos) {
+        if (pos < vEndpos) {
+            ++count;
+            pos++;
+        }
+    }
+    return count;
+}
+
+// std::wstring to std::string
+// std::wstring(unicode/multibytes/char16/wchar_t) to std::string(char)
+inline std::string wstringToString(const std::wstring& wstr) {
+    std::mbstate_t state = std::mbstate_t();
+    const std::size_t len = wstr.size();
+    std::vector<char> mbstr(len);
+    const wchar_t* wptr = wstr.c_str();
+#ifdef MSVC
+    size_t res = 0;
+    /*errno_t err = */ wcsrtombs_s(&res, &mbstr[0], len, &wptr, mbstr.size(), &state);
+#else
+    std::wcsrtombs(&mbstr[0], &wptr, mbstr.size(), &state);
+#endif
+    return std::string(mbstr.data(), mbstr.size());
+}
+
+// std::string to std::wstring
+// std::string(char) to std::wstring(unicode/multibytes/char16/wchar_t)
+inline std::wstring stringToWstring(const std::string& mbstr) {
+    std::mbstate_t state = std::mbstate_t();
+    const std::size_t len = mbstr.size();
+    std::vector<wchar_t> wstr(len);
+    const char* ptr = mbstr.c_str();
+#ifdef MSVC
+    size_t res = 0;
+    /*errno_t err = */ mbsrtowcs_s(&res, &wstr[0], len, &ptr, wstr.size(), &state);
+#else
+    std::mbsrtowcs(&wstr[0], &ptr, wstr.size(), &state);
+#endif
+    return std::wstring(wstr.data(), wstr.size());
+}
+
+}  // namespace ez
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#elif defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
