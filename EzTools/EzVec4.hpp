@@ -73,7 +73,7 @@ struct vec4 {
             z = def->z;
             w = def->w;
         }
-        std::vector<T> result = StringToNumberVector<T>(vec, c);
+        std::vector<T> result = str::stringToNumberVector<T>(vec, c);
         const size_t s = result.size();
         if (s > 0)
             x = result[0];
@@ -93,7 +93,7 @@ struct vec4 {
             z = def->z;
             w = def->w;
         } 
-        std::vector<T> result = stringToNumberVector<T>(vec, c);
+        std::vector<T> result = str::stringToNumberVector<T>(vec, c);
         const size_t s = result.size();
         if (static_cast<int>(s) != n) {
             if (s == 1) {
