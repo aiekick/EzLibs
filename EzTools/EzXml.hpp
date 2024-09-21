@@ -24,13 +24,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 #include <sstream>
-#include <iostream>
-#include <fstream>
-#include <algorithm>
 
 namespace ez {
 
@@ -81,18 +78,29 @@ public:
         return m_Name;
     }
 
-private:
-    static std::string m_escapeXml(const std::string& vData) {
-        std::string escaped = vData;
-        m_replaceAll(escaped, "&", "&amp;");
-        m_replaceAll(escaped, "<", "&lt;");
-        m_replaceAll(escaped, ">", "&gt;");
-        m_replaceAll(escaped, "\"", "&quot;");
-        m_replaceAll(escaped, "'", "&apos;");
+public:
+    static std::string escapeXml(const std::string& vDatas) {
+        std::string escaped = vDatas;
+        replaceAll(escaped, "&", "&amp;");
+        replaceAll(escaped, "<", "&lt;");
+        replaceAll(escaped, "\"", "&quot;");
+        replaceAll(escaped, "'", "&apos;");
+        replaceAll(escaped, ">", "&gt;");
         return escaped;
     }
 
-    static void m_replaceAll(std::string& vStr, const std::string& vFrom, const std::string& vTo) {
+    // replace xml excaped pattern by corresponding good pattern
+    static std::string unEscapeXmlCode(const std::string& vDatas) {
+        std::string unescaped = vDatas;
+        replaceAll(unescaped, "&lt;", "<");
+        replaceAll(unescaped, "&amp;", "&");
+        replaceAll(unescaped, "&quot;", "\"");
+        replaceAll(unescaped, "&apos;", "'");
+        replaceAll(unescaped, "&gt;", ">");
+        return unescaped;
+    }
+
+    static void replaceAll(std::string& vStr, const std::string& vFrom, const std::string& vTo) {
         if (vFrom.empty()) return;
         size_t startPos = 0;
         while ((startPos = vStr.find(vFrom, startPos)) != std::string::npos) {
@@ -113,38 +121,28 @@ public:
         return m_Root;
     }
 
-    bool loadFromFile(const std::string& vFilename) {
-        std::ifstream file(vFilename);
-        if (!file.is_open()) {
-            return false;
-        }
-
+    bool parse(const std::string& vDoc) {
+        std::istringstream doc(vDoc);
         std::string line;
-        while (std::getline(file, line)) {
+        while (std::getline(doc, line)) {
             m_parseLine(line);
         }
-
-        file.close();
         return true;
     }
 
 private:
     void m_parseLine(const std::string& vLine) {
         std::string trimmedLine = m_trim(vLine);
-
         if (trimmedLine.empty()) {
             return;
         }
-
         if (trimmedLine[0] == '<' && trimmedLine[1] != '/') {
             std::string tagName = m_extractTagName(trimmedLine);
             XmlNode newNode(tagName);
-
             auto attributes = m_extractAttributes(trimmedLine);
             for (const auto& [key, value] : attributes) {
                 newNode.setAttribute(key, value);
             }
-
             m_Root.addChild(newNode);
         }
     }
@@ -158,22 +156,19 @@ private:
     std::map<std::string, std::string> m_extractAttributes(const std::string& vLine) {
         std::map<std::string, std::string> attributes;
         size_t startPos = vLine.find(' ');
-
         while (startPos != std::string::npos) {
             startPos = vLine.find_first_not_of(" \t", startPos);
             size_t equalsPos = vLine.find('=', startPos);
-            if (equalsPos == std::string::npos) break;
-
+            if (equalsPos == std::string::npos) {
+                break;
+            }
             std::string key = vLine.substr(startPos, equalsPos - startPos);
             startPos = vLine.find('"', equalsPos) + 1;
             size_t endPos = vLine.find('"', startPos);
-
             std::string value = vLine.substr(startPos, endPos - startPos);
             attributes[key] = value;
-
             startPos = vLine.find(' ', endPos);
         }
-
         return attributes;
     }
 
