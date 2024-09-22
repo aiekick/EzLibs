@@ -272,9 +272,9 @@ public:
         va_end(args);
         lck.unlock();
 #else
-        UNUSED(vFunction);
-        UNUSED(vLine);
-        UNUSED(fmt);
+        (void)vFunction;
+        (void)vLine;
+        (void)fmt;
 #endif
     }
     void LogStringWithFunction_Debug(const std::string& vFunction, const int& vLine, const char* fmt, ...) {
@@ -290,14 +290,14 @@ public:
         va_end(args);
         lck.unlock();
 #else
-        UNUSED(vFunction);
-        UNUSED(vLine);
-        UNUSED(fmt);
+        (void)vFunction;
+        (void)vLine;
+        (void)fmt;
 #endif
     }
 #ifdef USE_OPENGL
     bool LogGLError(const std::string& vFile, const std::string& vFunc, int vLine, const std::string& vGLFunc = "") const {
-        UNUSED(vFile);
+        (void)vFile;
 
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
         ZoneScoped;

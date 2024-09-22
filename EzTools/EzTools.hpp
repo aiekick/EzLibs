@@ -59,6 +59,8 @@ SOFTWARE.
 #define EZ_TOOLS_DEBUG_BREAK
 #endif
 
+#define UNUSED(v) (void)(v)
+
 namespace ez {
 
 }  // namespace ez
