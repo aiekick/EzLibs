@@ -44,7 +44,9 @@ or
 #include <tracy/Tracy.hpp>
 #endif
 
+#ifdef _MSC_VER
 #include <Windows.h>
+#endif
 
 #include <cstdarg> /* va_list, va_start, va_arg, va_end */
 
