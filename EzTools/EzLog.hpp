@@ -64,7 +64,7 @@ using namespace std;
 
 typedef long long int64;
 
-#ifdef MSVC
+#ifdef _MSC_VER
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
@@ -379,7 +379,7 @@ public:
     std::string GetLastErrorAsString() {
         std::string msg;
 
-#ifdef WIN32
+#ifdef _MSC_VER
         // Get the error message, if any.
         const DWORD errorMessageID = ::GetLastError();
         if (errorMessageID == 0 || errorMessageID == 6)
