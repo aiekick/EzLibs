@@ -320,31 +320,31 @@ public:
             }
 
             if (!error.empty()) {
-                const int64 ticks = ct::GetTicks();
+                const int64 ticks = ez::time::GetTicks();
                 const float time = (ticks - lastTick) / 1000.0f;
 
                 std::string msg;
 
                 if (!vGLFunc.empty()) {
 #ifdef USE_GLFW3
-                    msg = ct::toStr(
+                    msg = str::toStr(
                         "[%010.3fs][GLFW3 0x%X][%s:%i] %s in %s\n", time, (uintptr_t)glfwGetCurrentContext(), vFunc.c_str(), vLine, error.c_str(), vGLFunc.c_str());
 #elif defined(USE_SDL2)
-                    msg = ct::toStr(
+                    msg = str::toStr(
                         "[%010.3fs][SDL2 0x%X][%s:%i] %s in %s\n", time, (uintptr_t)SDL_GL_GetCurrentContext(), vFunc.c_str(), vLine, error.c_str(), vGLFunc.c_str());
 #endif
                 } else {
 #ifdef USE_GLFW3
-                    msg = ct::toStr("[%010.3fs][GLFW3 0x%X][%s:%i] %s\n", time, (uintptr_t)glfwGetCurrentContext(), vFunc.c_str(), vLine, error.c_str());
+                    msg = str::toStr("[%010.3fs][GLFW3 0x%X][%s:%i] %s\n", time, (uintptr_t)glfwGetCurrentContext(), vFunc.c_str(), vLine, error.c_str());
 #elif defined(USE_SDL2)
-                    msg = ct::toStr("[%010.3fs][SDL2 0x%X][%s:%i] %s\n", time, (uintptr_t)SDL_GL_GetCurrentContext(), vFunc.c_str(), vLine, error.c_str());
+                    msg = str::toStr("[%010.3fs][SDL2 0x%X][%s:%i] %s\n", time, (uintptr_t)SDL_GL_GetCurrentContext(), vFunc.c_str(), vLine, error.c_str());
 #endif
                 }
 
                 LogVarLightError("%s", msg.c_str());
 
                 if (sOpenGLLogFunction) {
-                    auto arr = ct::splitStringToVector(msg, '\n');
+                    auto arr = str::splitStringToVector(msg, '\n');
                     if (arr.size() == 1U) {
                         sOpenGLLogFunction(2, msg);
                     } else {

@@ -306,22 +306,22 @@ public:
     }
     std::vector<float> GetVectorFloat(char c = ';') const {
         if (inputtype == "string")
-            return StringToNumberVector<float>(string_value, c);
+            return str::StringToNumberVector<float>(string_value, c);
         return vector_float_value;
     }
     std::vector<double> GetVectorDouble(char c = ';') const {
         if (inputtype == "string")
-            return StringToNumberVector<double>(string_value, c);
+            return str::StringToNumberVector<double>(string_value, c);
         return vector_double_value;
     }
     std::vector<T> GetVectorType(char c = ';') {
         if (inputtype == "string")
-            return StringToNumberVector<T>(string_value, c);
+            return str::StringToNumberVector<T>(string_value, c);
         return vector_float_value;
     }
     std::vector<std::string> GetVectorString(char c = ';') const {
         if (inputtype == "string")
-            return SplitStringToVector(string_value, c);
+            return str::SplitStringToVector(string_value, c);
         return vector_string_value;
     }
     std::set<std::string> GetSetString(char c = ';') const {

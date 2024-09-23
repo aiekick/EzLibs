@@ -135,7 +135,7 @@ public:
 	#elif defined(LINUX_OS)
 			char szTmp[32];
 			sprintf(szTmp, "/proc/%d/exe", getpid());
-			auto bytes = ct::mini<int>(readlink(szTmp, buffer, MAX_PATH), MAX_PATH - 1);
+			auto bytes = ez::mini<int>(readlink(szTmp, buffer, MAX_PATH), MAX_PATH - 1);
 			if (bytes >= 0) {
 				buffer[bytes] = '\0';
 			}
