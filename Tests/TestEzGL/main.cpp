@@ -27,5 +27,5 @@ int main(int argc, char** argv) {
         return TestEzGL(argv[1]) ? 0 : 1;
     }
     // User testing
-    return TestEzGL("") ? 0 : 1;
+    return TestEzGL("Test_EzGL_Uniforms_Parsing_Good_Syntax_10") ? 0 : 1;
 }

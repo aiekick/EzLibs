@@ -76,6 +76,8 @@ bool Test_EzGL_Uniforms_Parsing_Good_Syntax_10() {
     if (upd.uniform_comment_original != " kjhdfgkshk ") {
         return false;
     }
+
+    return true;
 }
 
 bool Test_EzGL_Uniforms_Parsing_Good_Syntax_11() {
@@ -98,6 +100,8 @@ bool Test_EzGL_Uniforms_Parsing_Good_Syntax_11() {
     if (upd.uniform_comment_original != " kjhdfgkshk ") {
         return false;
     }
+
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -160,6 +164,8 @@ bool Test_EzGL_Uniforms_Parsing_Time_Widget_0() {
     if (upd.params.size() > 0 && upd.params[0] != "0.0") {
         return false;
     }
+
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -180,6 +186,8 @@ bool Test_EzGL_Uniforms_Parsing_Buffer_Widget_0() {
     if (upd.uniform_name != "uResolution") {
         return false;
     }
+
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -215,6 +223,8 @@ bool Test_EzGL_Uniforms_Parsing_Slider_Widget_0() {
     if (upd.uniform_name != "uSlider") {
         return false;
     }
+
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////
