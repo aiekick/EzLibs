@@ -8,5 +8,5 @@ include_directories(.)
 set(EzLibs)
 
 enable_testing()
-
+add_definitions(-DTEST_ENABLED)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Tests)
