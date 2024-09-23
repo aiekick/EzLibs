@@ -252,7 +252,7 @@ struct vec3 {
 
     // Convert to string
     std::string string(char c = ';') const {
-        return ez::toStr(x) + c + ez::toStr(y) + c + ez::toStr(z);
+        return ez::str::toStr(x) + c + ez::str::toStr(y) + c + ez::str::toStr(z);
     }
 
     // Minimum component

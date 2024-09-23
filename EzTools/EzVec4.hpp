@@ -313,7 +313,7 @@ struct vec4 {
 
     // Convert to string
     std::string string(char c = ';') const {
-        return ez::toStr(x) + c + ez::toStr(y) + c + ez::toStr(z) + c + ez::toStr(w);
+        return ez::str::toStr(x) + c + ez::str::toStr(y) + c + ez::str::toStr(z) + c + ez::str::toStr(w);
     }
 
     // Minimum component
