@@ -344,7 +344,7 @@ public:
     }
     std::set<std::string> GetSetString(char c = ';') const {
         if (inputtype == "string") {
-            return SplitStringToSet(string_value, c);
+            return str::splitStringToSet(string_value, c);
         }
         return set_string_value;
     }
