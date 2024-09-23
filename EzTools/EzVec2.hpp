@@ -67,7 +67,7 @@ struct vec2 {
             x = def->x;
             y = def->y;
         }
-        std::vector<T> result = str::StringToNumberVector<T>(vec, c);
+        std::vector<T> result = str::stringToNumberVector<T>(vec, c);
         const size_t s = result.size();
         if (s > 0)
             x = result[0];
@@ -231,7 +231,7 @@ struct vec2 {
 
     // Convert to string
     std::string string(char c = ';') const {
-        return toStr(x) + c + toStr(y);
+        return str::toStr(x) + c + str::toStr(y);
     }
 
     // Ratio functions

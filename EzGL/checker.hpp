@@ -562,25 +562,25 @@ public:
         if (GetVersion(m_Version, version)) {
             LogVarLightInfo("OpenGl version : %i.%i", version.major, version.minor);
             if (m_AttribLayoutSupportedCore)
-                LogVarLightInfo("- Attrib Location Available in Core");
+                LogVarLightInfo("%s", "- Attrib Location Available in Core");
             else if (m_AttribLayoutSupportedExtention)
-                LogVarLightInfo("- Attrib Location Available in Extension");
+                LogVarLightInfo("%s", "- Attrib Location Available in Extension");
             else
-                LogVarLightInfo("- Attrib Location Not Available");
+                LogVarLightInfo("%s", "- Attrib Location Not Available");
             if (m_GeometryShaderSupported)
-                LogVarLightInfo("- Geometry Stage Available");
+                LogVarLightInfo("%s", "- Geometry Stage Available");
             else
-                LogVarLightInfo("- Geometry Stage Not Available");
+                LogVarLightInfo("%s", "- Geometry Stage Not Available");
             if (m_TesselationShaderSupported)
-                LogVarLightInfo("- Tesselation Stage Available");
+                LogVarLightInfo("%s", "- Tesselation Stage Available");
             else
-                LogVarLightInfo("- Tesselation Stage Not Available");
+                LogVarLightInfo("%s", "- Tesselation Stage Not Available");
             if (m_ComputeShaderSupported)
-                LogVarLightInfo("- Compute Stage Available");
+                LogVarLightInfo("%s", "- Compute Stage Available");
             else
-                LogVarLightInfo("- Compute Stage Not Available");
+                LogVarLightInfo("%s", "- Compute Stage Not Available");
         } else {
-            LogVarLightError("OpenGl version : Not Found !");
+            LogVarLightError("%s", "OpenGl version : Not Found !");
         }
     }
 

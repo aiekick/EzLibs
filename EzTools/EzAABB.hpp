@@ -46,7 +46,7 @@ struct AABB  // copy of b2AABB struct
     }
     AABB(std::string vec, char c)  // may be in format "0.2f,0.3f,0.4f,0.8f" left, bottom, right, top
     {
-        std::vector<float> result = str::StringToNumberVector<float>(vec, c);
+        std::vector<float> result = str::stringToNumberVector<float>(vec, c);
         const size_t s = result.size();
         if (s > 0)
             lowerBound.x = result[0];

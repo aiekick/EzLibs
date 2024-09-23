@@ -173,7 +173,7 @@ public:
             if (inputtype == "vec2")
                 return point_value == v.point_value;
             if (inputtype == "AABB")
-            	return aabb_value == v.aabb_value;
+                return aabb_value == v.aabb_value;
             if (inputtype == "AABBCC")
                 return aabbcc_value == v.aabbcc_value;
             if (inputtype == "bool")
@@ -238,103 +238,123 @@ public:
     }
 
     std::string GetS(char c = ';', const char* prec = "%.6f") {
-        if (inputtype == "vec4")
-            return toStr(rect_value.x) + c + toStr(rect_value.y) + c + toStr(rect_value.z) + c + toStr(rect_value.w);
-        if (inputtype == "vec3")
-            return toStr(v3_value.x) + c + toStr(v3_value.y) + c + toStr(v3_value.z);
-        if (inputtype == "vec2")
-            return toStr(point_value.x) + c + toStr(point_value.y);
-        if (inputtype == "AABB")
-            return toStr(aabb_value.lowerBound.x) + c + toStr(aabb_value.lowerBound.y) + c + toStr(aabb_value.upperBound.x) + c + toStr(aabb_value.upperBound.y);
-        if (inputtype == "bool")
+        if (inputtype == "vec4") {
+            return str::toStr(rect_value.x) + c + str::toStr(rect_value.y) + c + str::toStr(rect_value.z) + c + str::toStr(rect_value.w);
+        }
+        if (inputtype == "vec3") {
+            return str::toStr(v3_value.x) + c + str::toStr(v3_value.y) + c + str::toStr(v3_value.z);
+        }
+        if (inputtype == "vec2") {
+            return str::toStr(point_value.x) + c + str::toStr(point_value.y);
+        }
+        if (inputtype == "AABB") {
+            return str::toStr(aabb_value.lowerBound.x) + c + str::toStr(aabb_value.lowerBound.y) + c + str::toStr(aabb_value.upperBound.x) + c +
+                str::toStr(aabb_value.upperBound.y);
+        }
+        if (inputtype == "bool") {
             return (bool_value ? "true" : "false");
-        if (inputtype == "float")
-            return toStr(float_value);
+        }
+        if (inputtype == "float") {
+            return str::toStr(float_value);
+        }
         if (inputtype == "vectorFloat") {
             std::string str;
             for (auto f : vector_float_value) {
-                if (!str.empty())
+                if (!str.empty()) {
                     str += c;
-                str += toStr(prec, f);
+                }
+                str += str::toStr(prec, f);
             }
             return str;
         }
         if (inputtype == "vectorDouble") {
             std::string str;
             for (auto f : vector_double_value) {
-                if (!str.empty())
+                if (!str.empty()) {
                     str += c;
-                str += toStr(prec, f);
+                }
+                str += str::toStr(prec, f);
             }
             return str;
         }
-        if (inputtype == "double")
-            return toStr(double_value);
-        if (inputtype == "int")
-            return toStr(int_value);
-        if (inputtype == "long")
-            return toStr(long_value);
-        if (inputtype == "uint32_t")
-            return toStr(uint32_t_value);
+        if (inputtype == "double") {
+            return str::toStr(double_value);
+        }
+        if (inputtype == "int") {
+            return str::toStr(int_value);
+        }
+        if (inputtype == "long") {
+            return str::toStr(long_value);
+        }
+        if (inputtype == "uint32_t") {
+            return str::toStr(uint32_t_value);
+        }
         return string_value;
     }
     vec2<T> GetV2(char c = ';') {
-        if (inputtype == "string")
+        if (inputtype == "string") {
             return vec2<T>(string_value, c);
-        else if (inputtype == "vectorString") {
+        } else if (inputtype == "vectorString") {
         }
         return point_value;
     }
     vec3<T> GetV3(char c = ';') {
-        if (inputtype == "string")
+        if (inputtype == "string") {
             return vec3<T>(string_value, c);
-        else if (inputtype == "vectorString") {
+        } else if (inputtype == "vectorString") {
         }
         return v3_value;
     }
     vec4<T> GetV4(char c = ';') {
-        if (inputtype == "string")
+        if (inputtype == "string") {
             return vec4<T>(string_value, c, 4, 0);  //-V112
-        else if (inputtype == "vectorString") {
+        } else if (inputtype == "vectorString") {
         }
         return rect_value;
     }
     AABB<T> GetAABB(char c = ';') {
-        if (inputtype == "string")
+        if (inputtype == "string") {
             return AABB<T>(string_value, c);
+        }
         return aabb_value;
     }
     std::vector<float> GetVectorFloat(char c = ';') const {
-        if (inputtype == "string")
-            return str::StringToNumberVector<float>(string_value, c);
+        if (inputtype == "string") {
+            return str::stringToNumberVector<float>(string_value, c);
+        }
         return vector_float_value;
     }
     std::vector<double> GetVectorDouble(char c = ';') const {
-        if (inputtype == "string")
-            return str::StringToNumberVector<double>(string_value, c);
+        if (inputtype == "string") {
+            return str::stringToNumberVector<double>(string_value, c);
+        }
         return vector_double_value;
     }
     std::vector<T> GetVectorType(char c = ';') {
-        if (inputtype == "string")
-            return str::StringToNumberVector<T>(string_value, c);
+        if (inputtype == "string") {
+            return str::stringToNumberVector<T>(string_value, c);
+        }
         return vector_float_value;
     }
     std::vector<std::string> GetVectorString(char c = ';') const {
-        if (inputtype == "string")
-            return str::SplitStringToVector(string_value, c);
+        if (inputtype == "string") {
+            return str::splitStringToVector(string_value, c);
+        }
         return vector_string_value;
     }
     std::set<std::string> GetSetString(char c = ';') const {
-        if (inputtype == "string")
+        if (inputtype == "string") {
             return SplitStringToSet(string_value, c);
+        }
         return set_string_value;
     }
     float GetF(const char* vLocalToRetablish = nullptr) const {
         if (inputtype == "string") {
             std::setlocale(LC_NUMERIC, "C");
             auto res = (float)std::atof(string_value.c_str());
-            if (vLocalToRetablish)
+            if (vLocalToRetablish) {
                 std::setlocale(LC_NUMERIC, vLocalToRetablish);
+            }
             return res;
         }
         return float_value;
@@ -343,8 +363,9 @@ public:
         if (inputtype == "string") {
             std::setlocale(LC_NUMERIC, "C");
             auto res = (double)std::atof(string_value.c_str());
-            if (vLocalToRetablish)
+            if (vLocalToRetablish) {
                 std::setlocale(LC_NUMERIC, vLocalToRetablish);
+            }
             return res;
         }
         return double_value;
@@ -353,8 +374,9 @@ public:
         if (inputtype == "string") {
             std::setlocale(LC_NUMERIC, "C");
             auto res = std::atoi(string_value.c_str());
-            if (vLocalToRetablish)
+            if (vLocalToRetablish) {
                 std::setlocale(LC_NUMERIC, vLocalToRetablish);
+            }
             return res;
         }
         return int_value;
@@ -363,20 +385,23 @@ public:
         if (inputtype == "string") {
             std::setlocale(LC_NUMERIC, "C");
             auto res = std::atol(string_value.c_str());
-            if (vLocalToRetablish)
+            if (vLocalToRetablish) {
                 std::setlocale(LC_NUMERIC, vLocalToRetablish);
+            }
             return res;
         }
         return long_value;
     }
     bool GetB() const {
         if (inputtype == "string") {
-            if (string_value == "true" || string_value == "1")
+            if (string_value == "true" || string_value == "1") {
                 return true;
-            else
+            } else {
                 return false;
-        } else
+            }
+        } else {
             return bool_value;
+        }
     }
 };
 
