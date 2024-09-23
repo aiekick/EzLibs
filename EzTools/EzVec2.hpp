@@ -67,7 +67,7 @@ struct vec2 {
             x = def->x;
             y = def->y;
         }
-        std::vector<T> result = StringToNumberVector<T>(vec, c);
+        std::vector<T> result = str::StringToNumberVector<T>(vec, c);
         const size_t s = result.size();
         if (s > 0)
             x = result[0];
