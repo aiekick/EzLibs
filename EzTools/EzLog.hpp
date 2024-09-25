@@ -34,6 +34,7 @@ or
 #pragma warning(disable : 4251)
 
 #include "EzStr.hpp"
+#include "EzTime.hpp"
 
 #ifdef USE_GLFW3
 #include <GLFW/glfw3.h>

@@ -434,6 +434,9 @@ public:
         }
         return false;
     }
+    void play(bool vFlag) {
+        m_play = vFlag;
+    }
     const char* get_help() override {
         return u8R"(
 buffer uniform syantax :(default is optional)

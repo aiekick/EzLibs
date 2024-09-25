@@ -521,26 +521,29 @@ public:
     ~Checker() = default;
 
 public:
-    bool GetVersion(const std::string& vVersion, Version& vOutVersion) {
+    std::string getVersion() {
+        return m_Version;
+    }
+    bool getVersion(const std::string& vVersion, Version& vOutVersion) {
         if (m_VersionsMap.find(vVersion) != m_VersionsMap.end()) {
             vOutVersion = m_VersionsMap[vVersion];
             return true;
         }
         return false;
     }
-    const std::map<std::string, Version>& GetVersionMap() {
+    bool getVersion(Version& vOutVersion) {
+        return getVersion(getVersion(), vOutVersion);
+    }
+    const std::map<std::string, Version>& getVersionMap() {
         return m_VersionsMap;
     }
-    std::string GetVersion() {
-        return m_Version;
-    }
-    int GetGlslVersionInt() {
+    int getGlslVersionInt() {
         return m_DefaultGlslVersionInt;
     }
-    std::string GetGlslVersionHeader() {
+    std::string getGlslVersionHeader() {
         return m_DefaultGlslVersionHeader;
     }
-    bool CheckVersions() {
+    bool checkVersions() {
         if (!m_checkVersion(4, 5))
             if (!m_checkVersion(4, 4))
                 if (!m_checkVersion(4, 3))
@@ -557,9 +560,9 @@ public:
         m_Infos.fill();
         return true;
     }
-    void DisplaySupport() {
+    void printSupport() {
         Version version;
-        if (GetVersion(m_Version, version)) {
+        if (getVersion(m_Version, version)) {
             LogVarLightInfo("OpenGl version : %i.%i", version.major, version.minor);
             if (m_AttribLayoutSupportedCore)
                 LogVarLightInfo("%s", "- Attrib Location Available in Core");
@@ -638,7 +641,7 @@ private:
         Version version;
         bool is_supported_version = m_isGlSupported(vMajorGLVersion, MinorGLVersion);
         const auto& tmp_version = str::toStr(vMajorGLVersion) + "." + str::toStr(MinorGLVersion);
-        if (GetVersion(tmp_version, version)) {
+        if (getVersion(tmp_version, version)) {
             if (is_supported_version) {
                 m_Version = tmp_version;
             }

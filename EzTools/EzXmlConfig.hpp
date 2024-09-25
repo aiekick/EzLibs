@@ -32,12 +32,13 @@ SOFTWARE.
 #include "EzXml.hpp"
 
 namespace ez {
+namespace xml {
 
-class XmlConfig {
+class Config {
 public:
     virtual std::string getXml(const std::string& vOffset, const std::string& vUserDatas) = 0;
     // return true for continue xml parsing of childs in this node or false for interrupt the child exploration (if we want explore child ourselves)
-    virtual bool setFromXml(const XmlNode& vNode, const XmlNode& vParent, const std::string& vUserDatas) = 0;
+    virtual bool setFromXml(const Node& vNode, const Node& vParent, const std::string& vUserDatas) = 0;
 
 public:
     bool LoadConfigString(const std::string& vConfigString, const std::string& vUserDatas) {
@@ -75,23 +76,23 @@ public:
     bool parseConfigDatas(const std::string& vDatas, const std::string& vUserDatas) {
         bool res = false;
         std::string datas = vDatas;
-        ez::XmlNode::replaceAll(datas, "\r\n", "\n");
+        Node::replaceAll(datas, "\r\n", "\n");
         ez::Xml doc;
         res = doc.parse(datas);
         if (res) {
-            ez::XmlNode parent;
+            Node parent;
             RecursParsingConfig(doc.getRoot(), parent, vUserDatas);
         }
         return res;
     }
 
-    void RecursParsingConfig(const XmlNode& vNode, const XmlNode& vParent, const std::string& vUserDatas) {
+    void RecursParsingConfig(const Node& vNode, const Node& vParent, const std::string& vUserDatas) {
         if (setFromXml(vNode, vParent, vUserDatas)) {
             RecursParsingConfigChilds(vNode, vUserDatas);
         }
     }
 
-    void RecursParsingConfigChilds(const XmlNode& vNode, const std::string& vUserDatas) {
+    void RecursParsingConfigChilds(const Node& vNode, const std::string& vUserDatas) {
         // CHILDS
         // parse through all childs elements
         for (const auto& child : vNode.getChildren()) {
@@ -100,4 +101,5 @@ public:
     }
 };
 
+}  // namespace xml
 }  // namespace ez

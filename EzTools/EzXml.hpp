@@ -30,22 +30,24 @@ SOFTWARE.
 #include <sstream>
 
 namespace ez {
+namespace xml {
 
-class XmlNode {
+class Node {
 private:
     std::string m_Name;
     std::map<std::string, std::string> m_Attributes;
     std::string m_Content;
-    std::vector<XmlNode> m_Children;
+    std::vector<Node> m_Children;
 
 public:
-    XmlNode(const std::string& vName = "") : m_Name(vName) {}
+    Node(const std::string& vName = "") : m_Name(vName) {
+    }
 
-    void addChild(const XmlNode& vChild) {
+    void addChild(const Node& vChild) {
         m_Children.push_back(vChild);
     }
 
-    XmlNode& addChild(const std::string& vName) {
+    Node& addChild(const std::string& vName) {
         m_Children.emplace_back(vName);
         return m_Children.back();
     }
@@ -70,7 +72,7 @@ public:
         return m_Content;
     }
 
-    const std::vector<XmlNode>& getChildren() const {
+    const std::vector<Node>& getChildren() const {
         return m_Children;
     }
 
@@ -101,7 +103,8 @@ public:
     }
 
     static void replaceAll(std::string& vStr, const std::string& vFrom, const std::string& vTo) {
-        if (vFrom.empty()) return;
+        if (vFrom.empty())
+            return;
         size_t startPos = 0;
         while ((startPos = vStr.find(vFrom, startPos)) != std::string::npos) {
             vStr.replace(startPos, vFrom.length(), vTo);
@@ -110,14 +113,16 @@ public:
     }
 };
 
+}  // namespace xml
+
 class Xml {
 private:
-    XmlNode m_Root;
+    xml::Node m_Root;
 
 public:
     Xml(const std::string& vRootName = "root") : m_Root(vRootName) {}
 
-    XmlNode& getRoot() {
+    xml::Node& getRoot() {
         return m_Root;
     }
 
@@ -138,7 +143,7 @@ private:
         }
         if (trimmedLine[0] == '<' && trimmedLine[1] != '/') {
             std::string tagName = m_extractTagName(trimmedLine);
-            XmlNode newNode(tagName);
+            xml::Node newNode(tagName);
             auto attributes = m_extractAttributes(trimmedLine);
             for (const auto& [key, value] : attributes) {
                 newNode.setAttribute(key, value);
