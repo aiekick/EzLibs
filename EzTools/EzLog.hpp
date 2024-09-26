@@ -273,6 +273,7 @@ public:
         va_end(args);
         lck.unlock();
 #else
+        (void)vType;
         (void)vFunction;
         (void)vLine;
         (void)fmt;
