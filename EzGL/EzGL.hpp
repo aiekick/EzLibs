@@ -66,9 +66,9 @@ static inline void checkGLErrors(const char* vFile, const char* vFunc, const int
         printf("[%s][%s][%i] GL Errors : %s\n", vFile, vFunc, vLine, error.c_str());
     }
 #else
-    UNUSED(vFile);
-    UNUSED(vFunc);
-    UNUSED(vLine);
+    (void)vFile;
+    (void)vFunc;
+    (void)vLine;
 #endif
 }
 
