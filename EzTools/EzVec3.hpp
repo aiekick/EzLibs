@@ -482,6 +482,8 @@ inline vec3<T> cReflect(const vec3<T>& I, const vec3<T>& N) {
 // Type aliases for common vector types
 using dvec3 = vec3<double>;
 using fvec3 = vec3<float>;
+using f32vec3 = vec3<float>;
+using f64vec3 = vec3<double>;
 using ivec3 = vec3<int>;
 using i8vec3 = vec3<int8_t>;
 using i16vec3 = vec3<int16_t>;
@@ -489,6 +491,7 @@ using i32vec3 = vec3<int32_t>;
 using i64vec3 = vec3<int64_t>;
 using u8vec3 = vec3<uint8_t>;
 using u16vec3 = vec3<uint16_t>;
+using uvec3 = vec3<uint32_t>;
 using u32vec3 = vec3<uint32_t>;
 using u64vec3 = vec3<uint64_t>;
 

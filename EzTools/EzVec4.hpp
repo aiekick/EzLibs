@@ -531,6 +531,8 @@ inline vec4<T> tan(vec4<T> a) {
 // Type aliases for common vector types
 using dvec4 = vec4<double>;
 using fvec4 = vec4<float>;
+using f32vec4 = vec4<float>;
+using f64vec4 = vec4<double>;
 using bvec4 = vec4<bool>;
 using ivec4 = vec4<int>;
 using i8vec4 = vec4<int8_t>;

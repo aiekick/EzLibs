@@ -448,6 +448,8 @@ inline vec2<T> atan(const vec2<T>& a) {
 // Using statements for different types of vec2
 using dvec2 = vec2<double>;
 using fvec2 = vec2<float>;
+using f32vec2 = vec2<float>;
+using f64vec2 = vec2<double>;
 using i8vec2 = vec2<int8_t>;
 using i16vec2 = vec2<int16_t>;
 using ivec2 = vec2<int32_t>;

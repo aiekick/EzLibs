@@ -30,6 +30,7 @@ SOFTWARE.
 
 
 #include "EzXml.hpp"
+#include "EzLog.hpp"
 
 namespace ez {
 namespace xml {
@@ -50,12 +51,15 @@ public:
     }
 
     bool LoadConfigFile(const std::string& vFilePathName, const std::string& vUserDatas) {
-        bool res = false;
+        bool res = true; // if not file found its ok
         std::ifstream docFile(vFilePathName, std::ios::in);
         if (docFile.is_open()) {
             std::stringstream strStream;
             strStream << docFile.rdbuf();
             res = LoadConfigString(strStream.str(), vUserDatas);
+            if (!res) {
+                LogVarError("Config.xml file parsing failed");
+            }
             docFile.close();
         }
         return res;
