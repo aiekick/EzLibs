@@ -106,7 +106,30 @@ typedef std::shared_ptr<Node> NodePtr;
 typedef std::weak_ptr<Node> NodeWeak;
 typedef std::function<RetCodes(const size_t, const std::vector<SlotPtr>&, const SlotWeak&)> NodeFunctor;
 
+typedef uintptr_t Uuid;
+
 typedef void* UserDatas;
+
+/////////////////////////////////////
+///// UUID //////////////////////////
+/////////////////////////////////////
+
+class UUID {
+private:
+    Uuid m_Uuid = 0U;
+
+public:
+    UUID(void* vPtr) {
+        m_Uuid = (Uuid)vPtr;
+    }
+    Uuid getUUID()const {
+        return m_Uuid;
+    }
+
+    void setUUID(Uuid vUUID) {
+        m_Uuid = vUUID;
+    }
+};
 
 /////////////////////////////////////
 ///// SLOT //////////////////////////
@@ -123,7 +146,7 @@ struct EvalDatas {
     size_t frame = 0U;
 };
 
-class Slot {
+class Slot : public UUID {
     friend class Node;
 
 protected:
@@ -134,6 +157,9 @@ protected:
     EvalDatas m_LastEvaluatedDatas;
 
 public:
+    Slot() : UUID(this) {
+    }
+
     virtual bool initSlot(const SlotDatas& vDatas, const SlotWeak& vThis) {
         m_SlotDatas = vDatas;
         m_This = vThis;
@@ -200,7 +226,7 @@ struct NodeDatas {
     NodeFunctor functor = nullptr;
 };
 
-class Node {
+class Node : public UUID {
 private:
     NodeWeak m_This;
     NodeWeak m_ParentNode;
@@ -209,7 +235,11 @@ private:
     std::vector<SlotPtr> m_Inputs;
     std::vector<SlotPtr> m_Outputs;
 
-public:  // CTor / DTor
+public:
+    Node() : UUID(this) {
+    }
+
+    // CTor / DTor
     virtual bool initNode(const NodeDatas& vNodeDatas, const NodeWeak& vThis) {
         m_NodeDatas = vNodeDatas;
         m_This = vThis;
