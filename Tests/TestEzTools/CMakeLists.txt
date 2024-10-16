@@ -581,3 +581,10 @@ AddTest("TestEzVec4Division<int32_t>")
 AddTest("TestEzVec4Division<uint32_t>")
 AddTest("TestEzVec4Division<int64_t>")
 AddTest("TestEzVec4Division<uint64_t>")
+
+##########################################################
+##### EzStr ##############################################
+##########################################################
+
+AddTest("TestEzStrGetDigitsCountOfAIntegralNumber")
+AddTest("TestEzStrSearchForPatternWithWildcards")

@@ -3,6 +3,7 @@
 #include <TestEzVec2.h>
 #include <TestEzVec3.h>
 #include <TestEzVec4.h>
+#include <TestEzStr.h>
 #include <cmath>
 #include <limits>
 
@@ -29,15 +30,16 @@
     if (vTest == std::string(#v)) \
     return v()
 
-#define IfTestCollectionExist(v, str)        \
+#define IfTestCollectionExist(v)        \
     if (vTest.find(#v) != std::string::npos) \
-    return v(str)
+    return v(vTest)
 
 bool TestEzTools(const std::string& vTest) {
-    IfTestCollectionExist(TestEzMath, vTest);
-    else IfTestCollectionExist(TestEzVec2, vTest);
-    else IfTestCollectionExist(TestEzVec3, vTest);
-    else IfTestCollectionExist(TestEzVec4, vTest);
+    IfTestCollectionExist(TestEzMath);
+    else IfTestCollectionExist(TestEzVec2);
+    else IfTestCollectionExist(TestEzVec3);
+    else IfTestCollectionExist(TestEzVec4);
+    else IfTestCollectionExist(TestEzStr);
     return false;
 }
 

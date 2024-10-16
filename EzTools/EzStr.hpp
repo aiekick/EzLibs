@@ -219,7 +219,7 @@ inline std::vector<T> stringToNumberVector(const std::string& text, char delimit
         end = text.find(delimiter, start);
     }
     if (stringToNumber<T>(text.substr(start).c_str(), value)) {
-        arr.emplace_back(value);    
+        arr.emplace_back(value);
     }
     return arr;
 }
@@ -397,6 +397,39 @@ inline std::wstring stringToWstring(const std::string& mbstr) {
     std::mbsrtowcs(&wstr[0], &ptr, wstr.size(), &state);
 #endif
     return std::wstring(wstr.data(), wstr.size());
+}
+
+inline size_t getDigitsCountOfAIntegralNumber(const int64_t vNum) {
+     return (vNum == 0) ? 1 : static_cast<int>(log10(vNum)) + 1;
+}
+
+inline std::string searchForPatternWithWildcards(const std::string& vBuffer, const std::string& vWildcardedPattern, std::pair<size_t, size_t>& vOutPosRange) {
+    std::string res;
+    auto patterns = splitStringToVector(vWildcardedPattern, '*', false);
+    vOutPosRange.first = std::string::npos;
+    vOutPosRange.second = 0U;
+    for (const std::string &pattern: patterns) {
+        auto start = vBuffer.find(pattern, vOutPosRange.second);
+        if (start != std::string::npos) {
+            if (vOutPosRange.first == std::string::npos) {
+                vOutPosRange.first = start;
+            }
+            vOutPosRange.second = start + pattern.size();
+        } else {
+            vOutPosRange.first = std::string::npos;
+            vOutPosRange.second = std::string::npos;
+            break;
+        }
+    }
+    if (vOutPosRange.first != std::string::npos && vOutPosRange.second != std::string::npos) {
+        res = vBuffer.substr(vOutPosRange.first, vOutPosRange.second - vOutPosRange.first);
+    }
+    return res;
+}
+
+inline std::string searchForPatternWithWildcards(const std::string& vBuffer, const std::string& vWildcardedPattern) {
+    std::pair<size_t, size_t> posRange;
+    return searchForPatternWithWildcards(vBuffer, vWildcardedPattern, posRange);
 }
 
 }  // namespace ez
