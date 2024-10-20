@@ -38,7 +38,7 @@ SOFTWARE.
 #include <clocale>  // std::setlocale
 #include <locale>   // toupper, tolower (with locale)
 
-#ifdef MSVC
+#ifdef _MSC_VER
 #include <cwchar>
 #endif
 
@@ -374,7 +374,7 @@ inline std::string wstringToString(const std::wstring& wstr) {
     const std::size_t len = wstr.size();
     std::vector<char> mbstr(len);
     const wchar_t* wptr = wstr.c_str();
-#ifdef MSVC
+#ifdef _MSC_VER
     size_t res = 0;
     /*errno_t err = */ wcsrtombs_s(&res, &mbstr[0], len, &wptr, mbstr.size(), &state);
 #else
@@ -390,7 +390,7 @@ inline std::wstring stringToWstring(const std::string& mbstr) {
     const std::size_t len = mbstr.size();
     std::vector<wchar_t> wstr(len);
     const char* ptr = mbstr.c_str();
-#ifdef MSVC
+#ifdef _MSC_VER
     size_t res = 0;
     /*errno_t err = */ mbsrtowcs_s(&res, &wstr[0], len, &ptr, wstr.size(), &state);
 #else
