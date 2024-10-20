@@ -1,1 +1,1 @@
-# EzMath
+# EzTools
