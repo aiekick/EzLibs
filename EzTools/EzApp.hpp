@@ -24,23 +24,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#if defined(__WIN32__) || \
-	defined(WIN32) || \
-	defined(_WIN32) || \
-	defined(__WIN64__) || \
-	defined(WIN64) || \
-	defined(_WIN64) || \
-	defined(_MSC_VER)
+#if defined(__WIN32__) || defined(WIN32) || defined(_WIN32) || defined(__WIN64__) || defined(WIN64) || defined(_WIN64) || defined(_MSC_VER)
 #define WINDOWS_OS
-#elif defined(__linux__) || \
-	  defined(__FreeBSD__) || \
-	  defined(__DragonFly__) || \
-	  defined(__NetBSD__) || \
-	  defined(__OpenBSD__) || \
-	  defined(__APPLE__) || \
-	  defined(__EMSCRIPTEN__)
+#elif defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__APPLE__) || defined(__EMSCRIPTEN__)
 #define LINUX_OS
-#else 
+#else
 #define MAC_OS
 #endif
 
@@ -74,15 +62,15 @@ SOFTWARE.
 #ifdef MAC_OS
 #include <dlfcn.h>
 #include <sys/syslimits.h>  // PATH_MAX
-#endif // MAC_OS
+#endif                      // MAC_OS
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #include <stddef.h>
-#else // STDC_HEADERS
+#else  // STDC_HEADERS
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif // HAVE_STDLIB_H
-#endif /* STDC_HEADERS */
+#endif  // HAVE_STDLIB_H
+#endif  /* STDC_HEADERS */
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif /* HAVE_STRING_H */
@@ -91,80 +79,147 @@ SOFTWARE.
 #define SetCurrentDir chdir
 #ifndef S_IFDIR
 #define S_IFDIR __S_IFDIR
-#endif // S_IFDIR
+#endif  // S_IFDIR
 #ifndef MAX_PATH
 #define MAX_PATH PATH_MAX
-#endif // MAX_PATH
+#endif  // MAX_PATH
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
-#endif // PATH_MAX
+#endif  // PATH_MAX
 #define SLASH_CHAR "/"
 #endif
 
+#include <map>
 #include <string>
-#include <cstdio> // FILENAME_MAX
-#include <cstdint> // int32_t
+#include <cstdio>   // FILENAME_MAX
+#include <cstdint>  // int32_t
+#include <iostream>
 
 namespace ez {
 
 class App {
 private:
     std::string m_AppPath;
-	
+
+    struct Option {
+        std::string shortOpt;
+        std::string longOpt;
+        bool required = true;
+        std::string helpText;
+        std::string value;
+    };
+    std::vector<std::string> m_Args;
+    Option m_HelpOption;
+    std::map<std::string, Option> m_Options;
+
 public:
-    App(int32_t, char** vArgv) {
+    App(int32_t vArgc, char** vArgv) {
         setAppPath(vArgv[0]);
         setCurDirectory(getAppPath());
-		// parse options
-	}
+        for (size_t idx = 1U; idx < vArgc; ++idx) {
+            m_Args.push_back(vArgv[idx]);
+        }
+    }
 
-    void setAppPath(const std::string& vPath){
-		if (!vPath.empty()) {
-			auto pos = vPath.find_last_of("\\/");
-			if (pos != std::string::npos) {
+    void setAppPath(const std::string& vPath) {
+        if (!vPath.empty()) {
+            auto pos = vPath.find_last_of("\\/");
+            if (pos != std::string::npos) {
                 m_AppPath = vPath.substr(0, pos);
-			}
-		}
-	}
+            }
+        }
+    }
 
-	std::string getAppPath() {
+    std::string getAppPath() {
         if (m_AppPath.empty()) {
-			char buffer[MAX_PATH] = {};
-	#ifdef WINDOWS_OS
-			GetModuleFileName(nullptr, buffer, MAX_PATH);
-	#elif defined(LINUX_OS)
-			char szTmp[32];
-			sprintf(szTmp, "/proc/%d/exe", getpid());
-			auto bytes = ez::mini<int>(readlink(szTmp, buffer, MAX_PATH), MAX_PATH - 1);
-			if (bytes >= 0) {
-				buffer[bytes] = '\0';
-			}
-	#elif defined(MAC_OS)
-			auto path = m_getMacOsAppPath();
-			auto pos = path.find_last_of("\\/");
+            char buffer[MAX_PATH] = {};
+#ifdef WINDOWS_OS
+            GetModuleFileName(nullptr, buffer, MAX_PATH);
+#elif defined(LINUX_OS)
+            char szTmp[32];
+            sprintf(szTmp, "/proc/%d/exe", getpid());
+            auto bytes = ez::mini<int>(readlink(szTmp, buffer, MAX_PATH), MAX_PATH - 1);
+            if (bytes >= 0) {
+                buffer[bytes] = '\0';
+            }
+#elif defined(MAC_OS)
+            auto path = m_getMacOsAppPath();
+            auto pos = path.find_last_of("\\/");
             m_AppPath = path.substr(0, pos);
-	#endif
-	#if defined(WINDOWS_OS) || defined(LINUX_OS)
-			auto pos = std::string(buffer).find_last_of("\\/");
+#endif
+#if defined(WINDOWS_OS) || defined(LINUX_OS)
+            auto pos = std::string(buffer).find_last_of("\\/");
             m_AppPath = std::string(buffer).substr(0, pos);
-	#endif
-		}
+#endif
+        }
         return m_AppPath;
-	}
+    }
 
-	std::string getCurDirectory() const {
-		char cCurrentPath[FILENAME_MAX];
-		if (GetCurrentDir(cCurrentPath, FILENAME_MAX)) {
+    std::string getCurDirectory() const {
+        char cCurrentPath[FILENAME_MAX];
+        if (GetCurrentDir(cCurrentPath, FILENAME_MAX)) {
             return std::string(cCurrentPath) + SLASH_CHAR;
-		}
-		return "";
-	}
+        }
+        return "";
+    }
 
-	bool setCurDirectory(const std::string& vPath) const {
+    bool setCurDirectory(const std::string& vPath) const {
         auto path = vPath;
         m_correctSlashForPath(path);
-		return (SetCurrentDir(path.c_str()) == 0);
-	}
+        return (SetCurrentDir(path.c_str()) == 0);
+    }
+
+protected:
+    void m_addOption(const std::string& vShortOpt, const std::string& vLongOpt, bool vRequired, const std::string& vHelpText) {
+        m_Options[vShortOpt] = m_Options[vLongOpt] = Option{vShortOpt, vLongOpt, vRequired, vHelpText, ""};
+    }
+
+    void m_addHelpOption(const std::string& vHelpText) {
+        m_HelpOption = Option{"-h", "--help", false, vHelpText, ""};
+    }
+
+    void m_parseOptions() {
+        for (auto it = m_Args.begin(); it != m_Args.end(); ++it) {
+            auto arg = *it;
+
+            // print help
+            if (arg == m_HelpOption.shortOpt ||  //
+                arg == m_HelpOption.longOpt) {
+                m_printHelp();
+                return;
+            }
+
+            // option value
+            if (m_Options.find(arg) != m_Options.end()) {
+                if (it != --m_Args.end()) {
+                    ++it;
+                    arg = *it;
+                    if (arg[0] != '-') {
+                        m_Options[arg].value = *it;
+                    } else {
+                        --it;
+                    }
+                }
+            } else if (m_Options[arg].required) {
+                std::cout << "Option " << arg << " requires a value." << std::endl;
+            }
+        }
+
+        // Ensure all needed option are available
+        for (const auto& opt : m_Options) {
+            if (opt.second.required && opt.second.value.empty()) {
+                std::cout << "Missing required option: " << opt.first << std::endl;
+            }
+        }
+    }
+
+    std::string m_getOptionValue(const std::string& opt) const {
+        const auto& it = m_Options.find(opt);
+        if (it != m_Options.end()) {
+            return it->second.value;
+        }
+        return "";
+    }
 
 private:
     /* correct file path between os and different slash type between window and unix */
@@ -174,14 +229,22 @@ private:
     }
 
 #if defined(MAC_OS)
-static std::string m_getMacOsAppPath() {
-    Dl_info module_info;
-    if (dladdr((void*)GetMacOsAppPath, &module_info)) {
-        return std::string(module_info.dli_fname);
+    static std::string m_getMacOsAppPath() {
+        Dl_info module_info;
+        if (dladdr((void*)GetMacOsAppPath, &module_info)) {
+            return std::string(module_info.dli_fname);
+        }
+        return "";
     }
-    return "";
-}
 #endif
+
+    void m_printHelp() const {
+        std::cout << m_HelpOption.helpText << std::endl;
+        std::cout << "Usage: \n";
+        for (const auto& opt : m_Options) {
+            std::cout << "  " << opt.first << " (" << opt.second.longOpt << "): " << opt.second.helpText << "\n";
+        }
+    }
 };
 
 }  // namespace ez
