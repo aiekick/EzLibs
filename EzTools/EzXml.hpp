@@ -25,6 +25,7 @@ SOFTWARE.
 */
 
 #include <map>
+#include <stack>
 #include <string>
 #include <vector>
 #include <sstream>
@@ -80,6 +81,43 @@ public:
         return m_Name;
     }
 
+    std::string dump(const xml::Node& node, const uint32_t level = 0) const {
+        std::string indent(level * 2, ' ');  // Indentation based on the depth level
+        std::ostringstream oss;
+
+        oss << indent << "<" << node.getName();
+
+        for (const auto& attr : node.m_Attributes) {
+            oss << " " << attr.first << "=\"" << xml::Node::escapeXml(attr.second) << "\"";
+        }
+
+        const auto& content = node.getContent();
+        const auto& children = node.getChildren();
+
+        if (content.empty() && children.empty()) {
+            oss << "/>\n";
+        } else {
+            oss << ">";
+            if (!content.empty()) {
+                oss << xml::Node::escapeXml(content);
+            }
+            if (!children.empty()) {
+                oss << "\n";
+                for (const auto& child : children) {
+                    oss << dump(child, level + 1);
+                }
+                oss << indent;
+            }
+            oss << "</" << node.getName() << ">\n";
+        }
+
+        return oss.str();
+    }
+
+    std::string dump() const {
+        return dump(*this);
+    }
+
 public:
     static std::string escapeXml(const std::string& vDatas) {
         std::string escaped = vDatas;
@@ -118,9 +156,14 @@ public:
 class Xml {
 private:
     xml::Node m_Root;
+    // just during parsing,
+    // for know what is the current node
+    std::stack<xml::Node*> m_NodeStack;
 
 public:
-    Xml(const std::string& vRootName = "root") : m_Root(vRootName) {}
+    Xml(const std::string& vRootName = "root") : m_Root(vRootName) {
+        m_NodeStack.push(&m_Root);
+    }
 
     xml::Node& getRoot() {
         return m_Root;
@@ -135,20 +178,54 @@ public:
         return true;
     }
 
+    std::string dump() const {
+        return m_Root.dump();
+    }
+
 private:
+    bool m_isOpeningTag(const std::string& vLine) {
+        // Vérifie si la ligne commence par '<' et n'est ni une balise fermante ni une auto-fermante
+        return vLine[0] == '<' && vLine[1] != '/' && vLine.back() != '/';
+    }
+    bool m_isClosingTag(const std::string& vLine) {
+        // Vérifie si la ligne commence par '</'
+        return vLine[0] == '<' && vLine[1] == '/';
+    }
+    bool m_isSelfClosingTag(const std::string& vLine) {
+        // Vérifie si la ligne commence par '<' et se termine par '/>'
+        return vLine[0] == '<' &&                         //
+            (vLine.find("</", 1) != std::string::npos ||  //
+             vLine.find("/>", 1) != std::string::npos);
+    }
+
     void m_parseLine(const std::string& vLine) {
-        std::string trimmedLine = m_trim(vLine);
-        if (trimmedLine.empty()) {
+        std::string line = m_trim(vLine);
+        if (line.empty()) {
             return;
         }
-        if (trimmedLine[0] == '<' && trimmedLine[1] != '/') {
-            std::string tagName = m_extractTagName(trimmedLine);
+        if (m_isClosingTag(line)) {
+            m_NodeStack.pop();
+        } else if (m_isSelfClosingTag(line)) {
+            std::string tagName = m_extractTagName(line);
             xml::Node newNode(tagName);
-            auto attributes = m_extractAttributes(trimmedLine);
+            auto attributes = m_extractAttributes(line);
             for (const auto& [key, value] : attributes) {
                 newNode.setAttribute(key, value);
             }
-            m_Root.addChild(newNode);
+            m_NodeStack.top()->addChild(newNode);
+        } else if (m_isOpeningTag(line)) {
+            std::string tagName = m_extractTagName(line);
+            xml::Node newNode(tagName);
+            auto attributes = m_extractAttributes(line);
+            for (const auto& [key, value] : attributes) {
+                newNode.setAttribute(key, value);
+            }
+            m_NodeStack.top()->addChild(newNode);
+            m_NodeStack.push(const_cast<xml::Node*>(&m_NodeStack.top()->getChildren().back()));
+        } else {
+            if (!m_NodeStack.empty()) {
+                m_NodeStack.top()->setContent(line);
+            }
         }
     }
 
@@ -188,4 +265,4 @@ private:
     }
 };
 
-} // namespace ez
+}  // namespace ez
