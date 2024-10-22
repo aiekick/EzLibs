@@ -30,18 +30,36 @@ SOFTWARE.
 #include <vector>
 #include <sstream>
 
+#include "EzStr.hpp"
+
 namespace ez {
 namespace xml {
 
 class Node {
+public:
+    enum class Type {
+        None = 0,
+        Token,
+        Comment
+    };
+
 private:
     std::string m_Name;
     std::map<std::string, std::string> m_Attributes;
     std::string m_Content;
     std::vector<Node> m_Children;
+    Type m_Type = Type::None;
 
 public:
     Node(const std::string& vName = "") : m_Name(vName) {
+    }
+
+    void setType(Type vType) {
+        m_Type = vType;
+    }
+
+    Type getType() const {
+        return m_Type;
     }
 
     void addChild(const Node& vChild) {
@@ -81,34 +99,43 @@ public:
         return m_Name;
     }
 
-    std::string dump(const xml::Node& node, const uint32_t level = 0) const {
-        std::string indent(level * 2, ' ');  // Indentation based on the depth level
+    std::string dump(const xml::Node& vNode, const uint32_t vLevel = 0) const {
+        std::string indent(vLevel * 2, ' ');  // Indentation based on the depth level
         std::ostringstream oss;
 
-        oss << indent << "<" << node.getName();
-
-        for (const auto& attr : node.m_Attributes) {
-            oss << " " << attr.first << "=\"" << xml::Node::escapeXml(attr.second) << "\"";
+        oss << indent;
+        if (vNode.getType() != xml::Node::Type::Comment) {
+            oss << "<" << vNode.getName();
+            for (const auto& attr : vNode.m_Attributes) {
+                oss << " " << attr.first << "=\"" << xml::Node::unEscapeXmlCode(attr.second) << "\"";
+            }
         }
 
-        const auto& content = node.getContent();
-        const auto& children = node.getChildren();
+        const auto& content = vNode.getContent();
+        const auto& children = vNode.getChildren();
 
         if (content.empty() && children.empty()) {
-            oss << "/>\n";
+            oss << "/>" << std::endl;
         } else {
-            oss << ">";
+            if (vNode.getType() != xml::Node::Type::Comment) {
+                oss << ">";
+            }
             if (!content.empty()) {
-                oss << xml::Node::escapeXml(content);
+                oss << xml::Node::unEscapeXmlCode(content);
+            }
+            if (vNode.getType() == xml::Node::Type::Comment) {
+                oss << std::endl;
             }
             if (!children.empty()) {
-                oss << "\n";
+                oss << std::endl;
                 for (const auto& child : children) {
-                    oss << dump(child, level + 1);
+                    oss << dump(child, vLevel + 1);
                 }
                 oss << indent;
             }
-            oss << "</" << node.getName() << ">\n";
+            if (vNode.getType() != xml::Node::Type::Comment) {
+                oss << "</" << vNode.getName() << ">" << std::endl;
+            }
         }
 
         return oss.str();
@@ -159,6 +186,14 @@ private:
     // just during parsing,
     // for know what is the current node
     std::stack<xml::Node*> m_NodeStack;
+    enum class TokenType {  //
+        OPENED = 0,
+        CLOSED,
+        OPENED_CLOSED,
+        COMMENT,
+        CONTENT,
+        Count
+    };
 
 public:
     Xml(const std::string& vRootName = "root") : m_Root(vRootName) {
@@ -170,10 +205,48 @@ public:
     }
 
     bool parse(const std::string& vDoc) {
-        std::istringstream doc(vDoc);
-        std::string line;
-        while (std::getline(doc, line)) {
-            m_parseLine(line);
+        auto tokens = m_tokenize(vDoc);
+        if (tokens.empty()) {
+            return false;
+        }
+        for (const auto& token : tokens) {
+            std::string tagName;
+            std::map<std::string, std::string> attributes;
+            if (token.first.empty()) {
+                continue;
+            }
+            if (token.second == TokenType::CLOSED) {
+                m_NodeStack.pop();
+            } else if (token.second == TokenType::OPENED ||         //
+                       token.second == TokenType::OPENED_CLOSED ||  //
+                       token.second == TokenType::COMMENT) {
+                if (token.second != TokenType::COMMENT) {
+                    tagName = m_extractTagName(token.first);
+                }
+                xml::Node newNode(tagName);
+                newNode.setType(xml::Node::Type::Token);
+                if (token.second == TokenType::COMMENT) {
+                    newNode.setType(xml::Node::Type::Comment);
+                    newNode.setContent(token.first);
+                } else {
+                    if (!m_extractAttributes(token.first, attributes)) {
+                        return false;
+                    }
+                    for (const auto& [key, value] : attributes) {
+                        newNode.setAttribute(key, value);
+                    }
+                }
+                m_NodeStack.top()->addChild(newNode);
+                if (token.second == TokenType::OPENED) {
+                    m_NodeStack.push(const_cast<xml::Node*>(&m_NodeStack.top()->getChildren().back()));
+                }
+            } else if (token.second == TokenType::CONTENT) {
+                if (!m_NodeStack.empty()) {
+                    if (token.first[0] != '\n') {
+                        m_NodeStack.top()->setContent(token.first);
+                    }
+                }
+            }
         }
         return true;
     }
@@ -183,50 +256,37 @@ public:
     }
 
 private:
-    bool m_isOpeningTag(const std::string& vLine) {
-        // Vérifie si la ligne commence par '<' et n'est ni une balise fermante ni une auto-fermante
-        return vLine[0] == '<' && vLine[1] != '/' && vLine.back() != '/';
-    }
-    bool m_isClosingTag(const std::string& vLine) {
-        // Vérifie si la ligne commence par '</'
-        return vLine[0] == '<' && vLine[1] == '/';
-    }
-    bool m_isSelfClosingTag(const std::string& vLine) {
-        // Vérifie si la ligne commence par '<' et se termine par '/>'
-        return vLine[0] == '<' &&                         //
-            (vLine.find("</", 1) != std::string::npos ||  //
-             vLine.find("/>", 1) != std::string::npos);
-    }
-
-    void m_parseLine(const std::string& vLine) {
-        std::string line = m_trim(vLine);
-        if (line.empty()) {
-            return;
-        }
-        if (m_isClosingTag(line)) {
-            m_NodeStack.pop();
-        } else if (m_isSelfClosingTag(line)) {
-            std::string tagName = m_extractTagName(line);
-            xml::Node newNode(tagName);
-            auto attributes = m_extractAttributes(line);
-            for (const auto& [key, value] : attributes) {
-                newNode.setAttribute(key, value);
-            }
-            m_NodeStack.top()->addChild(newNode);
-        } else if (m_isOpeningTag(line)) {
-            std::string tagName = m_extractTagName(line);
-            xml::Node newNode(tagName);
-            auto attributes = m_extractAttributes(line);
-            for (const auto& [key, value] : attributes) {
-                newNode.setAttribute(key, value);
-            }
-            m_NodeStack.top()->addChild(newNode);
-            m_NodeStack.push(const_cast<xml::Node*>(&m_NodeStack.top()->getChildren().back()));
-        } else {
-            if (!m_NodeStack.empty()) {
-                m_NodeStack.top()->setContent(line);
+    std::vector<std::pair<std::string, TokenType>> m_tokenize(const std::string& vDoc) {
+        std::vector<std::pair<std::string, TokenType>> tokens;
+        size_t pos = 0;
+        size_t length = vDoc.length();
+        TokenType type = TokenType::Count;
+        while (pos < length) {
+            if (vDoc[pos] == '<') {
+                type = TokenType::OPENED;
+                if (vDoc[pos + 1] == '/') {
+                    type = TokenType::CLOSED;
+                } else if (vDoc[pos + 1] == '!') {
+                    type = TokenType::COMMENT;
+                }
+                size_t end = vDoc.find(">", pos);
+                if (end == std::string::npos) {
+                    break;
+                }
+                if (vDoc[end - 1] == '/') {
+                    type = TokenType::OPENED_CLOSED;
+                }
+                const auto ss = vDoc.substr(pos, end + 1 - pos);
+                tokens.push_back(std::make_pair(ss, type));
+                pos = end + 1;
+            } else {
+                size_t end = vDoc.find('<', pos);
+                const auto ss = vDoc.substr(pos, end - pos);
+                tokens.push_back(std::make_pair(ss, TokenType::CONTENT));
+                pos = end;
             }
         }
+        return tokens;
     }
 
     std::string m_extractTagName(const std::string& vLine) {
@@ -235,33 +295,38 @@ private:
         return vLine.substr(startPos, endPos - startPos);
     }
 
-    std::map<std::string, std::string> m_extractAttributes(const std::string& vLine) {
-        std::map<std::string, std::string> attributes;
+    bool m_extractAttributes(const std::string& vLine, std::map<std::string, std::string>& attributes) {
         size_t startPos = vLine.find(' ');
         while (startPos != std::string::npos) {
             startPos = vLine.find_first_not_of(" \t", startPos);
             size_t equalsPos = vLine.find('=', startPos);
             if (equalsPos == std::string::npos) {
-                break;
+                return false; 
             }
             std::string key = vLine.substr(startPos, equalsPos - startPos);
-            startPos = vLine.find('"', equalsPos) + 1;
-            size_t endPos = vLine.find('"', startPos);
-            std::string value = vLine.substr(startPos, endPos - startPos);
-            attributes[key] = value;
-            startPos = vLine.find(' ', endPos);
+            startPos = equalsPos + 1;
+            char quoteChar = vLine[startPos];
+            if (quoteChar == '"' || quoteChar == '\'') {
+                startPos++;
+                size_t endPos = vLine.find(quoteChar, startPos);
+                if (endPos != std::string::npos) {
+                    std::string value = vLine.substr(startPos, endPos - startPos);
+                    attributes[key] = value;
+                    startPos = vLine.find(' ', endPos);  // Passer à l'attribut suivant
+                } else {
+#ifdef LogVarError
+                    LogVarError("The attribut '%s' have invalid value", key.c_str());
+#endif
+                    return false;  // Erreur : guillemets/apostrophes non fermés
+                }
+            } else {
+#ifdef LogVarError
+                LogVarError("The attribut '%s' have invalid value", key.c_str());
+#endif
+                return false;  // Erreur : attribut sans guillemets ou apostrophes
+            }
         }
-        return attributes;
-    }
-
-    std::string m_trim(const std::string& vStr) {
-        const std::string whitespace = " \t\n\r";
-        size_t start = vStr.find_first_not_of(whitespace);
-        size_t end = vStr.find_last_not_of(whitespace);
-        if (start == std::string::npos || end == std::string::npos) {
-            return "";
-        }
-        return vStr.substr(start, end - start + 1);
+        return true;  // Extraction réussie
     }
 };
 

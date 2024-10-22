@@ -1,11 +1,15 @@
 #include <TestEzTools.h>
+
 #include <TestEzMath.h>
 #include <TestEzVec2.h>
 #include <TestEzVec3.h>
 #include <TestEzVec4.h>
 #include <TestEzStr.h>
-#include <cmath>
+#include <TestEzXml.h>
+#include <TestEzCron.h>
+
 #include <limits>
+#include <cmath>
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -40,6 +44,8 @@ bool TestEzTools(const std::string& vTest) {
     else IfTestCollectionExist(TestEzVec3);
     else IfTestCollectionExist(TestEzVec4);
     else IfTestCollectionExist(TestEzStr);
+    else IfTestCollectionExist(TestEzXml);
+    else IfTestCollectionExist(TestEzCron);
     return false;
 }
 

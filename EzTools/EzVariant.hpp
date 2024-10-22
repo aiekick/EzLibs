@@ -46,11 +46,21 @@ private:
     long long_value = 0;
     uint32_t uint32_t_value = 0;
     uint64_t uint64_t_value = 0;
+#ifdef vec2
     vec2<T> point_value;
+#endif
+#ifdef vec3
     vec3<T> v3_value;
+#endif
+#ifdef vec4
     vec4<T> rect_value;
+#endif
+#ifdef AABB
     AABB<T> aabb_value;
+#endif
+#ifdef AABBCC
     AABBCC<T> aabbcc_value;
+#endif
     std::vector<float> vector_float_value;
     std::vector<double> vector_double_value;
     std::vector<std::string> vector_string_value;
@@ -110,31 +120,41 @@ public:
         inputtype = "bool";
         datatype = inputtype;
     }
+#ifdef vec2
     variant(const vec2<T>& c) {
         point_value = c;
         inputtype = "vec2";
         datatype = inputtype;
     }
+#endif
+#ifdef vec3
     variant(const vec3<T>& c) {
         v3_value = c;
         inputtype = "vec3";
         datatype = inputtype;
     }
+#endif
+#ifdef vec4
     variant(const vec4<T>& c) {
         rect_value = c;
         inputtype = "vec4";
         datatype = inputtype;
     }
+#endif
+#ifdef AABB
     variant(const AABB<T>& c) {
         aabb_value = c;
         inputtype = "AABB";
         datatype = inputtype;
     }
+#endif
+#ifdef AABBCC
     variant(const AABBCC<T>& c) {
         aabb_value = c;
         inputtype = "AABBCC";
         datatype = inputtype;
     }
+#endif
     variant(const std::vector<double>& c) {
         vector_double_value = c;
         inputtype = "vectorDouble";
@@ -166,16 +186,26 @@ public:
     }
     bool operator==(variant<T> v) {
         if (inputtype == v.inputtype) {
+#ifdef vec4
             if (inputtype == "vec4")
                 return rect_value == v.rect_value;
+#endif
+#ifdef vec3
             if (inputtype == "vec3")
                 return v3_value == v.v3_value;
+#endif
+#ifdef vec2
             if (inputtype == "vec2")
                 return point_value == v.point_value;
+#endif
+#ifdef AABB
             if (inputtype == "AABB")
                 return aabb_value == v.aabb_value;
+#endif
+#ifdef AABBCC
             if (inputtype == "AABBCC")
                 return aabbcc_value == v.aabbcc_value;
+#endif
             if (inputtype == "bool")
                 return bool_value == v.bool_value;
             if (inputtype == "float")
@@ -291,6 +321,7 @@ public:
         }
         return string_value;
     }
+#ifdef vec2
     vec2<T> GetV2(char c = ';') {
         if (inputtype == "string") {
             return vec2<T>(string_value, c);
@@ -298,6 +329,8 @@ public:
         }
         return point_value;
     }
+#endif
+#ifdef vec3
     vec3<T> GetV3(char c = ';') {
         if (inputtype == "string") {
             return vec3<T>(string_value, c);
@@ -305,6 +338,8 @@ public:
         }
         return v3_value;
     }
+#endif
+#ifdef vec4
     vec4<T> GetV4(char c = ';') {
         if (inputtype == "string") {
             return vec4<T>(string_value, c, 4, 0);  //-V112
@@ -312,12 +347,15 @@ public:
         }
         return rect_value;
     }
+#endif
+#ifdef AABB
     AABB<T> GetAABB(char c = ';') {
         if (inputtype == "string") {
             return AABB<T>(string_value, c);
         }
         return aabb_value;
     }
+#endif
     std::vector<float> GetVectorFloat(char c = ';') const {
         if (inputtype == "string") {
             return str::stringToNumberVector<float>(string_value, c);

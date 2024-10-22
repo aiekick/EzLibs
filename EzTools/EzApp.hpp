@@ -98,6 +98,13 @@ SOFTWARE.
 namespace ez {
 
 class App {
+public:
+    enum class ValueType {
+        None=0,
+        Boolean, // option is present ? value = true : value = false
+        String // option=value
+    };
+
 private:
     std::string m_AppPath;
 
@@ -107,9 +114,10 @@ private:
         bool required = true;
         std::string helpText;
         std::string value;
+        ValueType type = ValueType::None;
     };
-    std::vector<std::string> m_Args;
     Option m_HelpOption;
+    std::vector<std::string> m_Args;
     std::map<std::string, Option> m_Options;
 
 public:
@@ -170,12 +178,12 @@ public:
     }
 
 protected:
-    void m_addOption(const std::string& vShortOpt, const std::string& vLongOpt, bool vRequired, const std::string& vHelpText) {
-        m_Options[vShortOpt] = m_Options[vLongOpt] = Option{vShortOpt, vLongOpt, vRequired, vHelpText, ""};
+    void m_addOption(const std::string& vShortOpt, const std::string& vLongOpt, bool vRequired, const std::string& vHelpText, const ValueType vValueType) {
+        m_Options[vShortOpt] = m_Options[vLongOpt] = Option{vShortOpt, vLongOpt, vRequired, vHelpText, "", vValueType};
     }
 
     void m_addHelpOption(const std::string& vHelpText) {
-        m_HelpOption = Option{"-h", "--help", false, vHelpText, ""};
+        m_HelpOption = Option{"-h", "--help", false, vHelpText, "", ValueType::None};
     }
 
     void m_parseOptions() {

@@ -588,3 +588,18 @@ AddTest("TestEzVec4Division<uint64_t>")
 
 AddTest("TestEzStrGetDigitsCountOfAIntegralNumber")
 AddTest("TestEzStrSearchForPatternWithWildcards")
+
+##########################################################
+##### EzXml ##############################################
+##########################################################
+
+AddTest("TestEzXmlParsingOK")
+AddTest("TestEzXmlParsingNOK_0")
+AddTest("TestEzXmlParsingNOK_1")
+
+##########################################################
+##### EzCron #############################################
+##########################################################
+
+AddTest("TestEzCron_0")
+AddTest("TestEzCron_1")
