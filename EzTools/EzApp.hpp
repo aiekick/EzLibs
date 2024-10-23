@@ -32,6 +32,8 @@ SOFTWARE.
 #define MAC_OS
 #endif
 
+#include "EzMath.hpp"
+
 #ifdef WINDOWS_OS
 // includes
 #include <Windows.h>
