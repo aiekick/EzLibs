@@ -71,7 +71,13 @@ public:
         return isTimeToAct(std::time(nullptr));
     }
     bool isTimeToAct(time_t vEpochTime) const {
+#ifdef _MSC_VER
+        struct tm _tm;
+        localtime_s(&_tm, &vEpochTime);
+        auto* time_info = &_tm;
+#else
         struct tm* time_info = std::localtime(&vEpochTime);
+#endif
         bool minute_match = m_matchField(m_Field[0], time_info->tm_min, 0, 59);
         bool hour_match = m_matchField(m_Field[1], time_info->tm_hour, 0, 23);
         bool day_match = m_matchField(m_Field[2], time_info->tm_mday, 1, 31);
@@ -93,7 +99,7 @@ private:
     }
 
     // Fonction qui vérifie si un champ (min, heure, jour, mois, jour de la semaine) correspond au moment actuel
-    bool m_matchField(const std::string& field, int current_value, int min_value, int max_value) const {
+    bool m_matchField(const std::string& field, int current_value, int /*min_value*/, int /*max_value*/) const {
         if (field == "*") {
             return true;
         }

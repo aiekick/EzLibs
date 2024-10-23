@@ -103,7 +103,7 @@ private:
     std::string m_AppPath;
 
 public:
-    App(int32_t vArgc, char** vArgv) {
+    App(int32_t /*vArgc*/, char** vArgv) {
         setAppPath(vArgv[0]);
         setCurDirectory(getAppPath());
     }

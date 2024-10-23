@@ -231,7 +231,7 @@ public:
         {
             uint64_t tmp = 0;
 
-#ifdef MSVC
+#ifdef _MSC_VER
             int res = sscanf_s(string_value.c_str(), "%lu64", &tmp);
 #else
             int res = sscanf(string_value.c_str(), "%lu64", &tmp);
@@ -252,7 +252,7 @@ public:
         if (inputtype == "string") {
             uint32_t tmp = 0;
 
-#ifdef MSVC
+#ifdef _MSC_VER
             const int res = sscanf_s(string_value.c_str(), "%u", &tmp);
 #else
             int res = sscanf(string_value.c_str(), "%u", &tmp);

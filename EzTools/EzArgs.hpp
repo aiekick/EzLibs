@@ -149,7 +149,7 @@ public:
         return {};
     }
 
-    const std::string& getStringValue(const std::string& vKey) {
+    std::string getStringValue(const std::string& vKey) {
         auto* p_opt = m_getOptionPtr(vKey);
         if (p_opt != nullptr) {
             if (p_opt->type == ValueType::String) {
