@@ -90,6 +90,7 @@ SOFTWARE.
 #endif
 
 #include <map>
+#include <vector>
 #include <string>
 #include <cstdio>   // FILENAME_MAX
 #include <cstdint>  // int32_t
@@ -98,35 +99,13 @@ SOFTWARE.
 namespace ez {
 
 class App {
-public:
-    enum class ValueType {
-        None=0,
-        Boolean, // option is present ? value = true : value = false
-        String // option=value
-    };
-
 private:
     std::string m_AppPath;
-
-    struct Option {
-        std::string shortOpt;
-        std::string longOpt;
-        bool required = true;
-        std::string helpText;
-        std::string value;
-        ValueType type = ValueType::None;
-    };
-    Option m_HelpOption;
-    std::vector<std::string> m_Args;
-    std::map<std::string, Option> m_Options;
 
 public:
     App(int32_t vArgc, char** vArgv) {
         setAppPath(vArgv[0]);
         setCurDirectory(getAppPath());
-        for (size_t idx = 1U; idx < vArgc; ++idx) {
-            m_Args.push_back(vArgv[idx]);
-        }
     }
 
     void setAppPath(const std::string& vPath) {
@@ -177,58 +156,6 @@ public:
         return (SetCurrentDir(path.c_str()) == 0);
     }
 
-protected:
-    void m_addOption(const std::string& vShortOpt, const std::string& vLongOpt, bool vRequired, const std::string& vHelpText, const ValueType vValueType) {
-        m_Options[vShortOpt] = m_Options[vLongOpt] = Option{vShortOpt, vLongOpt, vRequired, vHelpText, "", vValueType};
-    }
-
-    void m_addHelpOption(const std::string& vHelpText) {
-        m_HelpOption = Option{"-h", "--help", false, vHelpText, "", ValueType::None};
-    }
-
-    void m_parseOptions() {
-        for (auto it = m_Args.begin(); it != m_Args.end(); ++it) {
-            auto arg = *it;
-
-            // print help
-            if (arg == m_HelpOption.shortOpt ||  //
-                arg == m_HelpOption.longOpt) {
-                m_printHelp();
-                return;
-            }
-
-            // option value
-            if (m_Options.find(arg) != m_Options.end()) {
-                if (it != --m_Args.end()) {
-                    ++it;
-                    arg = *it;
-                    if (arg[0] != '-') {
-                        m_Options[arg].value = *it;
-                    } else {
-                        --it;
-                    }
-                }
-            } else if (m_Options[arg].required) {
-                std::cout << "Option " << arg << " requires a value." << std::endl;
-            }
-        }
-
-        // Ensure all needed option are available
-        for (const auto& opt : m_Options) {
-            if (opt.second.required && opt.second.value.empty()) {
-                std::cout << "Missing required option: " << opt.first << std::endl;
-            }
-        }
-    }
-
-    std::string m_getOptionValue(const std::string& opt) const {
-        const auto& it = m_Options.find(opt);
-        if (it != m_Options.end()) {
-            return it->second.value;
-        }
-        return "";
-    }
-
 private:
     /* correct file path between os and different slash type between window and unix */
     static void m_correctSlashForPath(std::string& vPath) {
@@ -245,14 +172,6 @@ private:
         return "";
     }
 #endif
-
-    void m_printHelp() const {
-        std::cout << m_HelpOption.helpText << std::endl;
-        std::cout << "Usage: \n";
-        for (const auto& opt : m_Options) {
-            std::cout << "  " << opt.first << " (" << opt.second.longOpt << "): " << opt.second.helpText << "\n";
-        }
-    }
 };
 
 }  // namespace ez

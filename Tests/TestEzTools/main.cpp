@@ -11,5 +11,5 @@ int main(int argc, char** argv) {
         return TestEzTools(argv[1]) ? 0 : 1;
     }
     // User testing
-    return TestEzTools("TestEzXmlParsingOK") ? 0 : 1;
+    return TestEzTools("TestEzArgs_0") ? 0 : 1;
 }
