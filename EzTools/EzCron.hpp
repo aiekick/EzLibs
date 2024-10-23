@@ -24,7 +24,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -59,6 +58,9 @@ private:
 public:
     Cron(const std::string& vCronExpr) : m_CronExpr(vCronExpr) {
         m_Field = m_split(m_CronExpr);
+#ifdef LogVarInfo
+        LogVarInfo("Cron(%s)", vCronExpr.c_str());
+#endif
     }
     bool isOk() const {
         if (m_Field.size() != 5) {
@@ -78,12 +80,53 @@ public:
 #else
         struct tm* time_info = std::localtime(&vEpochTime);
 #endif
+#ifdef LogVarInfo
+        LogVarInfo(                  //
+            "%i-%i-%i %ih:%im:%is",  //
+            time_info->tm_year + 1900,
+            time_info->tm_mon + 1,
+            time_info->tm_mday,
+            time_info->tm_hour,
+            time_info->tm_min,
+            time_info->tm_sec);
+#endif
         bool minute_match = m_matchField(m_Field[0], time_info->tm_min, 0, 59);
+        if (minute_match) {
+#ifdef LogVarInfo
+            LogVarInfo("minute_match => true");
+#endif
+        }
         bool hour_match = m_matchField(m_Field[1], time_info->tm_hour, 0, 23);
+        if (hour_match) {
+#ifdef LogVarInfo
+            LogVarInfo("hour_match => true");
+#endif
+        }
         bool day_match = m_matchField(m_Field[2], time_info->tm_mday, 1, 31);
+        if (day_match) {
+#ifdef LogVarInfo
+            LogVarInfo("day_match => true");
+#endif
+        }
         bool month_match = m_matchField(m_Field[3], time_info->tm_mon + 1, 1, 12);  // tm_mon est de 0 à 11
-        bool weekday_match = m_matchField(m_Field[4], time_info->tm_wday, 0, 6);    // tm_wday est de 0 (dimanche) à 6
-        return minute_match && hour_match && day_match && month_match && weekday_match;
+        if (month_match) {
+#ifdef LogVarInfo
+            LogVarInfo("month_match => true");
+#endif
+        }
+        bool weekday_match = m_matchField(m_Field[4], time_info->tm_wday, 0, 6);  // tm_wday est de 0 (dimanche) à 6
+        if (weekday_match) {
+#ifdef LogVarInfo
+            LogVarInfo("weekday_match => true");
+#endif
+        }
+        if (minute_match && hour_match && day_match && month_match && weekday_match) {
+#ifdef LogVarInfo
+            LogVarInfo("isTimeToAct() => true");
+#endif
+            return true;
+        }
+        return false;
     }
 
 private:
@@ -113,8 +156,9 @@ private:
 #else
                 sscanf(token.c_str(), "%d-%d", &start, &end);
 #endif
-                if (current_value >= start && current_value <= end)
+                if (current_value >= start && current_value <= end) {
                     return true;
+                }
             } else if (token.find('/') != std::string::npos) {
                 int start, step;
 #ifdef _MSC_VER
@@ -122,11 +166,13 @@ private:
 #else
                 sscanf(token.c_str(), "%d/%d", &start, &step);
 #endif
-                if ((current_value - start) % step == 0)
+                if ((current_value - start) % step == 0) {
                     return true;
+                }
             } else {
-                if (std::stoi(token) == current_value)
+                if (std::stoi(token) == current_value) {
                     return true;
+                }
             }
         }
         return false;

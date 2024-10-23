@@ -35,7 +35,7 @@ bool TestEzCron_0() {
 
 bool TestEzCron_1() {
     // 18h from monday to friday
-    auto cr = ez::time::Cron("0 18 * * 1-5");
+    auto cr = ez::time::Cron("18 0 * * 1-5");
     if (!cr.isOk())
         return false;
     struct tm time_info = {0};
