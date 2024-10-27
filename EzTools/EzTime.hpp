@@ -43,7 +43,7 @@ inline bool epochToISO8601(const std::time_t& vEpochTime, std::string& vOutTime)
     }
 #else
     auto* pTimeInfo = std::localtime(&tt);
-    #endif
+#endif
     std::ostringstream oss;
     oss << std::put_time(pTimeInfo, "%Y-%m-%d");
     if (!oss.fail()) {
@@ -53,16 +53,63 @@ inline bool epochToISO8601(const std::time_t& vEpochTime, std::string& vOutTime)
     return false;
 }
 
+// TODO: TO TEST
+inline std::string getCurrentDate() {
+    auto curr_date_t = std::time(nullptr);
+#ifdef _MSC_VER
+    tm _timeinfo;
+    tm* tm_curr_date = &_timeinfo;
+    if (localtime_s(tm_curr_date, &curr_date_t) != 0) {
+        return false;
+    }
+#else
+    auto* tm_curr_date = std::localtime(&curr_date_t);
+#endif
+    auto curr_date = std::chrono::system_clock::from_time_t(curr_date_t);
+    std::string date(32, ' ');
+    auto s = strftime(date.data(), date.size(), "%Y-%m-%d", tm_curr_date);
+    return date.substr(0, s);
+}
+
+// TODO: TO TEST
+inline std::string getCurrentDate(size_t vHoursOffset) {
+    auto curr_date_t = std::time(nullptr);
+#ifdef _MSC_VER
+    tm _timeinfo;
+    tm* tm_curr_date = &_timeinfo;
+    if (localtime_s(tm_curr_date, &curr_date_t) != 0) {
+        return false;
+    }
+#else
+    auto* tm_curr_date = std::localtime(&curr_date_t);
+#endif
+    std::chrono::hours offset_hours(vHoursOffset);
+    auto curr_date = std::chrono::system_clock::from_time_t(curr_date_t);
+    auto offset_date_t = std::chrono::system_clock::to_time_t(curr_date + offset_hours);
+#ifdef _MSC_VER
+    tm* tm_offset_date = &_timeinfo;
+    if (localtime_s(tm_offset_date, &curr_date_t) != 0) {
+        return false;
+    }
+#else
+    auto* tm_offset_date = std::localtime(&curr_date_t);
+#endif
+    std::string date(32, ' ');
+    auto s = strftime(date.data(), date.size(), "%Y-%m-%d", tm_offset_date);
+    return date.substr(0, s);
+}
+
 inline uint64_t getTicks() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
+// TODO: TO TEST
 inline float getTimeInterval() {
-    static auto lastTick = getTicks();
+    static auto S_lastTick = getTicks();
     const uint64_t ticks = getTicks();
     static float secMult = 1.0f / 1000.0f;
-    const float interval = (ticks - lastTick) * secMult;
-    lastTick = ticks;
+    const float interval = (ticks - S_lastTick) * secMult;
+    S_lastTick = ticks;
     return interval;
 }
 
