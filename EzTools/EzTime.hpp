@@ -88,11 +88,11 @@ inline std::string getCurrentDate(size_t vHoursOffset) {
     auto offset_date_t = std::chrono::system_clock::to_time_t(curr_date + offset_hours);
 #ifdef _MSC_VER
     tm* tm_offset_date = &_timeinfo;
-    if (localtime_s(tm_offset_date, &curr_date_t) != 0) {
+    if (localtime_s(tm_offset_date, &offset_date_t) != 0) {
         return false;
     }
 #else
-    auto* tm_offset_date = std::localtime(&curr_date_t);
+    auto* tm_offset_date = std::localtime(&offset_date_t);
 #endif
     std::string date(32, ' ');
     auto s = strftime(date.data(), date.size(), "%Y-%m-%d", tm_offset_date);
