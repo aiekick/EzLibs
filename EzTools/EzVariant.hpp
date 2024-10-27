@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef EZ_TOOLS_VARIANT
+#define EZ_TOOLS_VARIANT
+#endif  // EZ_TOOLS_VARIANT
+
 /*
 MIT License
 
@@ -46,19 +50,19 @@ private:
     long long_value = 0;
     uint32_t uint32_t_value = 0;
     uint64_t uint64_t_value = 0;
-#ifdef vec2
+#ifdef EZ_TOOLS_VEC2
     vec2<T> point_value;
 #endif
-#ifdef vec3
+#ifdef EZ_TOOLS_VEC3
     vec3<T> v3_value;
 #endif
-#ifdef vec4
+#ifdef EZ_TOOLS_VEC4
     vec4<T> rect_value;
 #endif
-#ifdef AABB
+#ifdef EZ_TOOLS_AABB
     AABB<T> aabb_value;
 #endif
-#ifdef AABBCC
+#ifdef EZ_TOOLS_AABBCC
     AABBCC<T> aabbcc_value;
 #endif
     std::vector<float> vector_float_value;
@@ -120,35 +124,35 @@ public:
         inputtype = "bool";
         datatype = inputtype;
     }
-#ifdef vec2
+#ifdef EZ_TOOLS_VEC2
     variant(const vec2<T>& c) {
         point_value = c;
         inputtype = "vec2";
         datatype = inputtype;
     }
 #endif
-#ifdef vec3
+#ifdef EZ_TOOLS_VEC3
     variant(const vec3<T>& c) {
         v3_value = c;
         inputtype = "vec3";
         datatype = inputtype;
     }
 #endif
-#ifdef vec4
+#ifdef EZ_TOOLS_VEC4
     variant(const vec4<T>& c) {
         rect_value = c;
         inputtype = "vec4";
         datatype = inputtype;
     }
 #endif
-#ifdef AABB
+#ifdef EZ_TOOLS_AABB
     variant(const AABB<T>& c) {
         aabb_value = c;
         inputtype = "AABB";
         datatype = inputtype;
     }
 #endif
-#ifdef AABBCC
+#ifdef EZ_TOOLS_AABBCC
     variant(const AABBCC<T>& c) {
         aabb_value = c;
         inputtype = "AABBCC";
@@ -186,23 +190,23 @@ public:
     }
     bool operator==(variant<T> v) {
         if (inputtype == v.inputtype) {
-#ifdef vec4
+#ifdef EZ_TOOLS_VEC4
             if (inputtype == "vec4")
                 return rect_value == v.rect_value;
 #endif
-#ifdef vec3
+#ifdef EZ_TOOLS_VEC3
             if (inputtype == "vec3")
                 return v3_value == v.v3_value;
 #endif
-#ifdef vec2
+#ifdef EZ_TOOLS_VEC2
             if (inputtype == "vec2")
                 return point_value == v.point_value;
 #endif
-#ifdef AABB
+#ifdef EZ_TOOLS_AABB
             if (inputtype == "AABB")
                 return aabb_value == v.aabb_value;
 #endif
-#ifdef AABBCC
+#ifdef EZ_TOOLS_AABBCC
             if (inputtype == "AABBCC")
                 return aabbcc_value == v.aabbcc_value;
 #endif
@@ -268,19 +272,27 @@ public:
     }
 
     std::string GetS(char c = ';', const char* prec = "%.6f") {
+#ifdef EZ_TOOLS_VEC4
         if (inputtype == "vec4") {
             return str::toStr(rect_value.x) + c + str::toStr(rect_value.y) + c + str::toStr(rect_value.z) + c + str::toStr(rect_value.w);
         }
+#endif
+#ifdef EZ_TOOLS_VEC3
         if (inputtype == "vec3") {
             return str::toStr(v3_value.x) + c + str::toStr(v3_value.y) + c + str::toStr(v3_value.z);
         }
+#endif
+#ifdef EZ_TOOLS_VEC2
         if (inputtype == "vec2") {
             return str::toStr(point_value.x) + c + str::toStr(point_value.y);
         }
+#endif
+#ifdef EZ_TOOLS_AABB
         if (inputtype == "AABB") {
             return str::toStr(aabb_value.lowerBound.x) + c + str::toStr(aabb_value.lowerBound.y) + c + str::toStr(aabb_value.upperBound.x) + c +
                 str::toStr(aabb_value.upperBound.y);
         }
+        #endif
         if (inputtype == "bool") {
             return (bool_value ? "true" : "false");
         }
@@ -321,7 +333,7 @@ public:
         }
         return string_value;
     }
-#ifdef vec2
+#ifdef EZ_TOOLS_VEC2
     vec2<T> GetV2(char c = ';') {
         if (inputtype == "string") {
             return vec2<T>(string_value, c);
@@ -330,7 +342,7 @@ public:
         return point_value;
     }
 #endif
-#ifdef vec3
+#ifdef EZ_TOOLS_VEC3
     vec3<T> GetV3(char c = ';') {
         if (inputtype == "string") {
             return vec3<T>(string_value, c);
@@ -339,7 +351,7 @@ public:
         return v3_value;
     }
 #endif
-#ifdef vec4
+#ifdef EZ_TOOLS_VEC4
     vec4<T> GetV4(char c = ';') {
         if (inputtype == "string") {
             return vec4<T>(string_value, c, 4, 0);  //-V112
@@ -348,7 +360,7 @@ public:
         return rect_value;
     }
 #endif
-#ifdef AABB
+#ifdef EZ_TOOLS_AABB
     AABB<T> GetAABB(char c = ';') {
         if (inputtype == "string") {
             return AABB<T>(string_value, c);

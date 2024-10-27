@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef EZ_TOOLS_VEC4
+#define EZ_TOOLS_VEC4
+#endif  // EZ_TOOLS_VEC4
+
 /*
 MIT License
 
