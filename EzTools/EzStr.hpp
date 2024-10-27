@@ -40,6 +40,7 @@ SOFTWARE.
 
 #ifdef _MSC_VER
 #include <cwchar>
+#include "Windows.h"
 #endif
 
 ////////////////////////////////////////////////////////////////////////////
@@ -401,6 +402,40 @@ inline std::wstring stringToWstring(const std::string& mbstr) {
 
 inline size_t getDigitsCountOfAIntegralNumber(const int64_t vNum) {
      return (vNum == 0) ? 1 : static_cast<int>(log10(vNum)) + 1;
+}
+
+inline std::string utf8Encode(const std::wstring& wstr) {
+    std::string res;
+#if defined(__WIN32__) || defined(WIN32) || defined(_WIN32) || defined(__WIN64__) || defined(WIN64) || defined(_WIN64) || defined(_MSC_VER)
+    if (!wstr.empty()) {
+        int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+        if (size_needed) {
+            res = std::string(size_needed, 0);
+            WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &res[0], size_needed, NULL, NULL);
+        }
+    }
+#else
+    // Suppress warnings from the compiler.
+    (void)wstr;
+#endif  // _IGFD_WIN_
+    return res;
+}
+
+// Convert an UTF8 string to a wide Unicode String
+inline std::wstring utf8Decode(const std::string& str) {
+    std::wstring res;
+#if defined(__WIN32__) || defined(WIN32) || defined(_WIN32) || defined(__WIN64__) || defined(WIN64) || defined(_WIN64) || defined(_MSC_VER)
+    if (!str.empty()) {
+        int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
+        if (size_needed) {
+            res = std::wstring(size_needed, 0);
+            MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &res[0], size_needed);
+        }
+    }
+#else
+    (void)str;
+#endif  // _IGFD_WIN_
+    return res;
 }
 
 inline std::string searchForPatternWithWildcards(const std::string& vBuffer, const std::string& vWildcardedPattern, std::pair<size_t, size_t>& vOutPosRange) {

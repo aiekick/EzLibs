@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef EZ_TOOLS_XML_CONFIG
+#define EZ_TOOLS_XML_CONFIG
+#endif // EZ_TOOLS_XML_CONFIG
+
 /*
 MIT License
 
@@ -27,7 +31,6 @@ SOFTWARE.
 #include <string>
 #include <vector>
 #include <fstream>
-
 
 #include "EzXml.hpp"
 #include "EzLog.hpp"

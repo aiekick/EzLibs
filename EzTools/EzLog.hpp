@@ -33,6 +33,10 @@ or
 #pragma once
 #pragma warning(disable : 4251)
 
+#ifndef EZ_TOOLS_LOG
+#define EZ_TOOLS_LOG
+#endif  // EZ_TOOLS_LOG
+
 #include "EzStr.hpp"
 #include "EzTime.hpp"
 

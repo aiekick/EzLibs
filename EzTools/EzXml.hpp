@@ -75,6 +75,10 @@ public:
         m_Attributes[vKey] = vValue;
     }
 
+    bool isAttributeExist(const std::string& vKey) const {
+        return (m_Attributes.find(vKey) != m_Attributes.end());
+    }
+
     std::string getAttribute(const std::string& vKey) const {
         auto it = m_Attributes.find(vKey);
         if (it != m_Attributes.end()) {
@@ -107,7 +111,7 @@ public:
         if (vNode.getType() != xml::Node::Type::Comment) {
             oss << "<" << vNode.getName();
             for (const auto& attr : vNode.m_Attributes) {
-                oss << " " << attr.first << "=\"" << xml::Node::unEscapeXmlCode(attr.second) << "\"";
+                oss << " " << attr.first << "=\"" << xml::Node::unEscapeXml(attr.second) << "\"";
             }
         }
 
@@ -121,7 +125,7 @@ public:
                 oss << ">";
             }
             if (!content.empty()) {
-                oss << xml::Node::unEscapeXmlCode(content);
+                oss << xml::Node::unEscapeXml(content);
             }
             if (vNode.getType() == xml::Node::Type::Comment) {
                 oss << std::endl;
@@ -157,7 +161,7 @@ public:
     }
 
     // replace xml excaped pattern by corresponding good pattern
-    static std::string unEscapeXmlCode(const std::string& vDatas) {
+    static std::string unEscapeXml(const std::string& vDatas) {
         std::string unescaped = vDatas;
         replaceAll(unescaped, "&lt;", "<");
         replaceAll(unescaped, "&amp;", "&");
