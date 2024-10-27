@@ -96,12 +96,16 @@ struct PathInfos {
     }
 
     std::string GetFPNE_WithPathNameExt(std::string vPath, const std::string& vName, const std::string& vExt) {
+        if (vPath[0] == EZ_FILE_SLASH_TYPE[0]) {
 #ifdef WIN32
             // if it happening on window this seem that this path msut be a relative path but with an error
             vPath = vPath.substr(1);  // bad formated path go relative
-#else
+#endif
+        } else {
+#ifdef UNIX
             vPath = "/" + vPath;  // make it absolute
 #endif
+        }
 
         if (vPath.empty())
             return vName + "." + vExt;
