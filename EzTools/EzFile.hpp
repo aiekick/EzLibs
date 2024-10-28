@@ -36,7 +36,7 @@ inline std::string loadFileToString(const std::string& vFilePathName) {
     return ret;
 }
 
-inline bool saveStringToFile(const std::string& vFilePathname, const std::string& vDatas, bool vAddTimeStamp = false) {
+inline bool saveStringToFile(const std::string& vDatas, const std::string& vFilePathname, bool vAddTimeStamp = false) {
     std::string fpn = vFilePathname;
     if (!fpn.empty()) {
         if (vAddTimeStamp) {
