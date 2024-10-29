@@ -22,13 +22,13 @@
 
 class TestConfig : public ez::xml::Config {
 public:
-    std::string getXml(const std::string& vOffset, const std::string& vUserDatas) final {
+    std::string getXml(const std::string& /*vOffset*/, const std::string& /*vUserDatas*/) final {
         return "";
     }
 
     // return true for continue xml parsing of childs in this node or 
     // false for interrupt the child exploration (if we want explore child ourselves)
-    bool setFromXml(const ez::xml::Node& vNode, const ez::xml::Node& vParent, const std::string& vUserDatas) final {
+    bool setFromXml(const ez::xml::Node& /*vNode*/, const ez::xml::Node& /*vParent*/, const std::string& /*vUserDatas*/) final {
         return true;
     }
 };

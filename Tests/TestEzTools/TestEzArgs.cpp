@@ -23,12 +23,12 @@
 bool TestEzArgs_0() {
     std::vector<char*> arr{"-s", "toto.json", "--auto", "z"};
     ez::Args args;
-    args.addStringOption("-s", "--source", "Source file");
-    args.addBoolOption("-a", "--auto", "Auto mode");
-    args.addBoolOption("-w", "--write", "Write");
-    args.addBoolOption("z", "zozo", "zozo");
-    args.addStringOption("-d", "--default", "Default option", "empty");
-    if (!args.parseOptions(arr.size(), arr.data(), 0U))
+    args.addStringOption("-s/--source", "Source file");
+    args.addBoolOption("-a/--auto", "Auto mode");
+    args.addBoolOption("-w/--write", "Write");
+    args.addBoolOption("z/zozo", "zozo");
+    args.addStringOption("-d/default", "Default option", "empty");
+    if (!args.parseOptions(static_cast<int32_t>(arr.size()), arr.data(), 0U))
         return false;
     if (args.getStringValue("s") != "toto.json")
         return false;

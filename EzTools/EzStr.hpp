@@ -467,6 +467,27 @@ inline std::string searchForPatternWithWildcards(const std::string& vBuffer, con
     return searchForPatternWithWildcards(vBuffer, vWildcardedPattern, posRange);
 }
 
+inline std::string encodeBase64(const std::string& in) {
+    static constexpr char sEncodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string out;
+    int val = 0, valb = -6;
+    for (uint8_t c : in) {
+        val = (val << 8) + c;
+        valb += 8;
+        while (valb >= 0) {
+            out.push_back(sEncodingTable[(val >> valb) & 0x3F]);
+            valb -= 6;
+        }
+    }
+    if (valb > -6) {
+        out.push_back(sEncodingTable[((val << 8) >> (valb + 8)) & 0x3F]);
+    }
+    while (out.size() % 4) {
+        out.push_back('=');
+    }
+    return out;
+}
+
 }  // namespace ez
 }  // namespace ez
 

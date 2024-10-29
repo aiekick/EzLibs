@@ -38,6 +38,8 @@ SOFTWARE.
 #include <cstdint>  // int32_t
 #include <iostream>
 
+#include "EzStr.hpp"
+
 namespace ez {
 
 class Args {
@@ -51,9 +53,8 @@ private:
 
 private:
     struct Option {
-        std::string longOpt;
-        std::string shortOpt;
-        std::string helpText;
+        std::set<std::string> opts;
+        std::string help_text;
         bool required = true;
         ValueType type = ValueType::None;
         std::string value_string;
@@ -65,29 +66,29 @@ private:
     std::vector<Option> m_Options;
 
 public:
-    void addBoolOption(const std::string& vShortOpt, const std::string& vLongOpt, const std::string& vHelpText, const bool vDefaultValue = false) {
-        auto opt = m_addOption(vShortOpt, vLongOpt, vHelpText, ValueType::Bool);
+    void addBoolOption(const std::string& vOpt, const std::string& vHelpText, const bool vDefaultValue = false) {
+        auto opt = m_addOption(vOpt, vHelpText, ValueType::Bool);
         opt.value_bool = vDefaultValue;
         m_Options.push_back(opt);
     }
 
-    void addIntOption(const std::string& vShortOpt, const std::string& vLongOpt, const std::string& vHelpText, const int32_t vDefaultValue = false) {
-        auto opt = m_addOption(vShortOpt, vLongOpt, vHelpText, ValueType::Int);
+    void addIntOption(const std::string& vOpt, const std::string& vHelpText, const int32_t vDefaultValue = false) {
+        auto opt = m_addOption(vOpt, vHelpText, ValueType::Int);
         opt.value_int = vDefaultValue;
         m_Options.push_back(opt);
     }
 
-    void addStringOption(const std::string& vShortOpt, const std::string& vLongOpt, const std::string& vHelpText, const std::string& vDefaultValue = {}) {
-        auto opt = m_addOption(vShortOpt, vLongOpt, vHelpText, ValueType::String);
+    void addStringOption(const std::string& vOpt, const std::string& vHelpText, const std::string& vDefaultValue = {}) {
+        auto opt = m_addOption(vOpt, vHelpText, ValueType::String);
         opt.value_string = vDefaultValue;
         m_Options.push_back(opt);
     }
 
     void addHelpOption(const std::string& vHelpText) {
         Option opt;
-        opt.shortOpt = "-h";
-        opt.longOpt = "--help";
-        opt.helpText = vHelpText;
+        opt.opts.emplace("h");
+        opt.opts.emplace("help");
+        opt.help_text = vHelpText;
         m_HelpOption = opt;
     }
 
@@ -100,16 +101,14 @@ public:
             }
 
             // print help
-            if (arg == m_HelpOption.shortOpt ||  //
-                arg == m_HelpOption.longOpt) {
+            if (m_HelpOption.opts.find(arg) != m_HelpOption.opts.end()) {
                 m_printHelp();
                 return true;
             }
 
             // get args values
             for (auto& opt : m_Options) {
-                if (arg == opt.shortOpt || //
-                    arg == opt.longOpt) {
+                if (opt.opts.find(arg) != opt.opts.end()) {
                     if (opt.type == ValueType::String) {
                         if (idx < (vArgc + 1)) {
                             ++idx;
@@ -129,7 +128,7 @@ public:
         return true;
     }
 
-    bool getBoolValue(const std::string& vKey) {
+    bool getBoolValue(const std::string& vKey) const {
         auto* p_opt = m_getOptionPtr(vKey);
         if (p_opt != nullptr) {
             if (p_opt->type == ValueType::Bool) {
@@ -139,7 +138,7 @@ public:
         return {};
     }
 
-    int32_t getIntValue(const std::string& vKey) {
+    int32_t getIntValue(const std::string& vKey) const {
         auto* p_opt = m_getOptionPtr(vKey);
         if (p_opt != nullptr) {
             if (p_opt->type == ValueType::Int) {
@@ -149,7 +148,7 @@ public:
         return {};
     }
 
-    std::string getStringValue(const std::string& vKey) {
+    std::string getStringValue(const std::string& vKey) const {
         auto* p_opt = m_getOptionPtr(vKey);
         if (p_opt != nullptr) {
             if (p_opt->type == ValueType::String) {
@@ -160,31 +159,26 @@ public:
     }
 
 private:
-    Option m_addOption(const std::string& vShortOpt, const std::string& vLongOpt, const std::string& vHelpText, const ValueType vType) {
-        Option opt;
-        opt.shortOpt = vShortOpt;
-        opt.longOpt = vLongOpt;
-        opt.helpText = vHelpText;
-        opt.type = vType;
-        auto short_last_minus = vShortOpt.find_last_of("-");
-        if (short_last_minus != std::string::npos) {
-            opt.shortOpt = vShortOpt.substr(short_last_minus + 1);
-        } else {
-            opt.shortOpt = vShortOpt;
+    Option m_addOption(const std::string& vOpt, const std::string& vHelpText, const ValueType vType) {
+        Option res;
+        auto opts = ez::str::splitStringToVector(vOpt, '/');
+        for (auto& opt : opts) {
+            auto short_last_minus = opt.find_last_of("-");
+            if (short_last_minus != std::string::npos) {
+                opt = opt.substr(short_last_minus + 1);
+            }
         }
-        auto long_last_minus = vLongOpt.find_last_of("-");
-        if (long_last_minus != std::string::npos) {
-            opt.longOpt = vLongOpt.substr(long_last_minus + 1);
-        } else {
-            opt.longOpt = vLongOpt;
+        for (const auto& opt : opts) {
+            res.opts.emplace(opt);
         }
-        return opt;
+        res.help_text = vHelpText;
+        res.type = vType;
+        return res;
     }
 
-    Option* m_getOptionPtr(const std::string& vKey) {
+    const Option* m_getOptionPtr(const std::string& vKey) const {
         for (auto& opt : m_Options) {
-            if (vKey == opt.shortOpt ||  //
-                vKey == opt.longOpt) {
+            if (opt.opts.find(vKey) != opt.opts.end()) {
                 return &opt;
             }
         }
@@ -192,10 +186,18 @@ private:
     }
 
     void m_printHelp() const {
-        std::cout << m_HelpOption.helpText << std::endl;
-        std::cout << "Usage: \n";
+        std::cout << m_HelpOption.help_text << std::endl;
+        std::cout << "Usage:" << std::endl;
         for (const auto& opt : m_Options) {
-            std::cout << "  " << opt.shortOpt << " (" << opt.longOpt << "): " << opt.helpText << "\n";
+            std::cout << " [";
+            size_t idx = 0;
+            for (const auto& o : opt.opts) {
+                if (idx++ > 0) {
+                    std::cout << ':';
+                }
+                std::cout << o;
+            }
+            std::cout << "] : " << opt.help_text << std::endl;
         }
     }
 };
