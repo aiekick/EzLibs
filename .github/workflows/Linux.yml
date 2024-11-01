@@ -1,0 +1,23 @@
+name: Linux
+
+on:
+  push:
+    branches:
+    - master
+    paths-ignore:
+    - 'doc/**'
+    - '.gitignore'
+    - 'README.md'
+    - 'LICENSE'
+
+jobs:
+  build_Linux_Ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: master
+    - name: configure
+      run: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release
+    - name: build
+      run: cmake --build build

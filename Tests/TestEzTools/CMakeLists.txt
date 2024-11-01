@@ -639,5 +639,16 @@ AddTest("TestEzXmlParsingNOK_1")
 ##### EzCron #############################################
 ##########################################################
 
-AddTest("TestEzCron_0")
-AddTest("TestEzCron_1")
+AddTest("TestEzCron_Format_Valid_Wildcard")
+AddTest("TestEzCron_Format_Valid_Nums")
+AddTest("TestEzCron_Format_Invalid_Intervals")
+AddTest("TestEzCron_Format_Invalid_Mins")
+AddTest("TestEzCron_Format_Invalid_Hours")
+AddTest("TestEzCron_Format_Invalid_MonthDay")
+AddTest("TestEzCron_Format_Invalid_Month")
+AddTest("TestEzCron_Format_Invalid_WeekDay")
+AddTest("TestEzCron_Format_Invalid_ManyErrors_0")
+AddTest("TestEzCron_Format_Invalid_ManyErrors_1")
+AddTest("TestEzCron_Format_Invalid_FieldCount_0")
+AddTest("TestEzCron_Format_Invalid_FieldCount_1")
+AddTest("TestEzCron_TimeCheck_Valid")

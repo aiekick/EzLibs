@@ -84,7 +84,7 @@ inline std::string getCurrentDate() {
     tm _timeinfo;
     tm* tm_curr_date = &_timeinfo;
     if (localtime_s(tm_curr_date, &curr_date_t) != 0) {
-        return false;
+        return {};
     }
 #else
     auto* tm_curr_date = std::localtime(&curr_date_t);
@@ -102,7 +102,7 @@ inline std::string getCurrentDate(size_t vHoursOffset) {
     tm _timeinfo;
     tm* tm_curr_date = &_timeinfo;
     if (localtime_s(tm_curr_date, &curr_date_t) != 0) {
-        return false;
+        return {};
     }
 #else
     auto* tm_curr_date = std::localtime(&curr_date_t);
@@ -113,7 +113,7 @@ inline std::string getCurrentDate(size_t vHoursOffset) {
 #ifdef _MSC_VER
     tm* tm_offset_date = &_timeinfo;
     if (localtime_s(tm_offset_date, &offset_date_t) != 0) {
-        return false;
+        return {};
     }
 #else
     auto* tm_offset_date = std::localtime(&offset_date_t);
