@@ -33,6 +33,14 @@ SOFTWARE.
 #include <string>
 #include <vector>
 
+#ifdef min
+#undef min
+#endif // min
+
+#ifdef max
+#undef max
+#endif // max
+
 // Namespace ez
 namespace ez {
 

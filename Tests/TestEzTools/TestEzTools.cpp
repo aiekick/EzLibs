@@ -8,6 +8,7 @@
 #include <TestEzXml.h>
 #include <TestEzCron.h>
 #include <TestEzArgs.h>
+#include <TestEzGraph.h>
 
 #include <limits>
 #include <cmath>
@@ -48,6 +49,7 @@ bool TestEzTools(const std::string& vTest) {
     else IfTestCollectionExist(TestEzXml);
     else IfTestCollectionExist(TestEzCron);
     else IfTestCollectionExist(TestEzArgs);
+    else IfTestCollectionExist(TestEzGraph);
     return false;
 }
 

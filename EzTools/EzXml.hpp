@@ -236,8 +236,8 @@ public:
                     if (!m_extractAttributes(token.first, attributes)) {
                         return false;
                     }
-                    for (const auto& [key, value] : attributes) {
-                        newNode.setAttribute(key, value);
+                    for (const auto& kv : attributes) {
+                        newNode.setAttribute(kv.first, kv.second);
                     }
                 }
                 m_NodeStack.top()->addChild(newNode);
@@ -316,12 +316,12 @@ private:
                 if (endPos != std::string::npos) {
                     std::string value = vLine.substr(startPos, endPos - startPos);
                     attributes[key] = value;
-                    startPos = vLine.find(' ', endPos);  // Passer à l'attribut suivant
+                    startPos = vLine.find(' ', endPos);  // Passer ? l'attribut suivant
                 } else {
 #ifdef LogVarError
                     LogVarError("The attribut '%s' have invalid value", key.c_str());
 #endif
-                    return false;  // Erreur : guillemets/apostrophes non fermés
+                    return false;  // Erreur : guillemets/apostrophes non ferm?s
                 }
             } else {
 #ifdef LogVarError
@@ -330,7 +330,7 @@ private:
                 return false;  // Erreur : attribut sans guillemets ou apostrophes
             }
         }
-        return true;  // Extraction réussie
+        return true;  // Extraction r?ussie
     }
 };
 
