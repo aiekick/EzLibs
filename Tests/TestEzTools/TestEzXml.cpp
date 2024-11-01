@@ -1,6 +1,5 @@
 #include <TestEzTools/TestEzXml.h>
 #include <EzTools/EzXmlConfig.hpp>
-#include <EzTools/EzXml.hpp>
 
 #include <iostream>
 #include <string>
@@ -113,20 +112,22 @@ bool TestEzXmlParsingOK() {
     return true;
 }
 
+ // all attributes value must be some strings
 bool TestEzXmlParsingNOK_0() {
     const auto& doc =
         u8R"(
 <config>
-    <Test name="test1" number=50/>
+    <Test name="test1" number=5/>
 </config>
 )";
     ez::Xml xml;
-    if (!xml.parse(doc))
+    if (xml.parse(doc))
         return false;
     std::cout << xml.dump() << std::endl;
     return true;
 }
 
+ // to tag end
 bool TestEzXmlParsingNOK_1() {
     const auto& doc =
         u8R"(

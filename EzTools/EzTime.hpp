@@ -1,5 +1,29 @@
 #pragma once
 
+/*
+MIT License
+
+Copyright (c) 2024 Stephane Cuillerdier (aka aiekick)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 #include <ctime>
 #include <string>
 #include <chrono>
@@ -65,10 +89,10 @@ inline std::string getCurrentDate() {
 #else
     auto* tm_curr_date = std::localtime(&curr_date_t);
 #endif
-    auto curr_date = std::chrono::system_clock::from_time_t(curr_date_t);
-    std::string date(32, ' ');
-    auto s = strftime(date.data(), date.size(), "%Y-%m-%d", tm_curr_date);
-    return date.substr(0, s);
+    char buffer[32 + 1]{};
+    auto s = strftime(buffer, 32, "%Y-%m-%d", tm_curr_date);
+    buffer[s] = '\0';
+    return std::string(buffer);
 }
 
 // TODO: TO TEST
@@ -94,9 +118,10 @@ inline std::string getCurrentDate(size_t vHoursOffset) {
 #else
     auto* tm_offset_date = std::localtime(&offset_date_t);
 #endif
-    std::string date(32, ' ');
-    auto s = strftime(date.data(), date.size(), "%Y-%m-%d", tm_offset_date);
-    return date.substr(0, s);
+    char buffer[32+1]{};
+    auto s = strftime(buffer, 32, "%Y-%m-%d", tm_offset_date);
+    buffer[s] = '\0';
+    return std::string(buffer);
 }
 
 inline uint64_t getTicks() {

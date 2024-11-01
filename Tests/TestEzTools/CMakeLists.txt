@@ -6,12 +6,18 @@ enable_language(C CXX)
 project(${PROJECT} CXX)
 message("EzTools testing enabled")
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O0 -g")
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	set(COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-instr-generate")
+option(USE_CODE_COVERAGE "Enable code coverage reporting" OFF)
+
+if (USE_CODE_COVERAGE)
+	if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O0 -g")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+		set(COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-instr-generate")
+	elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+		add_compile_options(/DEBUG:FULL /COVERAGE)
+	endif()
 endif()
 
 file(GLOB_RECURSE PROJECT_TEST_SRC_RECURSE
@@ -29,12 +35,44 @@ target_include_directories(${PROJECT} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/.. 
 )
 
+##########################################################
+##########################################################
+##########################################################
+
+if (USE_CODE_COVERAGE)
+    add_custom_target(coverage
+            COMMAND ${CMAKE_CTEST_COMMAND} # Lance les tests
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Running tests for code coverage"
+    )
+    set_target_properties(coverage PROPERTIES FOLDER Tests)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        # Cible pour générer un rapport de couverture pour GCC/Clang
+        add_custom_command(TARGET coverage POST_BUILD
+            COMMAND gcovr -r . --html --html-details -o ${CMAKE_BINARY_DIR}/coverage.html
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Generating coverage report for GCC/Clang"
+        )
+    elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        # Cible pour générer un rapport de couverture pour MSVC
+        add_custom_command(TARGET coverage POST_BUILD
+            COMMAND "${CMAKE_CMAKE_COMMAND}" -E env "PATH=%VSINSTALLDIR%\\Team Tools\\Dynamic Code Coverage Tools" CodeCoverage.exe collect /output:${CMAKE_BINARY_DIR}/coverage.coverage <path_to_your_test_executable>
+            COMMAND "${CMAKE_CMAKE_COMMAND}" -E env "PATH=%VSINSTALLDIR%\\Team Tools\\Dynamic Code Coverage Tools" CodeCoverage.exe analyze /output:${CMAKE_BINARY_DIR}/coverage.xml ${CMAKE_BINARY_DIR}/coverage.coverage
+            COMMENT "Generating coverage report for MSVC"
+        )
+    endif()
+endif()
+
+##########################################################
+##### TESTS ##############################################
+##########################################################
+
 function(AddTest arg)
   add_test("${arg}" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT}" "${arg}")
 endfunction()
 
 ##########################################################
-##### EzTools #############################################
+##### EzTools ############################################
 ##########################################################
 
 AddTest("TestEzMathRound<float>")

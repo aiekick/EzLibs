@@ -142,7 +142,7 @@ private:
     }
 
     // Fonction qui vérifie si un champ (min, heure, jour, mois, jour de la semaine) correspond au moment actuel
-    bool m_matchField(const std::string& field, int current_value, int /*min_value*/, int /*max_value*/) const {
+    bool m_matchField(const std::string& field, int current_value, int min_value, int max_value) const {
         if (field == "*") {
             return true;
         }
@@ -170,8 +170,11 @@ private:
                     return true;
                 }
             } else {
-                if (std::stoi(token) == current_value) {
-                    return true;
+                auto n = std::stoi(token);
+                if (n > min_value && n < max_value) {
+                    if (n == current_value) {
+                        return true;
+                    }
                 }
             }
         }

@@ -17,11 +17,18 @@
 ////////////////////////////////////////////////////////////////////////////
 
 bool TestEzStrGetDigitsCountOfAIntegralNumber() {
-    if (ez::str::getDigitsCountOfAIntegralNumber(0) != 1) return false;
-    if (ez::str::getDigitsCountOfAIntegralNumber(1) != 1) return false;
-    if (ez::str::getDigitsCountOfAIntegralNumber(-1) != 2) return false;
-    if (ez::str::getDigitsCountOfAIntegralNumber(000) != 1) return false;
-    if (ez::str::getDigitsCountOfAIntegralNumber(150) != 3) return false;
+    if (ez::str::getDigitsCountOfAIntegralNumber(0) != 1)
+        return false;
+    if (ez::str::getDigitsCountOfAIntegralNumber(1) != 1)
+        return false;
+    if (ez::str::getDigitsCountOfAIntegralNumber(-1) != 2)
+        return false;
+    if (ez::str::getDigitsCountOfAIntegralNumber(000) != 1)
+        return false;
+    if (ez::str::getDigitsCountOfAIntegralNumber(150) != 3)
+        return false;
+    if (ez::str::getDigitsCountOfAIntegralNumber(050) != 2)
+        return false;
     return true;
 }
 
