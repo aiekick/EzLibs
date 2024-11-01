@@ -649,7 +649,7 @@ AddTest("TestEzXmlParsingNOK_1")
 
 AddTest("TestEzCron_Format_Valid_Wildcard")
 AddTest("TestEzCron_Format_Valid_Nums")
-AddTest("TestEzCron_Format_Invalid_Intervals")
+AddTest("TestEzCron_Format_Valid_Intervals")
 AddTest("TestEzCron_Format_Invalid_Mins")
 AddTest("TestEzCron_Format_Invalid_Hours")
 AddTest("TestEzCron_Format_Invalid_MonthDay")
