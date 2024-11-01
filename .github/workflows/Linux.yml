@@ -18,8 +18,11 @@ jobs:
       with:
         ref: master
     - name: configure
-      run: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release
+      run: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DTESTING_EZ_EXPR=ON -DTESTING_EZ_GRAPH=ON -DTESTING_EZ_GRAPH=ON -DTESTING_EZ_TOOLS=ON
     - name: build
       run: cmake --build build
     - name: test
       run: ctest --output-on-failure
+
+
+

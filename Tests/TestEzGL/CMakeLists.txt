@@ -28,6 +28,9 @@ if(NOT GLAD_LIBRARIES)
 	file(GLOB GLAD_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glad/glad.h)
 	add_library(glad STATIC ${GLAD_HEADERS} ${GLAD_SOURCES})
 	set_target_properties(glad PROPERTIES LINKER_LANGUAGE C)
+	target_include_directories(glad PRIVATE
+		${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glad/include
+	)
 	if(WIN32)
 		set(GLAD_LIBRARIES glad)
 	else()
@@ -40,7 +43,8 @@ target_link_libraries(${PROJECT} PRIVATE ${GLAD_LIBRARIES})
 target_include_directories(${PROJECT} PRIVATE 
 	${GLAD_INCLUDE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/.. 
+	${CMAKE_CURRENT_SOURCE_DIR}/..
+	${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glad/include
 )
 
 set_target_properties(${PROJECT} PROPERTIES FOLDER Tests)
