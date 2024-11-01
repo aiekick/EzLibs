@@ -10,5 +10,5 @@ int main(int argc, char** argv) {
         return TestEzTools(argv[1]) ? 0 : 1;
     }
     // User testing
-    return TestEzTools("TestEzCron_Format_Invalid_Intervals") ? 0 : 1;
+    return TestEzTools("TestEzCron_Format_Valid_Nums") ? 0 : 1;
 }

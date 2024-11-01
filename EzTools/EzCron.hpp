@@ -24,10 +24,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <iostream>
-#include <sstream>
-#include <vector>
+#include <set>
 #include <ctime>
+#include <string>
+#include <vector>
+#include <cstdint>
+#include <sstream>
+#include <iterator>
+#include <iostream>
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -50,135 +54,372 @@ SOFTWARE.
 namespace ez {
 namespace time {
 
+// Supported Crontab format
+//  'mm hh dd MM DD'
+//  mm : the minutes from 0 to 59
+//  hh : the hour from 0 to 23
+//  dd : the day of the month from 1 to 31
+//  MM : the month from 1 to 12
+//  DD : the day of the week from 0 to 7. 0 and 7 are the sunday
+// For each fields, thoses forms are accepted :
+//  * : always valid units (0,1,3,4, etc..)
+//  5,8 : the units 5 and 8
+//  2-5 : the units from 2 to 5 (2, 3, 4, 5)
+//  */3 : all the 3 interval units(0, 3, 6, 9, etc..)
+
 class Cron {
+public:
+    enum ErrorFlags {  //
+        NONE = (0),
+        INVALID_MINUTE = (1 << 0),
+        INVALID_HOUR = (1 << 1),
+        INVALID_MONTH_DAY = (1 << 2),
+        INVALID_MONTH = (1 << 3),
+        INVALID_WEEK_DAY = (1 << 4),
+        WRONG_FIELDS_COUNT = (1 << 5),
+        INVALID_CHAR = (1 << 6),
+        INVALID_RANGE = (1 << 7),
+        INVALID_INTERVAL = (1 << 8),
+        INVALID_FIELD = (1 << 9)
+    };
+    enum class FieldType {  //
+        VALUE = 0,          // Value
+        INTERVAL,           // Interval. each values
+        RANGE,              // Range [min:max]
+        VALUES,             // Values [v0,v1,v2]
+        WILDCARD,           // Valid value for all
+        Count
+    };
+    enum class FieldIndex {  //
+        MINUTE = 0,
+        HOUR,
+        DAY_MONTH,
+        MONTH,
+        DAY_WEEK,
+        Count
+    };
+    struct Field {
+        std::string str;                                            // field str
+        FieldIndex index{FieldIndex::MINUTE};                       // field index
+        int32_t cpos{-1};                                           // char pos in the cron rule
+        FieldType type{FieldType::VALUE};                           // field type
+        int32_t value{-1};                                          // the value with type is 'value'
+        int32_t interval{-1};                                       // the interval value when type is 'interval'
+        std::pair<int32_t, int32_t> range{std::make_pair(-1, -1)};  // the range when type is 'range'
+        std::set<int32_t> values{};                                 // the valude when type is 'values'
+    };
+    struct ErrorDetail {
+        int32_t flag{};
+        int32_t position{};
+        std::string message;
+    };
+
 private:
-    std::string m_CronExpr;
-    std::vector<std::string> m_Field;
+    int32_t m_errorFlags;
+    std::string m_cronRule;
+    std::vector<Field> m_fields;
+    std::vector<ErrorDetail> m_errorDetails;
 
 public:
-    Cron(const std::string& vCronExpr) : m_CronExpr(vCronExpr) {
-        m_Field = m_split(m_CronExpr);
-#ifdef LogVarInfo
-        LogVarInfo("Cron(%s)", vCronExpr.c_str());
-#endif
+    Cron(const std::string &m_cronRule)  //
+        : m_errorFlags(NONE), m_cronRule(m_cronRule) {
+        m_parseExpression();
     }
+
     bool isOk() const {
-        if (m_Field.size() != 5) {
-            std::cerr << "Invalid cron expression" << std::endl;
+        return (m_errorFlags == NONE);
+    }
+
+    const std::string &getCronRule() const {
+        return m_cronRule;
+    }
+
+    int getErrorFlags() const {
+        return m_errorFlags;
+    }
+
+    const std::vector<ErrorDetail> &getErrorDetails() const {
+        return m_errorDetails;
+    }
+
+    /*bool isTimeToAct() const {
+        time_t currentTime = std::time(nullptr);
+        return isTimeToAct(currentTime);
+    }*/
+
+    /*bool isTimeToAct(time_t vCurrentTime) const {
+        if (isOk()) {
+#ifdef _MSC_VER
+            struct tm _tm;
+            localtime_s(&_tm, &vCurrentTime);
+            auto *currentTm = &_tm;
+#else
+            auto *currentTm std::localtime(&vCurrentTime);
+#endif
+            return m_checkField(m_min, currentTm->tm_min) &&     //
+                m_checkField(m_hour, currentTm->tm_hour) &&      //
+                m_checkField(m_monthDay, currentTm->tm_mday) &&  //
+                m_checkField(m_month, currentTm->tm_mon + 1) &&  //
+                m_checkField(m_weekDay, currentTm->tm_wday);
+        }
+        return false;
+    }*/
+
+    std::string getErrorMessage() const {
+        std::stringstream err;
+        if (m_errorDetails.empty()) {
+            std::cout << "No errors found.\n";
+        } else {
+            err << "Errors found in cron rule :" << std::endl;
+            err << m_cronRule << std::endl;
+            for (auto rev_it = m_errorDetails.rbegin(); rev_it != m_errorDetails.rend(); ++rev_it) {
+                std::string marker_line(m_cronRule.size(), ' ');
+                for (auto it = m_errorDetails.begin(); it != m_errorDetails.end(); ++it) {
+                    marker_line[it->position] = '|';
+                }
+                marker_line[rev_it->position] = '^';
+                marker_line = marker_line.substr(0, rev_it->position + 1);
+                err << marker_line << "-- " << rev_it->message << std::endl;
+            }
+        }
+        return err.str();
+    }
+
+    std::string getSupportedFormat() const {
+        return u8R"(
+Supported Crontab format
+ mm hh dd MM DD    
+ mm : the minutes from 0 to 59
+ hh : the hour from 0 to 23
+ dd : the day of the month from 1 to 31
+ MM : the month from 1 to 12
+ DD : the day of the week from 0 to 7. 0 and 7 are the sunday
+For each fields, thoses forms are accepted :
+ * : always valid units (0,1,3,4, etc..)
+ 5,8 : the units 5 and 8
+ 2-5 : the units from 2 to 5 (2, 3, 4, 5)
+ */3 : all the 3 interval units (0, 3, 6, 9, etc..)
+)";
+    }
+
+private:
+    typedef int32_t CharPos;
+    typedef std::pair<CharPos, std::string> Token;
+    std::vector<Token> m_split(const std::string &vText, const std::string &vDelimiters) {
+        std::vector<Token> arr;
+        if (!vText.empty()) {
+            std::string::size_type start = 0;
+            std::string::size_type end = vText.find_first_of(vDelimiters, start);
+            while (end != std::string::npos) {
+                std::string token = vText.substr(start, end - start);
+                if (!token.empty()) {
+                    arr.emplace_back(std::make_pair(start, token));
+                }
+                start = end + 1;
+                end = vText.find_first_of(vDelimiters, start);
+            }
+            std::string token = vText.substr(start);
+            if (!token.empty()) {
+                arr.emplace_back(std::make_pair(start, token));
+            }
+        }
+        return arr;
+    }
+    template <typename U, typename T>
+    void addError(U vFlag, T vCharPos) {
+        ErrorDetail ed;
+        ed.flag = static_cast<ErrorFlags>(vFlag);
+        ed.position = static_cast<int32_t>(vCharPos);
+        ed.message = m_getErrorString(ed.flag);
+        m_errorDetails.push_back(ed);
+        m_errorFlags |= ed.flag;
+    }
+    bool m_parseValue(Field &vInOutField, const std::string &vValue, int32_t vCharPos) {
+        try {
+            auto v = std::stoi(vValue);
+            // check min/max
+            switch (vInOutField.index) {
+                case FieldIndex::MINUTE: {
+                    if (v < 0 || v > 59) {
+                        addError(ErrorFlags::INVALID_MINUTE, vCharPos);
+                        return false;
+                    }
+                } break;
+                case FieldIndex::HOUR: {
+                    if (v < 0 || v > 23) {
+                        addError(ErrorFlags::INVALID_HOUR, vCharPos);
+                        return false;
+                    }
+                } break;
+                case FieldIndex::DAY_MONTH: {
+                    if (v < 1 || v > 31) {
+                        addError(ErrorFlags::INVALID_MONTH_DAY, vCharPos);
+                        return false;
+                    }
+                } break;
+                case FieldIndex::MONTH: {
+                    if (v < 1 || v > 12) {
+                        addError(ErrorFlags::INVALID_MONTH, vCharPos);
+                        return false;
+                    }
+                } break;
+                case FieldIndex::DAY_WEEK: {
+                    if (v < 0 || v > 7) {
+                        addError(ErrorFlags::INVALID_WEEK_DAY, vCharPos);
+                        return false;
+                    }
+                } break;
+                case FieldIndex::Count:
+                default: break;
+            }
+            // set value
+            switch (vInOutField.type) {
+                case FieldType::VALUE: {
+                    vInOutField.value = v;
+                } break;
+                case FieldType::INTERVAL: {
+                    vInOutField.interval = v;
+                } break;
+                case FieldType::RANGE: {
+                    if (vInOutField.range.first == -1) {
+                        vInOutField.range.first = v;
+                    } else {
+                        vInOutField.range.second = v;
+                    }
+                } break;
+                case FieldType::VALUES: {
+                    vInOutField.values.emplace(v);
+                } break;
+                case FieldType::WILDCARD:
+                case FieldType::Count:
+                default: break;
+            }
+        } catch (...) {
+            auto flag = (1 << static_cast<int32_t>(vInOutField.index));
+            addError(flag, vCharPos);
             return false;
         }
         return true;
     }
-    bool isTimeToAct() const {
-        return isTimeToAct(std::time(nullptr));
+    bool m_parseValue(Field &vInOutField, const Token &vToken) {
+        return m_parseValue(vInOutField, vToken.second, vToken.first);
     }
-    bool isTimeToAct(time_t vEpochTime) const {
-#ifdef _MSC_VER
-        struct tm _tm;
-        localtime_s(&_tm, &vEpochTime);
-        auto* time_info = &_tm;
-#else
-        struct tm* time_info = std::localtime(&vEpochTime);
-#endif
-#ifdef LogVarInfo
-        LogVarInfo(                  //
-            "%i-%i-%i %ih:%im:%is",  //
-            time_info->tm_year + 1900,
-            time_info->tm_mon + 1,
-            time_info->tm_mday,
-            time_info->tm_hour,
-            time_info->tm_min,
-            time_info->tm_sec);
-#endif
-        bool minute_match = m_matchField(m_Field[0], time_info->tm_min, 0, 59);
-        if (minute_match) {
-#ifdef LogVarInfo
-            LogVarInfo("minute_match => true");
-#endif
+    bool m_isValidFieldFormat(Field &vInOutField) {
+        auto wpos = vInOutField.str.find_first_not_of("0123456789/*-,");
+        if (wpos != std::string::npos) {
+            addError(INVALID_CHAR, wpos);
+            return false;
         }
-        bool hour_match = m_matchField(m_Field[1], time_info->tm_hour, 0, 23);
-        if (hour_match) {
-#ifdef LogVarInfo
-            LogVarInfo("hour_match => true");
-#endif
-        }
-        bool day_match = m_matchField(m_Field[2], time_info->tm_mday, 1, 31);
-        if (day_match) {
-#ifdef LogVarInfo
-            LogVarInfo("day_match => true");
-#endif
-        }
-        bool month_match = m_matchField(m_Field[3], time_info->tm_mon + 1, 1, 12);  // tm_mon est de 0 à 11
-        if (month_match) {
-#ifdef LogVarInfo
-            LogVarInfo("month_match => true");
-#endif
-        }
-        bool weekday_match = m_matchField(m_Field[4], time_info->tm_wday, 0, 6);  // tm_wday est de 0 (dimanche) à 6
-        if (weekday_match) {
-#ifdef LogVarInfo
-            LogVarInfo("weekday_match => true");
-#endif
-        }
-        if (minute_match && hour_match && day_match && month_match && weekday_match) {
-#ifdef LogVarInfo
-            LogVarInfo("isTimeToAct() => true");
-#endif
-            return true;
-        }
-        return false;
+        return true;
     }
-
-private:
-    // Fonction pour séparer une chaîne de caractères par des espaces
-    std::vector<std::string> m_split(const std::string& str) const {
-        std::istringstream iss(str);
-        std::vector<std::string> tokens;
-        std::string token;
-        while (iss >> token) {
-            tokens.push_back(token);
-        }
-        return tokens;
-    }
-
-    // Fonction qui vérifie si un champ (min, heure, jour, mois, jour de la semaine) correspond au moment actuel
-    bool m_matchField(const std::string& field, int current_value, int min_value, int max_value) const {
-        if (field == "*") {
-            return true;
-        }
-        std::istringstream iss(field);
-        std::string token;
-        while (std::getline(iss, token, ',')) {
-            if (token.find('-') != std::string::npos) {
-                int start, end;
-#ifdef _MSC_VER
-                sscanf_s(token.c_str(), "%d-%d", &start, &end);
-#else
-                sscanf(token.c_str(), "%d-%d", &start, &end);
-#endif
-                if (current_value >= start && current_value <= end) {
-                    return true;
+    bool m_isWildcardORInterval(Field &vInOutField) {
+        auto wpos = vInOutField.str.find("*");
+        if (wpos != std::string::npos) {
+            auto wpos = vInOutField.str.find_first_not_of("0123456789/*");
+            if (wpos != std::string::npos) {
+                addError(INVALID_INTERVAL, wpos);
+                return true;  // we not want to continue the field check
+            }
+            if (vInOutField.str.size() > wpos) {  // interval pattern '*/'
+                ++wpos;
+                if (vInOutField.str[wpos] == '/') {
+                    ++wpos;
+                    vInOutField.str = vInOutField.str.substr(wpos);
+                    vInOutField.type = FieldType::INTERVAL;
+                    return m_parseValue(vInOutField, vInOutField.str, wpos);
                 }
-            } else if (token.find('/') != std::string::npos) {
-                int start, step;
-#ifdef _MSC_VER
-                sscanf_s(token.c_str(), "%d/%d", &start, &step);
-#else
-                sscanf(token.c_str(), "%d/%d", &start, &step);
-#endif
-                if ((current_value - start) % step == 0) {
-                    return true;
-                }
-            } else {
-                auto n = std::stoi(token);
-                if (n > min_value && n < max_value) {
-                    if (n == current_value) {
-                        return true;
+            } else {  // generic pattern '*'
+                vInOutField.type = FieldType::WILDCARD;
+            }
+            return true;  // wildcard, stop field checking
+        }
+        return false;  // no wildcard, continue field checking
+    }
+    bool m_isRange(Field &vInOutField) {
+        bool res = true;
+        auto tokens = m_split(vInOutField.str, "-");
+        if (!tokens.empty()) {
+            vInOutField.type = FieldType::RANGE;
+            if (tokens.size() != 2) {
+                addError(INVALID_RANGE, vInOutField.cpos + vInOutField.str.size());
+                return true;  // we not want to continue the field check
+            }
+            for (const auto &token : tokens) {
+                res &= m_parseValue(vInOutField, token);
+            }
+            return true;  // range, stop field checking
+        }
+        return false;  // no range, continue field checking
+    }
+    bool m_isValues(Field &vInOutField) {
+        bool res = true;
+        auto tokens = m_split(vInOutField.str, ",");
+        if (!tokens.empty()) {
+            vInOutField.type = FieldType::VALUES;
+            for (const auto &token : tokens) {
+                res &= m_parseValue(vInOutField, token);
+            }
+            return true;  // values, stop field checking
+        }
+        return false;  // no values, continue field checking
+    }
+    void m_parseField(const Token &vToken) {
+        Field field;
+        field.str = vToken.second;
+        field.index = static_cast<FieldIndex>(m_fields.size());
+        field.cpos = vToken.first;
+        if (m_isValidFieldFormat(field)) {
+            if (!m_isWildcardORInterval(field)) {
+                if (!m_isRange(field)) {
+                    if (!m_isValues(field)) {
+                        addError(INVALID_FIELD, field.cpos);
                     }
                 }
             }
         }
-        return false;
+        m_fields.push_back(field);
+    }
+    void m_parseExpression() {
+        m_fields.clear();
+        auto tokens = m_split(m_cronRule, " ");
+        if (tokens.size() != 5) {
+            addError(WRONG_FIELDS_COUNT, m_cronRule.size());
+        }
+        for (const auto &token : tokens) {
+            m_parseField(token);
+        }
+    }
+
+    std::string m_getErrorString(int32_t vFlag) {
+        std::stringstream res;
+        if (vFlag & INVALID_MINUTE) {
+            res << " Invalid minute.";
+        }
+        if (vFlag & INVALID_HOUR) {
+            res << " Invalid hour.";
+        }
+        if (vFlag & INVALID_MONTH_DAY) {
+            res << " Invalid month day.";
+        }
+        if (vFlag & INVALID_MONTH) {
+            res << " Invalid month.";
+        }
+        if (vFlag & INVALID_WEEK_DAY) {
+            res << " Invalid week day.";
+        }
+        if (vFlag & WRONG_FIELDS_COUNT) {
+            res << " Invalid fields count.";
+        }
+        if (vFlag & INVALID_CHAR) {
+            res << " Invalid char.";
+        }
+        if (vFlag & INVALID_RANGE) {
+            res << " Invalid range.";
+        }
+        if (vFlag & INVALID_INTERVAL) {
+            res << " Invalid interval.";
+        }
+        return res.str();
     }
 };
 
