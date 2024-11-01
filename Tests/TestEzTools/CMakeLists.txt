@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 cmake_policy(SET CMP0110 OLD) ## for use [] in test names like "EzTools.double.Vec2.[]"
 
-set(PROJECT TestEzMath)
+set(PROJECT TestEzTools)
 enable_language(C CXX)
 project(${PROJECT} CXX)
 message("EzTools testing enabled")
@@ -24,9 +24,17 @@ file(GLOB_RECURSE PROJECT_TEST_SRC_RECURSE
 	${CMAKE_CURRENT_SOURCE_DIR}/*.cpp 
 	${CMAKE_CURRENT_SOURCE_DIR}/*.h 
 )
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${PROJECT_TEST_SRC_RECURSE})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX tests FILES ${PROJECT_TEST_SRC_RECURSE})
 
-add_executable(${PROJECT} ${PROJECT_TEST_SRC_RECURSE})
+file(GLOB_RECURSE PROJECT_EZ_TOOLS_SRC_RECURSE
+	${CMAKE_CURRENT_SOURCE_DIR}/../../EzTools/*.hpp
+)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/../../EzTools PREFIX src FILES ${PROJECT_EZ_TOOLS_SRC_RECURSE})
+
+add_executable(${PROJECT} 
+    ${PROJECT_TEST_SRC_RECURSE} 
+    ${PROJECT_EZ_TOOLS_SRC_RECURSE}
+)
 
 set_target_properties(${PROJECT} PROPERTIES FOLDER Tests)
 
