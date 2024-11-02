@@ -16,84 +16,123 @@
 #pragma GCC diagnostic ignored "-Wfloat-conversion"
 #endif
 
+#define EZ_LOG_IMPLEMENTATION
+#include <EzTools/EzLog.hpp>
+
+using namespace ez::time;
+
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool runTest(const std::string &cronExpr, bool expectedValidity, int expectedErrors) {
-    ez::time::Cron cron(cronExpr);
-    bool isValid = cron.isOk();
-    int errorFlags = cron.getErrorFlags();
-
-    std::cout << "Testing expression: \"" << cronExpr << "\"" << std::endl;
-    std::cout << "Expected validity: " << (expectedValidity ? "Valid" : "Invalid") << std::endl;
-    std::cout << "Actual validity: " << (isValid ? "Valid" : "Invalid") << std::endl;
-    std::cout << "Expected error flags: " << expectedErrors << std::endl;
-    std::cout << "Actual error flags: " << errorFlags << std::endl;
-
-    if (!isValid) {
-        std::cout << cron.getErrorMessage() << std::endl;
+class TestCron : public Cron {
+public:
+    TestCron(const std::string &vRule) : Cron(vRule) {
+        LogVarError("%s", getErrorMessage().c_str());
     }
+};
 
-    return ((isValid == expectedValidity) && (errorFlags == expectedErrors));
+time_t getEpochTime(int32_t vMin, int32_t vHour, int32_t vMonthDay, int32_t vMonth) {
+    struct tm time_info {};
+    time_info.tm_year = 2024 - 1900;  // Année 2024
+    time_info.tm_mon = vMonth;        // Mois d'octobre (tm_mon commence à 0)
+    time_info.tm_mday = vMonthDay;    // 22 octobre
+    time_info.tm_hour = vHour;        // 18h
+    time_info.tm_min = vMin;          // 00 minutes
+    time_info.tm_sec = 25;            // 00 secondes
+    time_info.tm_isdst = 1;           // heure ete
+    return std::mktime(&time_info);
 }
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool TestEzCron_Format_Invalid_Mins() {
-    return runTest("60 * * * *", false, ez::time::Cron::INVALID_MINUTE);
+bool TestEzCron_Format_Mins() {
+    // not valid
+    TestCron cr("60 * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != Cron::INVALID_MINUTE) return false;
+    return true;
 }
 
-bool TestEzCron_Format_Invalid_Hours() {
-    return runTest("0 24 * * *", false, ez::time::Cron::INVALID_HOUR);
+bool TestEzCron_Format_Hours() {
+    // not valid
+    TestCron cr("0 24 * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != Cron::INVALID_HOUR) return false;
+    return true;
 }
 
-bool TestEzCron_Format_Invalid_MonthDay() {
-    return runTest("0 * 32 * *", false, ez::time::Cron::INVALID_MONTH_DAY);
+bool TestEzCron_Format_MonthDay() {
+    // not valid
+    TestCron cr("0 * 32 * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != Cron::INVALID_MONTH_DAY) return false;
+    return true;
 }
 
-bool TestEzCron_Format_Invalid_Month() {
-    return runTest("0 * * 13 *", false, ez::time::Cron::INVALID_MONTH);
+bool TestEzCron_Format_Month() {
+    // not valid
+    TestCron cr("0 * * 13 *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != Cron::INVALID_MONTH) return false;
+    return true;
 }
 
-bool TestEzCron_Format_Invalid_WeekDay() {
-    return runTest("0 * * * 8", false, ez::time::Cron::INVALID_WEEK_DAY);
+bool TestEzCron_Format_WeekDay() {
+    // not valid
+    TestCron cr("0 * * * 8");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != Cron::INVALID_WEEK_DAY) return false;
+    return true;
 }
 
-bool TestEzCron_Format_Invalid_ManyErrors_0() {
-    return runTest("60 24 32 13 8",
-                   false,
-                   ez::time::Cron::INVALID_MINUTE |         //
-                       ez::time::Cron::INVALID_HOUR |       //
-                       ez::time::Cron::INVALID_MONTH_DAY |  //
-                       ez::time::Cron::INVALID_MONTH |      //
-                       ez::time::Cron::INVALID_WEEK_DAY);
+bool TestEzCron_Format_ManyErrors_0() {
+    TestCron cr("60 24 32 13 8");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() !=
+        (Cron::INVALID_MINUTE |     //
+         Cron::INVALID_HOUR |       //
+         Cron::INVALID_MONTH_DAY |  //
+         Cron::INVALID_MONTH |      //
+         Cron::INVALID_WEEK_DAY))
+        return false;
+    return true;
 }
 
-bool TestEzCron_Format_Invalid_ManyErrors_1() {
-    return runTest("62 28 35 32 68 12",
-                   false,
-                   ez::time::Cron::INVALID_MINUTE |         //
-                       ez::time::Cron::INVALID_HOUR |       //
-                       ez::time::Cron::INVALID_MONTH_DAY |  //
-                       ez::time::Cron::INVALID_MONTH |      //
-                       ez::time::Cron::INVALID_WEEK_DAY |   //
-                       ez::time::Cron::WRONG_FIELDS_COUNT);
+bool TestEzCron_Format_ManyErrors_1() {
+    TestCron cr("62 28 35 32 68 12");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() !=
+        (Cron::INVALID_MINUTE |     //
+         Cron::INVALID_HOUR |       //
+         Cron::INVALID_MONTH_DAY |  //
+         Cron::INVALID_MONTH |      //
+         Cron::INVALID_WEEK_DAY |//
+         Cron::INVALID_FIELDS_COUNT))
+        return false;
+    return true;
 }
 
-bool TestEzCron_Format_Invalid_FieldCount_0() {
-    return runTest("0 0 1", false, ez::time::Cron::WRONG_FIELDS_COUNT);
+bool TestEzCron_Format_FieldCount_0() {
+    TestCron cr("0 0 1");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != Cron::INVALID_FIELDS_COUNT) return false;
+    return true;
 }
 
-bool TestEzCron_Format_Invalid_FieldCount_1() {
-    return runTest("* * * * * *", false, ez::time::Cron::WRONG_FIELDS_COUNT);
+bool TestEzCron_Format_FieldCount_1() {
+    TestCron cr("* * * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != Cron::INVALID_FIELDS_COUNT) return false;
+    return true;
 }
 
-bool TestEzCron_Format_Valid_Type_Value() {
+bool TestEzCron_Format_Type_Value() {
+    // valids
     auto pat = "05 003 0009 005 0004";
-    ez::time::Cron cr(pat);
+    TestCron cr(pat);
     if (!cr.isOk()) return false;
     auto fields = cr.getFields();
     if (fields.size() != 5) return false;
@@ -102,64 +141,170 @@ bool TestEzCron_Format_Valid_Type_Value() {
     if (fields.at(2).value != 9) return false;
     if (fields.at(3).value != 5) return false;
     if (fields.at(4).value != 4) return false;
-    return runTest(pat, true, ez::time::Cron::NONE);
-}
-
-bool TestEzCron_Format_inValid_Type_Value() {
-    return runTest("@ _5 $9 ù9 %5", false, ez::time::Cron::NONE);
-}
-
-bool TestEzCron_Format_Valid_Type_Interval() {
-    auto cr = ez::time::Cron("*5 * * * *");
+    // not valids
+    cr = TestCron("@ _5 $9 ù9 %5");
+    if (cr.getErrorFlags() !=
+        (Cron::INVALID_MINUTE |     //
+         Cron::INVALID_HOUR |       //
+         Cron::INVALID_MONTH_DAY |  //
+         Cron::INVALID_MONTH |      //
+         Cron::INVALID_WEEK_DAY |   //
+         Cron::INVALID_CHAR))
+        return false;
     if (cr.isOk()) return false;
-    if (cr.getErrorFlags() != (ez::time::Cron::INVALID_MINUTE | ez::time::Cron::INVALID_INTERVAL)) return false;
-    cr = ez::time::Cron("*//5 * * * *");
-    if (cr.isOk()) return false;
-    if (cr.getErrorFlags() != (ez::time::Cron::INVALID_MINUTE | ez::time::Cron::INVALID_INTERVAL)) return false;
-    cr = ez::time::Cron("*/ * * * *");
-    if (cr.isOk()) return false;
-    if (cr.getErrorFlags() != (ez::time::Cron::INVALID_MINUTE | ez::time::Cron::INVALID_INTERVAL)) return false;
-    cr = ez::time::Cron("*/* * * * *");
-    if (cr.isOk()) return false;
-    if (cr.getErrorFlags() != (ez::time::Cron::INVALID_MINUTE | ez::time::Cron::INVALID_INTERVAL)) return false;
     return true;
 }
 
-bool TestEzCron_Format_InValid_Type_Interval() {
-    return runTest("* * * * *", true, ez::time::Cron::NONE);
-}
-
-bool TestEzCron_Format_Valid_Type_Range() {
-    return runTest("0 0 1 1 0", true, ez::time::Cron::NONE);
-}
-
-bool TestEzCron_Format_InValid_Type_Range() {
-    return runTest("0 0 1 1 0", true, ez::time::Cron::NONE);
-}
-
-bool TestEzCron_Format_Valid_Type_Values() {
-    return runTest("*/5 * * * *", true, ez::time::Cron::NONE);
-}
-
-bool TestEzCron_Format_InValid_Type_Values() {
-    return runTest("*/5 * * * *", true, ez::time::Cron::NONE);
-}
-
-bool TestEzCron_TimeCheck_Valid() {
-    // 18h from monday to friday
-    auto cr = ez::time::Cron("18 0 * * 1-5");
+bool TestEzCron_Format_Type_Interval() {
+    //valids
+    auto cr = TestCron("*/0 */5 */5 */5 */5");
     if (!cr.isOk()) return false;
-    struct tm time_info {};
-    time_info.tm_year = 2024 - 1900;  // Année 2024
-    time_info.tm_mon = 9;             // Mois d'octobre (tm_mon commence à 0)
-    time_info.tm_mday = 22;           // 22 octobre
-    time_info.tm_hour = 18;           // 18h
-    time_info.tm_min = 0;             // 00 minutes
-    time_info.tm_sec = 25;            // 00 secondes
-    time_info.tm_isdst = 1;           // heure ete
-    auto custom_epoch = std::mktime(&time_info);
-    return false;
-    // cr.isTimeToAct(custom_epoch);
+    cr = TestCron("*/10 */5 */5 */5 */5");
+    if (!cr.isOk()) return false;
+    cr = TestCron("*/45 */5 */5 */5 */5");
+    if (!cr.isOk()) return false;
+    cr = TestCron("*/59 */5 */5 */5 */5");
+    if (!cr.isOk()) return false;
+    // not valids
+    const auto error_flag = (Cron::INVALID_MINUTE |     //
+                             Cron::INVALID_HOUR |       //
+                             Cron::INVALID_MONTH_DAY |  //
+                             Cron::INVALID_MONTH |      //
+                             Cron::INVALID_WEEK_DAY |   //
+                             Cron::INVALID_INTERVAL);
+    cr = TestCron("*5 *5 *5 *5 *5");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != error_flag) return false;
+    cr = TestCron("*//5 *//5 *//5 *//5 *//5");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != error_flag) return false;
+    cr = TestCron("*/ */ */ */ */");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != error_flag) return false;
+    cr = TestCron("*/* */* */* */* */*");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != error_flag) return false;
+    cr = TestCron("** ** ** ** **");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != error_flag) return false;
+    return true;
+}
+
+bool TestEzCron_Format_Type_Range() {
+    // valids
+    auto cr = TestCron("0-9 * * * *");
+    if (!cr.isOk()) return false;
+    // not valids
+    cr = TestCron("5-9-9 * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_RANGE)) return false;
+    cr = TestCron("- * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_RANGE)) return false;
+    cr = TestCron("-5 * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_RANGE)) return false;
+    cr = TestCron("5-5 * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_RANGE)) return false;
+    cr = TestCron("5--9 * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_RANGE)) return false;
+    cr = TestCron("5-4 * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_RANGE)) return false;
+    cr = TestCron("5- * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_RANGE)) return false;
+    cr = TestCron("5-9£9 * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_RANGE | Cron::INVALID_CHAR)) return false;
+    return true;
+}
+
+bool TestEzCron_Format_Type_Values() {
+    // valids
+    auto cr = TestCron("0,9,5,6 * * * *");
+    if (!cr.isOk()) return false;
+    // not valids
+    cr = TestCron(", * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_VALUES)) return false;
+    cr = TestCron("0,2, * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_VALUES)) return false;
+    cr = TestCron(",0 * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_VALUES)) return false;
+    cr = TestCron(",0, * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_VALUES)) return false;
+    cr = TestCron("0,5,69. * * * *");
+    if (cr.isOk()) return false;
+    if (cr.getErrorFlags() != (Cron::INVALID_MINUTE | Cron::INVALID_VALUES | Cron::INVALID_CHAR)) return false;
+    return true;
+}
+
+bool TestEzCron_TimeCheck_Type_Value() {
+    auto cr = TestCron("18 0 * * 2");
+    if (!cr.isOk()) return false;
+    // valid value
+    if (!cr.isTimeToAct(getEpochTime(18, 0, 22, 9))) return false;
+    // not valid value
+    if (cr.isTimeToAct(getEpochTime(17, 0, 22, 9))) return false;
+    if (cr.isTimeToAct(getEpochTime(19, 0, 22, 9))) return false;
+    return true;
+}
+
+bool TestEzCron_TimeCheck_Type_Interval() {
+    auto cr = TestCron("*/5 0 * * 2");
+    if (!cr.isOk()) return false;
+    // valid interval
+    if (!cr.isTimeToAct(getEpochTime(0, 0, 22, 9))) return false;
+    if (!cr.isTimeToAct(getEpochTime(5, 0, 22, 9))) return false;
+    if (!cr.isTimeToAct(getEpochTime(10, 0, 22, 9))) return false;
+    if (!cr.isTimeToAct(getEpochTime(15, 0, 22, 9))) return false;
+    if (!cr.isTimeToAct(getEpochTime(55, 0, 22, 9))) return false;
+    // not valid interval
+    if (cr.isTimeToAct(getEpochTime(1, 0, 22, 9))) return false;
+    if (cr.isTimeToAct(getEpochTime(2, 0, 22, 9))) return false;
+    if (cr.isTimeToAct(getEpochTime(11, 0, 22, 9))) return false;
+    if (cr.isTimeToAct(getEpochTime(54, 0, 22, 9))) return false;
+    if (cr.isTimeToAct(getEpochTime(58, 0, 22, 9))) return false;
+    return true;
+}
+
+bool TestEzCron_TimeCheck_Type_Range() {
+    auto cr = TestCron("15-19 0 * * 2");
+    if (!cr.isOk()) return false;
+    // valid range
+    if (!cr.isTimeToAct(getEpochTime(15, 0, 22, 9))) return false;
+    if (!cr.isTimeToAct(getEpochTime(16, 0, 22, 9))) return false;
+    if (!cr.isTimeToAct(getEpochTime(17, 0, 22, 9))) return false;
+    if (!cr.isTimeToAct(getEpochTime(18, 0, 22, 9))) return false;
+    if (!cr.isTimeToAct(getEpochTime(19, 0, 22, 9))) return false;
+    // not valid ranges
+    if (cr.isTimeToAct(getEpochTime(10, 0, 22, 9))) return false;
+    if (cr.isTimeToAct(getEpochTime(14, 0, 22, 9))) return false;
+    if (cr.isTimeToAct(getEpochTime(20, 0, 22, 9))) return false;
+    if (cr.isTimeToAct(getEpochTime(22, 0, 22, 9))) return false;
+    return true;
+}
+
+bool TestEzCron_TimeCheck_Type_Values() {
+    auto cr = TestCron("10,15,22 0 * * 2");
+    if (!cr.isOk()) return false;
+    // valid values
+    if (!cr.isTimeToAct(getEpochTime(10, 0, 22, 9))) return false;
+    if (!cr.isTimeToAct(getEpochTime(15, 0, 22, 9))) return false;
+    if (!cr.isTimeToAct(getEpochTime(22, 0, 22, 9))) return false;
+    // not valid values
+    if (cr.isTimeToAct(getEpochTime(5, 0, 22, 9))) return false;
+    if (cr.isTimeToAct(getEpochTime(9, 0, 22, 9))) return false;
+    if (cr.isTimeToAct(getEpochTime(11, 0, 22, 9))) return false;
+    if (cr.isTimeToAct(getEpochTime(16, 0, 22, 9))) return false;
+    if (cr.isTimeToAct(getEpochTime(23, 0, 22, 9))) return false;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -170,24 +315,23 @@ bool TestEzCron_TimeCheck_Valid() {
     if (vTest == std::string(#v)) return v()
 
 bool TestEzCron(const std::string &vTest) {
-    IfTestExist(TestEzCron_Format_Invalid_Mins);
-    else IfTestExist(TestEzCron_Format_Invalid_Hours);
-    else IfTestExist(TestEzCron_Format_Invalid_MonthDay);
-    else IfTestExist(TestEzCron_Format_Invalid_Month);
-    else IfTestExist(TestEzCron_Format_Invalid_WeekDay);
-    else IfTestExist(TestEzCron_Format_Invalid_ManyErrors_0);
-    else IfTestExist(TestEzCron_Format_Invalid_ManyErrors_1);
-    else IfTestExist(TestEzCron_Format_Invalid_FieldCount_0);
-    else IfTestExist(TestEzCron_Format_Invalid_FieldCount_1);
-    else IfTestExist(TestEzCron_Format_Valid_Type_Value);
-    else IfTestExist(TestEzCron_Format_inValid_Type_Value);
-    else IfTestExist(TestEzCron_Format_Valid_Type_Interval);
-    else IfTestExist(TestEzCron_Format_InValid_Type_Interval);
-    else IfTestExist(TestEzCron_Format_Valid_Type_Range);
-    else IfTestExist(TestEzCron_Format_InValid_Type_Range);
-    else IfTestExist(TestEzCron_Format_Valid_Type_Values);
-    else IfTestExist(TestEzCron_Format_InValid_Type_Values);
-    else IfTestExist(TestEzCron_TimeCheck_Valid);
+    IfTestExist(TestEzCron_Format_Mins);
+    else IfTestExist(TestEzCron_Format_Hours);
+    else IfTestExist(TestEzCron_Format_MonthDay);
+    else IfTestExist(TestEzCron_Format_Month);
+    else IfTestExist(TestEzCron_Format_WeekDay);
+    else IfTestExist(TestEzCron_Format_ManyErrors_0);
+    else IfTestExist(TestEzCron_Format_ManyErrors_1);
+    else IfTestExist(TestEzCron_Format_FieldCount_0);
+    else IfTestExist(TestEzCron_Format_FieldCount_1);
+    else IfTestExist(TestEzCron_Format_Type_Value);
+    else IfTestExist(TestEzCron_Format_Type_Interval);
+    else IfTestExist(TestEzCron_Format_Type_Range);
+    else IfTestExist(TestEzCron_Format_Type_Values);
+    else IfTestExist(TestEzCron_TimeCheck_Type_Value);
+    else IfTestExist(TestEzCron_TimeCheck_Type_Interval);
+    else IfTestExist(TestEzCron_TimeCheck_Type_Range);
+    else IfTestExist(TestEzCron_TimeCheck_Type_Values);
     return false;
 }
 

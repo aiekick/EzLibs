@@ -77,11 +77,12 @@ public:
         INVALID_MONTH_DAY = (1 << 2),
         INVALID_MONTH = (1 << 3),
         INVALID_WEEK_DAY = (1 << 4),
-        WRONG_FIELDS_COUNT = (1 << 5),
+        INVALID_FIELDS_COUNT = (1 << 5),
         INVALID_CHAR = (1 << 6),
         INVALID_RANGE = (1 << 7),
         INVALID_INTERVAL = (1 << 8),
-        INVALID_FIELD = (1 << 9)
+        INVALID_VALUES = (1 << 9),
+        INVALID_FIELD = (1 << 10)
     };
     enum class FieldType {  //
         VALUE = 0,          // Value
@@ -143,35 +144,36 @@ public:
         return m_fields;
     }
 
-    /*bool isTimeToAct() const {
+    bool isTimeToAct() const {
         time_t currentTime = std::time(nullptr);
         return isTimeToAct(currentTime);
-    }*/
+    }
 
-    /*bool isTimeToAct(time_t vCurrentTime) const {
+    bool isTimeToAct(time_t vCurrentTime) const {
         if (isOk()) {
 #ifdef _MSC_VER
             struct tm _tm;
             localtime_s(&_tm, &vCurrentTime);
-            auto *currentTm = &_tm;
+            auto* currentTm = &_tm;
 #else
-            auto *currentTm std::localtime(&vCurrentTime);
+            auto* currentTm = std::localtime(&vCurrentTime);
 #endif
-            return m_checkField(m_min, currentTm->tm_min) &&     //
-                m_checkField(m_hour, currentTm->tm_hour) &&      //
-                m_checkField(m_monthDay, currentTm->tm_mday) &&  //
-                m_checkField(m_month, currentTm->tm_mon + 1) &&  //
-                m_checkField(m_weekDay, currentTm->tm_wday);
+            return                                                          //
+                m_checkTimeForField(FieldIndex::MINUTE, currentTm->tm_min) &&  //
+                m_checkTimeForField(FieldIndex::HOUR, currentTm->tm_hour) &&   //
+                m_checkTimeForField(FieldIndex::DAY_MONTH, currentTm->tm_mday) &&  //
+                m_checkTimeForField(FieldIndex::MONTH, currentTm->tm_mon + 1) &&   //
+                m_checkTimeForField(FieldIndex::DAY_WEEK, currentTm->tm_wday);
         }
         return false;
-    }*/
+    }
 
     std::string getErrorMessage() const {
         std::stringstream err;
         if (m_errorDetails.empty()) {
             std::cout << "No errors found.\n";
         } else {
-            err << "Errors found in cron rule :" << std::endl;
+            err << "Errors found in cron rule : " << std::endl;
             err << m_cronRule << std::endl;
             for (auto rev_it = m_errorDetails.rbegin(); rev_it != m_errorDetails.rend(); ++rev_it) {
                 if (rev_it->position >= 0) {
@@ -183,10 +185,9 @@ public:
                     }
                     marker_line[rev_it->position] = '^';
                     marker_line = marker_line.substr(0, rev_it->position + 1);
-                    err << marker_line << "-- " << rev_it->message << std::endl;
+                    err << marker_line << "--<| " << m_getErrorString(rev_it->flag) << " " << rev_it->message << std::endl;
                 }
             }
-            err << m_getErrorString(m_errorFlags) << std::endl;
         }
         return err.str();
     }
@@ -219,23 +220,23 @@ private:
             if (end != std::string::npos) {
                 while (end != std::string::npos) {
                     std::string token = vText.substr(start, end - start);
-                    if (!token.empty()) {
-                        arr.emplace_back(std::make_pair(start, token));
-                    }
+                    arr.emplace_back(std::make_pair(start, token));  // empty token or not
                     start = end + 1;
                     end = vText.find_first_of(vDelimiters, start);
                 }
                 std::string token = vText.substr(start);
-                if (!token.empty()) {
-                    arr.emplace_back(std::make_pair(start, token));
-                }
+                arr.emplace_back(std::make_pair(start, token));  // empty token or not
             }
         }
         return arr;
     }
 
+    int32_t getErrorFlagFromIndex(FieldIndex vIndex) {
+        return (1 << static_cast<int32_t>(vIndex));
+    }
+
     template <typename U, typename V, typename W>
-    void addError(U vFlag, V vCharPos, W vIndex) {
+    void m_addError(U vFlag, V vCharPos, W vIndex, const std::string& vMessage = {}) {
         auto idx = static_cast<size_t>(vIndex);
         while (m_errorDetails.size() <= idx) {
             m_errorDetails.push_back({});
@@ -245,45 +246,60 @@ private:
         auto cp = static_cast<int32_t>(vCharPos);
         if (ed.position < 0) {
             ed.position = cp;
-        } else if (cp < ed.position) {
+        } else if (cp > ed.position) {
             ed.position = cp;
         }
-        ed.message = m_getErrorString(ed.flag);
+        if (!vMessage.empty()) {
+            ed.message += vMessage;
+        }
         m_errorFlags |= ed.flag;
+    }
+    
+    bool m_fieldHaveError(Field& vInOutField) {
+        auto idx = static_cast<size_t>(vInOutField.index);
+        if (m_errorDetails.size() > idx) {
+            return (m_errorDetails.at(idx).position > 0);
+        }
+        return false;
     }
     
     bool m_parseValue(Field& vInOutField, const std::string& vValue, int32_t vCharPos) {
         try {
+            auto wpos = vInOutField.str.find_first_not_of("0123456789/*-,");
+            if (wpos != std::string::npos) {
+                m_addError(INVALID_CHAR | getErrorFlagFromIndex(vInOutField.index), vInOutField.cpos + wpos, vInOutField.index);
+                return false;
+            }
             auto v = std::stoi(vValue);
             // check min/max
             switch (vInOutField.index) {
                 case FieldIndex::MINUTE: {
                     if (v < 0 || v > 59) {
-                        addError(ErrorFlags::INVALID_MINUTE, vCharPos, vInOutField.index);
+                        m_addError(ErrorFlags::INVALID_MINUTE, vCharPos, vInOutField.index);
                         return false;
                     }
                 } break;
                 case FieldIndex::HOUR: {
                     if (v < 0 || v > 23) {
-                        addError(ErrorFlags::INVALID_HOUR, vCharPos, vInOutField.index);
+                        m_addError(ErrorFlags::INVALID_HOUR, vCharPos, vInOutField.index);
                         return false;
                     }
                 } break;
                 case FieldIndex::DAY_MONTH: {
                     if (v < 1 || v > 31) {
-                        addError(ErrorFlags::INVALID_MONTH_DAY, vCharPos, vInOutField.index);
+                        m_addError(ErrorFlags::INVALID_MONTH_DAY, vCharPos, vInOutField.index);
                         return false;
                     }
                 } break;
                 case FieldIndex::MONTH: {
                     if (v < 1 || v > 12) {
-                        addError(ErrorFlags::INVALID_MONTH, vCharPos, vInOutField.index);
+                        m_addError(ErrorFlags::INVALID_MONTH, vCharPos, vInOutField.index);
                         return false;
                     }
                 } break;
                 case FieldIndex::DAY_WEEK: {
                     if (v < 0 || v > 7) {
-                        addError(ErrorFlags::INVALID_WEEK_DAY, vCharPos, vInOutField.index);
+                        m_addError(ErrorFlags::INVALID_WEEK_DAY, vCharPos, vInOutField.index);
                         return false;
                     }
                 } break;
@@ -313,8 +329,7 @@ private:
                 default: break;
             }
         } catch (...) {
-            auto flag = (1 << static_cast<int32_t>(vInOutField.index));
-            addError(flag, vCharPos, vInOutField.index);
+            m_addError(getErrorFlagFromIndex(vInOutField.index), vCharPos, vInOutField.index);
             return false;
         }
         return true;
@@ -324,67 +339,123 @@ private:
         return m_parseValue(vInOutField, vToken.second, vToken.first);
     }
     
-    bool m_isValidFieldFormat(Field& vInOutField) {
-        auto wpos = vInOutField.str.find_first_not_of("0123456789/*-,");
-        if (wpos != std::string::npos) {
-            addError(INVALID_CHAR, wpos, vInOutField.index);
-            return false;
-        }
-        return true;
-    }
-    
-    bool m_isWildcardORInterval(Field& vInOutField) {
-        auto wpos = vInOutField.str.find("*");
-        if (wpos != std::string::npos) {
-            auto bad_pos = vInOutField.str.find_first_not_of("0123456789/*");
-            if (bad_pos != std::string::npos) {
-                addError(INVALID_INTERVAL, vInOutField.cpos + bad_pos, vInOutField.index);
-                return true;  // we not want to continue the field check
-            }
-            if (vInOutField.str.size() > wpos) {  // interval pattern '*/'
-                ++wpos;
-                if (vInOutField.str[wpos] == '/') {
-                    ++wpos;
-                    vInOutField.str = vInOutField.str.substr(wpos);
-                    vInOutField.type = FieldType::INTERVAL;
-                    return m_parseValue(vInOutField, vInOutField.str, wpos);
-                } else {
-                    addError(INVALID_INTERVAL, vInOutField.cpos + wpos, vInOutField.index);
+    bool m_isInterval(Field& vInOutField) {
+        if (!vInOutField.str.empty()) {
+            auto wpos = vInOutField.str.find("*");
+            if (wpos != std::string::npos) {
+                auto bad_pos = vInOutField.str.find_first_not_of("0123456789/*");
+                if (bad_pos != std::string::npos) {
+                    m_addError(INVALID_INTERVAL | getErrorFlagFromIndex(vInOutField.index),  //
+                               vInOutField.cpos + bad_pos,
+                               vInOutField.index);
+                    return true;  // we not want to continue the field check
                 }
-            } else {  // generic pattern '*'
-                vInOutField.type = FieldType::WILDCARD;
+                if (wpos < (vInOutField.str.size() - 1)) {  // interval pattern '*/'
+                    ++wpos;
+                    if (vInOutField.str[wpos] == '/') {
+                        ++wpos;
+                        vInOutField.str = vInOutField.str.substr(wpos);
+                        vInOutField.type = FieldType::INTERVAL;
+                        if (!m_parseValue(vInOutField, vInOutField.str, static_cast<int32_t>(wpos))) {
+                            m_addError(INVALID_INTERVAL, vInOutField.cpos + wpos, vInOutField.index);
+                            return false;  // wildcard, stop field checking
+                        }
+                    } else {
+                        m_addError(INVALID_INTERVAL | getErrorFlagFromIndex(vInOutField.index),  //
+                                   vInOutField.cpos + wpos,
+                                   vInOutField.index);
+                    }
+                } else {  // generic pattern '*'
+                    vInOutField.type = FieldType::WILDCARD;
+                }
+                return true;  // wildcard, stop field checking
             }
-            return true;  // wildcard, stop field checking
         }
         return false;  // no wildcard, continue field checking
     }
     
     bool m_isRange(Field& vInOutField) {
-        bool res = true;
-        auto tokens = m_split(vInOutField.str, "-");
-        if (!tokens.empty()) {
-            vInOutField.type = FieldType::RANGE;
-            if (tokens.size() != 2) {
-                addError(INVALID_RANGE, vInOutField.cpos + vInOutField.str.size(), vInOutField.index);
-                return true;  // we not want to continue the field check
+        if (!vInOutField.str.empty()) {
+            if (vInOutField.str.front() == '-') {
+                m_addError(INVALID_RANGE | getErrorFlagFromIndex(vInOutField.index),  //
+                           vInOutField.cpos,
+                           vInOutField.index);
+                return true;  // range, stop field checking
+            } else if (vInOutField.str.back() == '-') {
+                m_addError(INVALID_RANGE | getErrorFlagFromIndex(vInOutField.index),  //
+                           vInOutField.cpos + vInOutField.str.size() - 1,
+                           vInOutField.index);
+                return true;  // range, stop field checking
             }
-            for (const auto& token : tokens) {
-                res &= m_parseValue(vInOutField, token);
+            auto tokens = m_split(vInOutField.str, "-");
+            if (!tokens.empty()) {
+                vInOutField.type = FieldType::RANGE;
+                if (tokens.size() != 2) {
+                    auto err_pos = vInOutField.str.size();
+                    for (const auto& token : tokens) {
+                        if (token.second.empty()) {
+                            err_pos = token.first;
+                            break;
+                        }
+                    }
+                    m_addError(INVALID_RANGE | getErrorFlagFromIndex(vInOutField.index),  //
+                               vInOutField.cpos + err_pos,
+                               vInOutField.index);
+                    return true;  // range, stop field checking
+                }
+                for (const auto& token : tokens) {
+                    if (!m_parseValue(vInOutField, token)) {
+                        m_addError(INVALID_RANGE, vInOutField.cpos + token.first, vInOutField.index);
+                    }
+                }                
+                if (!m_fieldHaveError(vInOutField)) {
+                    if (vInOutField.range.first == vInOutField.range.second) {                // 5-5
+                        m_addError(INVALID_RANGE | getErrorFlagFromIndex(vInOutField.index),  //
+                                   vInOutField.cpos + tokens[1].first,
+                                   vInOutField.index,
+                                   " End must be different than Start.");
+                    } else if (vInOutField.range.first > vInOutField.range.second) {          // 5-4
+                        m_addError(INVALID_RANGE | getErrorFlagFromIndex(vInOutField.index),  //
+                                   vInOutField.cpos + tokens[1].first,
+                                   vInOutField.index,
+                                   " End must be greater than Start.");
+                    }
+                }
+                return true;  // range, stop field checking
             }
-            return true;  // range, stop field checking
         }
         return false;  // no range, continue field checking
     }
     
     bool m_isValues(Field& vInOutField) {
-        bool res = true;
-        auto tokens = m_split(vInOutField.str, ",");
-        if (!tokens.empty()) {
-            vInOutField.type = FieldType::VALUES;
-            for (const auto& token : tokens) {
-                res &= m_parseValue(vInOutField, token);
+        if (!vInOutField.str.empty()) {
+            if (vInOutField.str.front() == ',') {
+                m_addError(INVALID_VALUES | getErrorFlagFromIndex(vInOutField.index),  //
+                           vInOutField.cpos,
+                           vInOutField.index);
+                return true;  // range, stop field checking
+            } else if (vInOutField.str.back() == ',') {
+                m_addError(INVALID_VALUES | getErrorFlagFromIndex(vInOutField.index),  //
+                           vInOutField.cpos + vInOutField.str.size() - 1,
+                           vInOutField.index);
+                return true;  // range, stop field checking
             }
-            return true;  // values, stop field checking
+            auto tokens = m_split(vInOutField.str, ",");
+            if (!tokens.empty()) {
+                vInOutField.type = FieldType::VALUES;
+                if (tokens.size() == 1) {
+                    m_addError(INVALID_VALUES | getErrorFlagFromIndex(vInOutField.index),  //
+                               vInOutField.cpos + vInOutField.str.size(),
+                               vInOutField.index);
+                    return true;  // we not want to continue the field check
+                }
+                for (const auto& token : tokens) {
+                    if (!m_parseValue(vInOutField, token)) {
+                        m_addError(INVALID_VALUES, vInOutField.cpos + token.first, vInOutField.index);
+                    }
+                }
+                return true;  // values, stop field checking
+            }
         }
         return false;  // no values, continue field checking
     }
@@ -394,12 +465,10 @@ private:
         field.str = vToken.second;
         field.index = static_cast<FieldIndex>(m_fields.size());
         field.cpos = vToken.first;
-        if (m_isValidFieldFormat(field)) {
-            if (!m_isWildcardORInterval(field)) {
-                if (!m_isRange(field)) {
-                    if (!m_isValues(field)) {
-                        m_parseValue(field, vToken);
-                    }
+        if (!m_isInterval(field)) {
+            if (!m_isRange(field)) {
+                if (!m_isValues(field)) {
+                    m_parseValue(field, vToken);
                 }
             }
         }
@@ -411,7 +480,7 @@ private:
         auto tokens = m_split(m_cronRule, " ");
         auto count = static_cast<size_t>(FieldIndex::Count);
         if (tokens.size() != count) {
-            addError(WRONG_FIELDS_COUNT, tokens.back().first, tokens.size() - 1);  // put the error on the last available field
+            m_addError(INVALID_FIELDS_COUNT, tokens.back().first, tokens.size() - 1);  // put the error on the last available field
         }
         for (const auto& token : tokens) {
             m_parseField(token);
@@ -435,19 +504,50 @@ private:
         if (vFlag & INVALID_WEEK_DAY) {
             res << " Invalid week day.";
         }
-        if (vFlag & WRONG_FIELDS_COUNT) {
+        if (vFlag & INVALID_FIELDS_COUNT) {
             res << " Invalid fields count.";
         }
         if (vFlag & INVALID_CHAR) {
             res << " Invalid char.";
         }
-        if (vFlag & INVALID_RANGE) {
-            res << " Invalid range.";
-        }
         if (vFlag & INVALID_INTERVAL) {
             res << " Invalid interval.";
         }
+        if (vFlag & INVALID_RANGE) {
+            res << " Invalid range.";
+        }
+        if (vFlag & INVALID_VALUES) {
+            res << " Invalid values.";
+        }
+        if (vFlag & INVALID_FIELD) {
+            res << " Invalid field.";
+        }
         return res.str();
+    }
+
+    bool m_checkTimeForField(FieldIndex vFieldIndex, int32_t vValue) const {
+        const auto& field = m_fields.at(static_cast<size_t>(vFieldIndex));
+        switch (field.type) {
+            case FieldType::WILDCARD: {  // '*' is valid for all values
+                return true;
+            }
+            case FieldType::VALUE: { // a == v
+                return (field.value == vValue);
+            }
+            case FieldType::INTERVAL: { // each v
+                return ((vValue % field.interval) == 0);
+            }
+            case FieldType::RANGE: { // a > v > b
+                return (vValue >= field.range.first &&  //
+                        vValue <= field.range.second);
+            }
+            case FieldType::VALUES: { // a == v or b == v or ..
+                return (field.values.find(vValue) != field.values.end());
+            }
+            case FieldType::Count:
+            default: break;
+        }
+        return false;
     }
 };
 
