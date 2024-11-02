@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include <set>
 #include <ctime>
+#include <array>
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -110,7 +111,7 @@ public:
     };
     struct ErrorDetail {
         int32_t flag{};
-        int32_t position{};
+        int32_t position{-1};
         std::string message;
     };
 
@@ -121,7 +122,7 @@ private:
     std::vector<ErrorDetail> m_errorDetails;
 
 public:
-    Cron(const std::string &m_cronRule)  //
+    Cron(const std::string& m_cronRule)  //
         : m_errorFlags(NONE), m_cronRule(m_cronRule) {
         m_parseExpression();
     }
@@ -130,7 +131,7 @@ public:
         return (m_errorFlags == NONE);
     }
 
-    const std::string &getCronRule() const {
+    const std::string& getCronRule() const {
         return m_cronRule;
     }
 
@@ -138,8 +139,8 @@ public:
         return m_errorFlags;
     }
 
-    const std::vector<ErrorDetail> &getErrorDetails() const {
-        return m_errorDetails;
+    const std::vector<Field>& getFields() const {
+        return m_fields;
     }
 
     /*bool isTimeToAct() const {
@@ -173,14 +174,19 @@ public:
             err << "Errors found in cron rule :" << std::endl;
             err << m_cronRule << std::endl;
             for (auto rev_it = m_errorDetails.rbegin(); rev_it != m_errorDetails.rend(); ++rev_it) {
-                std::string marker_line(m_cronRule.size(), ' ');
-                for (auto it = m_errorDetails.begin(); it != m_errorDetails.end(); ++it) {
-                    marker_line[it->position] = '|';
+                if (rev_it->position >= 0) {
+                    std::string marker_line(m_cronRule.size(), ' ');
+                    for (auto it = m_errorDetails.begin(); it != m_errorDetails.end(); ++it) {
+                        if (it->position >= 0) {
+                            marker_line[it->position] = '|';
+                        }
+                    }
+                    marker_line[rev_it->position] = '^';
+                    marker_line = marker_line.substr(0, rev_it->position + 1);
+                    err << marker_line << "-- " << rev_it->message << std::endl;
                 }
-                marker_line[rev_it->position] = '^';
-                marker_line = marker_line.substr(0, rev_it->position + 1);
-                err << marker_line << "-- " << rev_it->message << std::endl;
             }
+            err << m_getErrorString(m_errorFlags) << std::endl;
         }
         return err.str();
     }
@@ -205,67 +211,79 @@ For each fields, thoses forms are accepted :
 private:
     typedef int32_t CharPos;
     typedef std::pair<CharPos, std::string> Token;
-    std::vector<Token> m_split(const std::string &vText, const std::string &vDelimiters) {
+    std::vector<Token> m_split(const std::string& vText, const std::string& vDelimiters) {
         std::vector<Token> arr;
         if (!vText.empty()) {
             std::string::size_type start = 0;
             std::string::size_type end = vText.find_first_of(vDelimiters, start);
-            while (end != std::string::npos) {
-                std::string token = vText.substr(start, end - start);
+            if (end != std::string::npos) {
+                while (end != std::string::npos) {
+                    std::string token = vText.substr(start, end - start);
+                    if (!token.empty()) {
+                        arr.emplace_back(std::make_pair(start, token));
+                    }
+                    start = end + 1;
+                    end = vText.find_first_of(vDelimiters, start);
+                }
+                std::string token = vText.substr(start);
                 if (!token.empty()) {
                     arr.emplace_back(std::make_pair(start, token));
                 }
-                start = end + 1;
-                end = vText.find_first_of(vDelimiters, start);
-            }
-            std::string token = vText.substr(start);
-            if (!token.empty()) {
-                arr.emplace_back(std::make_pair(start, token));
             }
         }
         return arr;
     }
-    template <typename U, typename T>
-    void addError(U vFlag, T vCharPos) {
-        ErrorDetail ed;
-        ed.flag = static_cast<ErrorFlags>(vFlag);
-        ed.position = static_cast<int32_t>(vCharPos);
+
+    template <typename U, typename V, typename W>
+    void addError(U vFlag, V vCharPos, W vIndex) {
+        auto idx = static_cast<size_t>(vIndex);
+        while (m_errorDetails.size() <= idx) {
+            m_errorDetails.push_back({});
+        }
+        auto& ed = m_errorDetails.at(idx);
+        ed.flag |= static_cast<int32_t>(vFlag);
+        auto cp = static_cast<int32_t>(vCharPos);
+        if (ed.position < 0) {
+            ed.position = cp;
+        } else if (cp < ed.position) {
+            ed.position = cp;
+        }
         ed.message = m_getErrorString(ed.flag);
-        m_errorDetails.push_back(ed);
         m_errorFlags |= ed.flag;
     }
-    bool m_parseValue(Field &vInOutField, const std::string &vValue, int32_t vCharPos) {
+    
+    bool m_parseValue(Field& vInOutField, const std::string& vValue, int32_t vCharPos) {
         try {
             auto v = std::stoi(vValue);
             // check min/max
             switch (vInOutField.index) {
                 case FieldIndex::MINUTE: {
                     if (v < 0 || v > 59) {
-                        addError(ErrorFlags::INVALID_MINUTE, vCharPos);
+                        addError(ErrorFlags::INVALID_MINUTE, vCharPos, vInOutField.index);
                         return false;
                     }
                 } break;
                 case FieldIndex::HOUR: {
                     if (v < 0 || v > 23) {
-                        addError(ErrorFlags::INVALID_HOUR, vCharPos);
+                        addError(ErrorFlags::INVALID_HOUR, vCharPos, vInOutField.index);
                         return false;
                     }
                 } break;
                 case FieldIndex::DAY_MONTH: {
                     if (v < 1 || v > 31) {
-                        addError(ErrorFlags::INVALID_MONTH_DAY, vCharPos);
+                        addError(ErrorFlags::INVALID_MONTH_DAY, vCharPos, vInOutField.index);
                         return false;
                     }
                 } break;
                 case FieldIndex::MONTH: {
                     if (v < 1 || v > 12) {
-                        addError(ErrorFlags::INVALID_MONTH, vCharPos);
+                        addError(ErrorFlags::INVALID_MONTH, vCharPos, vInOutField.index);
                         return false;
                     }
                 } break;
                 case FieldIndex::DAY_WEEK: {
                     if (v < 0 || v > 7) {
-                        addError(ErrorFlags::INVALID_WEEK_DAY, vCharPos);
+                        addError(ErrorFlags::INVALID_WEEK_DAY, vCharPos, vInOutField.index);
                         return false;
                     }
                 } break;
@@ -296,28 +314,31 @@ private:
             }
         } catch (...) {
             auto flag = (1 << static_cast<int32_t>(vInOutField.index));
-            addError(flag, vCharPos);
+            addError(flag, vCharPos, vInOutField.index);
             return false;
         }
         return true;
     }
-    bool m_parseValue(Field &vInOutField, const Token &vToken) {
+
+    bool m_parseValue(Field& vInOutField, const Token& vToken) {
         return m_parseValue(vInOutField, vToken.second, vToken.first);
     }
-    bool m_isValidFieldFormat(Field &vInOutField) {
+    
+    bool m_isValidFieldFormat(Field& vInOutField) {
         auto wpos = vInOutField.str.find_first_not_of("0123456789/*-,");
         if (wpos != std::string::npos) {
-            addError(INVALID_CHAR, wpos);
+            addError(INVALID_CHAR, wpos, vInOutField.index);
             return false;
         }
         return true;
     }
-    bool m_isWildcardORInterval(Field &vInOutField) {
+    
+    bool m_isWildcardORInterval(Field& vInOutField) {
         auto wpos = vInOutField.str.find("*");
         if (wpos != std::string::npos) {
-            auto wpos = vInOutField.str.find_first_not_of("0123456789/*");
-            if (wpos != std::string::npos) {
-                addError(INVALID_INTERVAL, wpos);
+            auto bad_pos = vInOutField.str.find_first_not_of("0123456789/*");
+            if (bad_pos != std::string::npos) {
+                addError(INVALID_INTERVAL, vInOutField.cpos + bad_pos, vInOutField.index);
                 return true;  // we not want to continue the field check
             }
             if (vInOutField.str.size() > wpos) {  // interval pattern '*/'
@@ -327,6 +348,8 @@ private:
                     vInOutField.str = vInOutField.str.substr(wpos);
                     vInOutField.type = FieldType::INTERVAL;
                     return m_parseValue(vInOutField, vInOutField.str, wpos);
+                } else {
+                    addError(INVALID_INTERVAL, vInOutField.cpos + wpos, vInOutField.index);
                 }
             } else {  // generic pattern '*'
                 vInOutField.type = FieldType::WILDCARD;
@@ -335,35 +358,38 @@ private:
         }
         return false;  // no wildcard, continue field checking
     }
-    bool m_isRange(Field &vInOutField) {
+    
+    bool m_isRange(Field& vInOutField) {
         bool res = true;
         auto tokens = m_split(vInOutField.str, "-");
         if (!tokens.empty()) {
             vInOutField.type = FieldType::RANGE;
             if (tokens.size() != 2) {
-                addError(INVALID_RANGE, vInOutField.cpos + vInOutField.str.size());
+                addError(INVALID_RANGE, vInOutField.cpos + vInOutField.str.size(), vInOutField.index);
                 return true;  // we not want to continue the field check
             }
-            for (const auto &token : tokens) {
+            for (const auto& token : tokens) {
                 res &= m_parseValue(vInOutField, token);
             }
             return true;  // range, stop field checking
         }
         return false;  // no range, continue field checking
     }
-    bool m_isValues(Field &vInOutField) {
+    
+    bool m_isValues(Field& vInOutField) {
         bool res = true;
         auto tokens = m_split(vInOutField.str, ",");
         if (!tokens.empty()) {
             vInOutField.type = FieldType::VALUES;
-            for (const auto &token : tokens) {
+            for (const auto& token : tokens) {
                 res &= m_parseValue(vInOutField, token);
             }
             return true;  // values, stop field checking
         }
         return false;  // no values, continue field checking
     }
-    void m_parseField(const Token &vToken) {
+    
+    void m_parseField(const Token& vToken) {
         Field field;
         field.str = vToken.second;
         field.index = static_cast<FieldIndex>(m_fields.size());
@@ -372,25 +398,27 @@ private:
             if (!m_isWildcardORInterval(field)) {
                 if (!m_isRange(field)) {
                     if (!m_isValues(field)) {
-                        addError(INVALID_FIELD, field.cpos);
+                        m_parseValue(field, vToken);
                     }
                 }
             }
         }
         m_fields.push_back(field);
     }
+    
     void m_parseExpression() {
         m_fields.clear();
         auto tokens = m_split(m_cronRule, " ");
-        if (tokens.size() != 5) {
-            addError(WRONG_FIELDS_COUNT, m_cronRule.size());
+        auto count = static_cast<size_t>(FieldIndex::Count);
+        if (tokens.size() != count) {
+            addError(WRONG_FIELDS_COUNT, tokens.back().first, tokens.size() - 1);  // put the error on the last available field
         }
-        for (const auto &token : tokens) {
+        for (const auto& token : tokens) {
             m_parseField(token);
         }
     }
 
-    std::string m_getErrorString(int32_t vFlag) {
+    std::string m_getErrorString(int32_t vFlag) const {
         std::stringstream res;
         if (vFlag & INVALID_MINUTE) {
             res << " Invalid minute.";
