@@ -25,12 +25,18 @@ using namespace ez::time;
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-class TestCron : public Cron {
+namespace ez {
+namespace time {
+
+    class TestCron : public Cron {
 public:
     TestCron(const std::string &vRule) : Cron(vRule) {
         LogVarError("%s", getErrorMessage().c_str());
     }
 };
+
+}  // namespace time
+}  // namespace ez
 
 time_t getEpochTime(int32_t vMin, int32_t vHour, int32_t vMonthDay, int32_t vMonth) {
     struct tm time_info {};

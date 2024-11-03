@@ -1,0 +1,65 @@
+#include <EzLibs/EzGif.hpp>
+#include <string>
+
+// D�sactivation des warnings de conversion
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4244)  // Conversion from 'double' to 'float', possible loss of data
+#pragma warning(disable : 4305)  // Truncation from 'double' to 'float'
+#elif defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wfloat-conversion"
+#endif
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+bool TestEzGif_Save_0() {
+    ez::img::Gif gif;
+    gif.setSize(100, 100);
+    gif.setColor(0, 255, 0, 0);    // Rouge
+    gif.setColor(1, 0, 255, 0);    // Vert
+    gif.setColor(2, 0, 0, 255);    // Bleu
+    gif.setColor(3, 255, 255, 0);  // Jaune
+    for (int y = 0; y < 100; ++y) {
+        for (int x = 0; x < 100; ++x) {
+            uint8_t colorIndex = (x / 25) + (y / 25) * 2; // one color per block of 25x25
+            gif.setPixel(x, y, colorIndex);
+        }
+    }
+    gif.save(PROJECT_PATH "test.gif");
+    return true;
+}
+
+bool TestEzGif_Save_1() {
+    return true;
+}
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+#define IfTestExist(v) \
+    if (vTest == std::string(#v)) return v()
+
+bool TestEzGif(const std::string& vTest) {
+    IfTestExist(TestEzGif_Save_0);
+    else IfTestExist(TestEzGif_Save_1);
+    return false;
+}
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#elif defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////

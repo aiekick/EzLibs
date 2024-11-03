@@ -15,7 +15,8 @@ file(GLOB SRC_RECURSE
 	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzIni.hpp
 	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzLog.hpp
 	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzXmlConfig.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzBmp.hpp)
+	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzBmp.hpp
+	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzGif.hpp)
 source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/EzLibs PREFIX Libs FILES ${SRC_RECURSE})
 
 add_executable(${PROJECT} 
@@ -32,3 +33,17 @@ target_include_directories(${PROJECT} PRIVATE
 ##########################################################
 ##### TESTS ##############################################
 ##########################################################
+
+##########################################################
+##### TESTS EzBmp ########################################
+##########################################################
+
+AddTest("TestEzBmp_Save_0")
+AddTest("TestEzBmp_Save_1")
+
+##########################################################
+##### TESTS EzGif ########################################
+##########################################################
+
+AddTest("TestEzGif_Save_0")
+AddTest("TestEzGif_Save_1")

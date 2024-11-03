@@ -20,6 +20,8 @@ ez::img::Bmp()
 */
 
 class Bmp {
+    friend class TestBmp;
+
 private:
     uint32_t m_width{};
     uint32_t m_height{};
@@ -43,18 +45,20 @@ public:
         return *this;
     }
 
-    Bmp& setPixel(uint32_t vX, uint32_t vY, uint8_t vRed, uint8_t vGreen, uint8_t vBlue) {
-        if (vX >= 0 && vX < m_width && vY >= 0 && vY < m_height) {
-            size_t index = static_cast<size_t>((vY * m_width + vX) * 3U);
+    Bmp& setPixel(int32_t vX, int32_t vY, int32_t vRed, int32_t vGreen, int32_t vBlue) {
+        auto x = static_cast<uint32_t>(vX);
+        auto y = static_cast<uint32_t>(vY);
+        if (x >= 0 && y < m_width && y >= 0U && x < m_height) {
+            size_t index = static_cast<size_t>((vY * m_width + vX) * 3);
             // BMP save color in BGR
-            m_pixels[index++] = vBlue;
-            m_pixels[index++] = vGreen;
-            m_pixels[index] = vRed;
+            m_pixels[index++] = m_getByteFromInt32(vBlue);
+            m_pixels[index++] = m_getByteFromInt32(vGreen);
+            m_pixels[index] = m_getByteFromInt32(vBlue);
         }
         return *this;
     }
 
-    Bmp& setPixel(uint32_t vX, uint32_t vY, float vRed, float vGreen, float vBlue) {
+    Bmp& setPixel(int32_t vX, int32_t vY, float vRed, float vGreen, float vBlue) {
         return setPixel(vX,  //
                         vY, 
                         m_getByteFromLinearFloat(vRed),
@@ -126,9 +130,9 @@ public:
         file.write(reinterpret_cast<char*>(infoHeader), sizeof(infoHeader));
 
         // Écrire les données des pixels
-        for (int y = m_height - 1; y >= 0; --y) {  // BMP commence du bas vers le haut
-            for (int x = 0; x < m_width; ++x) {
-                int index = (y * m_width + x) * 3;
+        for (int32_t y = static_cast<int32_t>(m_height - 1); y >= 0; --y) {  // BMP commence du bas vers le haut
+            for (int32_t x = 0; x < static_cast<int32_t>(m_width); ++x) {
+                size_t index = static_cast<size_t>((y * m_width + x) * 3);
                 file.write(reinterpret_cast<char*>(&m_pixels[index]), 3);
             }
             // Ajout de padding si nécessaire
@@ -141,6 +145,15 @@ public:
     }
 
 private:
+    uint8_t m_getByteFromInt32(int32_t vValue) {
+        if (vValue < 0) {
+            vValue = 0;
+        }
+        if (vValue > 255) {
+            vValue = 255;
+        }
+        return static_cast<uint8_t>(vValue);
+    }
     uint8_t m_getByteFromLinearFloat(float vValue) {
         if (vValue < 0.0f) {
             vValue = 0.0f;

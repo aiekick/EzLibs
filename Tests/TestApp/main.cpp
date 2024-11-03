@@ -4,12 +4,11 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-#define IfTestCollectionExist(v, str)        \
-    if (vTest.find(#v) != std::string::npos) \
-    return v(str)
+#define IfTestCollectionExist(v) \
+    if (vTest.find(#v) != std::string::npos) return v(vTest)
 
 bool TestApp(const std::string& vTest) {
-    IfTestCollectionExist(TestEzArgs, vTest);
+    IfTestCollectionExist(TestEzArgs);
     return true;
 }
 

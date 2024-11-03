@@ -5,8 +5,6 @@ set(PROJECT TestMath)
 enable_language(C CXX)
 project(${PROJECT} CXX)
 
-add_definitions(-DPROJECT_PATH="${CMAKE_CURRENT_SOURCE_DIR}")
-
 file(GLOB_RECURSE PROJECT_TEST_SRC_RECURSE 
 	${CMAKE_CURRENT_SOURCE_DIR}/*.cpp 
 	${CMAKE_CURRENT_SOURCE_DIR}/*.h)

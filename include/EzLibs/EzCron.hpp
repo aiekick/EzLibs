@@ -69,6 +69,8 @@ namespace time {
 //  */3 : all the 3 interval units(0, 3, 6, 9, etc..)
 
 class Cron {
+    friend class TestCron;
+
 public:
     enum ErrorFlags {  //
         NONE = (0),
@@ -231,7 +233,7 @@ private:
         return arr;
     }
 
-    int32_t getErrorFlagFromIndex(FieldIndex vIndex) {
+    int32_t m_getErrorFlagFromIndex(FieldIndex vIndex) {
         return (1 << static_cast<int32_t>(vIndex));
     }
 
@@ -267,7 +269,7 @@ private:
         try {
             auto wpos = vInOutField.str.find_first_not_of("0123456789/*-,");
             if (wpos != std::string::npos) {
-                m_addError(INVALID_CHAR | getErrorFlagFromIndex(vInOutField.index), vInOutField.cpos + wpos, vInOutField.index);
+                m_addError(INVALID_CHAR | m_getErrorFlagFromIndex(vInOutField.index), vInOutField.cpos + wpos, vInOutField.index);
                 return false;
             }
             auto v = std::stoi(vValue);
@@ -329,7 +331,7 @@ private:
                 default: break;
             }
         } catch (...) {
-            m_addError(getErrorFlagFromIndex(vInOutField.index), vCharPos, vInOutField.index);
+            m_addError(m_getErrorFlagFromIndex(vInOutField.index), vCharPos, vInOutField.index);
             return false;
         }
         return true;
@@ -345,7 +347,7 @@ private:
             if (wpos != std::string::npos) {
                 auto bad_pos = vInOutField.str.find_first_not_of("0123456789/*");
                 if (bad_pos != std::string::npos) {
-                    m_addError(INVALID_INTERVAL | getErrorFlagFromIndex(vInOutField.index),  //
+                    m_addError(INVALID_INTERVAL | m_getErrorFlagFromIndex(vInOutField.index),  //
                                vInOutField.cpos + bad_pos,
                                vInOutField.index);
                     return true;  // we not want to continue the field check
@@ -361,7 +363,7 @@ private:
                             return false;  // wildcard, stop field checking
                         }
                     } else {
-                        m_addError(INVALID_INTERVAL | getErrorFlagFromIndex(vInOutField.index),  //
+                        m_addError(INVALID_INTERVAL | m_getErrorFlagFromIndex(vInOutField.index),  //
                                    vInOutField.cpos + wpos,
                                    vInOutField.index);
                     }
@@ -377,12 +379,12 @@ private:
     bool m_isRange(Field& vInOutField) {
         if (!vInOutField.str.empty()) {
             if (vInOutField.str.front() == '-') {
-                m_addError(INVALID_RANGE | getErrorFlagFromIndex(vInOutField.index),  //
+                m_addError(INVALID_RANGE | m_getErrorFlagFromIndex(vInOutField.index),  //
                            vInOutField.cpos,
                            vInOutField.index);
                 return true;  // range, stop field checking
             } else if (vInOutField.str.back() == '-') {
-                m_addError(INVALID_RANGE | getErrorFlagFromIndex(vInOutField.index),  //
+                m_addError(INVALID_RANGE | m_getErrorFlagFromIndex(vInOutField.index),  //
                            vInOutField.cpos + vInOutField.str.size() - 1,
                            vInOutField.index);
                 return true;  // range, stop field checking
@@ -398,7 +400,7 @@ private:
                             break;
                         }
                     }
-                    m_addError(INVALID_RANGE | getErrorFlagFromIndex(vInOutField.index),  //
+                    m_addError(INVALID_RANGE | m_getErrorFlagFromIndex(vInOutField.index),  //
                                vInOutField.cpos + err_pos,
                                vInOutField.index);
                     return true;  // range, stop field checking
@@ -410,12 +412,12 @@ private:
                 }                
                 if (!m_fieldHaveError(vInOutField)) {
                     if (vInOutField.range.first == vInOutField.range.second) {                // 5-5
-                        m_addError(INVALID_RANGE | getErrorFlagFromIndex(vInOutField.index),  //
+                        m_addError(INVALID_RANGE | m_getErrorFlagFromIndex(vInOutField.index),  //
                                    vInOutField.cpos + tokens[1].first,
                                    vInOutField.index,
                                    " End must be different than Start.");
                     } else if (vInOutField.range.first > vInOutField.range.second) {          // 5-4
-                        m_addError(INVALID_RANGE | getErrorFlagFromIndex(vInOutField.index),  //
+                        m_addError(INVALID_RANGE | m_getErrorFlagFromIndex(vInOutField.index),  //
                                    vInOutField.cpos + tokens[1].first,
                                    vInOutField.index,
                                    " End must be greater than Start.");
@@ -430,12 +432,12 @@ private:
     bool m_isValues(Field& vInOutField) {
         if (!vInOutField.str.empty()) {
             if (vInOutField.str.front() == ',') {
-                m_addError(INVALID_VALUES | getErrorFlagFromIndex(vInOutField.index),  //
+                m_addError(INVALID_VALUES | m_getErrorFlagFromIndex(vInOutField.index),  //
                            vInOutField.cpos,
                            vInOutField.index);
                 return true;  // range, stop field checking
             } else if (vInOutField.str.back() == ',') {
-                m_addError(INVALID_VALUES | getErrorFlagFromIndex(vInOutField.index),  //
+                m_addError(INVALID_VALUES | m_getErrorFlagFromIndex(vInOutField.index),  //
                            vInOutField.cpos + vInOutField.str.size() - 1,
                            vInOutField.index);
                 return true;  // range, stop field checking
@@ -444,7 +446,7 @@ private:
             if (!tokens.empty()) {
                 vInOutField.type = FieldType::VALUES;
                 if (tokens.size() == 1) {
-                    m_addError(INVALID_VALUES | getErrorFlagFromIndex(vInOutField.index),  //
+                    m_addError(INVALID_VALUES | m_getErrorFlagFromIndex(vInOutField.index),  //
                                vInOutField.cpos + vInOutField.str.size(),
                                vInOutField.index);
                     return true;  // we not want to continue the field check

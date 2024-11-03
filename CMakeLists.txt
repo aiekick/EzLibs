@@ -16,5 +16,6 @@ include_directories(${EZ_LIBS_INCLUDE_DIR})
 
 if(USE_EZ_LIBS_TESTING)
 	enable_testing()
+	add_definitions(-DPROJECT_PATH="${CMAKE_SOURCE_DIR}/")
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Tests)
 endif()

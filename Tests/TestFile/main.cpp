@@ -1,4 +1,5 @@
-//#include <TestEzFile.h>
+#include <TestEzBmp.h>
+#include <TestEzGif.h>
 
 #include <string>
 
@@ -6,13 +7,13 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-#define IfTestCollectionExist(v, str)        \
-    if (vTest.find(#v) != std::string::npos) \
-    return v(str)
+#define IfTestCollectionExist(v) \
+    if (vTest.find(#v) != std::string::npos) return v(vTest)
 
 bool TestFile(const std::string& vTest) {
-    // IfTestCollectionExist(TestEzFile_, vTest);
-    return true;
+    IfTestCollectionExist(TestEzBmp);
+    IfTestCollectionExist(TestEzGif);
+    return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -25,5 +26,5 @@ int main(int argc, char** argv) {
         return TestFile(argv[1]) ? 0 : 1;
     }
     // User testing
-    return TestFile("TestEzFile_") ? 0 : 1;
+    return TestFile("TestEzBmp_Save_0") ? 0 : 1;
 }
