@@ -1,0 +1,156 @@
+#pragma once
+
+#include <fstream>
+#include <vector>
+#include <cstdint>
+#include <stdexcept>
+#include <string>
+
+namespace ez {
+namespace img {
+
+/*
+Bitmap picture file saver
+
+ez::img::Bmp()
+    .setSize(10,10) // width, height 10
+    .setPixel(0,0,255,100,200) // byte form
+    .setPixel(5,5,0.5,0.2,0.8) // linear float form
+    .save("test.bmp"); // save to file test.bmp
+*/
+
+class Bmp {
+private:
+    uint32_t m_width{};
+    uint32_t m_height{};
+    std::vector<uint8_t> m_pixels;
+
+public:
+    Bmp() = default;
+    ~Bmp() = default;
+
+    Bmp& setSize(uint32_t vWidth, uint32_t vHeight) {
+        m_width = std::move(vWidth);
+        m_height = std::move(vHeight);
+        m_pixels.resize(m_width * m_height * 3U);
+        return *this;
+    }
+
+    Bmp& clear() {
+        m_width = 0U;
+        m_height = 0U;
+        m_pixels.clear();
+        return *this;
+    }
+
+    Bmp& setPixel(uint32_t vX, uint32_t vY, uint8_t vRed, uint8_t vGreen, uint8_t vBlue) {
+        if (vX >= 0 && vX < m_width && vY >= 0 && vY < m_height) {
+            size_t index = static_cast<size_t>((vY * m_width + vX) * 3U);
+            // BMP save color in BGR
+            m_pixels[index++] = vBlue;
+            m_pixels[index++] = vGreen;
+            m_pixels[index] = vRed;
+        }
+        return *this;
+    }
+
+    Bmp& setPixel(uint32_t vX, uint32_t vY, float vRed, float vGreen, float vBlue) {
+        return setPixel(vX,  //
+                        vY, 
+                        m_getByteFromLinearFloat(vRed),
+                        m_getByteFromLinearFloat(vRed),
+                        m_getByteFromLinearFloat(vRed));
+    }
+
+    // Sauvegarde l'image en tant que fichier BMP
+    Bmp& save(const std::string& filename) {
+        std::ofstream file(filename, std::ios::binary);
+        if (!file) {
+            throw std::runtime_error("Impossible d'ouvrir le fichier.");
+        }
+
+        int paddingSize = (4 - (m_width * 3) % 4) % 4;
+        int fileSize = 54 + (m_width * m_height * 3) + (m_height * paddingSize);
+
+        // En-tête de fichier BMP
+        uint8_t fileHeader[14] = {
+            'B',
+            'M',  // Signature
+            0,
+            0,
+            0,
+            0,  // Taille du fichier
+            0,
+            0,
+            0,
+            0,  // Réservé
+            54,
+            0,
+            0,
+            0  // Offset vers les données d'image
+        };
+
+        // Insérer la taille du fichier dans l'en-tête
+        fileHeader[2] = fileSize;
+        fileHeader[3] = fileSize >> 8;
+        fileHeader[4] = fileSize >> 16;
+        fileHeader[5] = fileSize >> 24;
+
+        // En-tête d'information BMP
+        uint8_t infoHeader[40] = {
+            40, 0, 0, 0,  // Taille de l'en-tête d'information
+            0,  0, 0, 0,  // Largeur
+            0,  0, 0, 0,  // Hauteur
+            1,  0,        // Nombre de plans (1)
+            24, 0,        // Bits par pixel (24 bits)
+            0,  0, 0, 0,  // Compression (aucune)
+            0,  0, 0, 0,  // Taille de l'image (non compressée)
+            0,  0, 0, 0,  // Résolution horizontale (pixels par mètre)
+            0,  0, 0, 0,  // Résolution verticale (pixels par mètre)
+            0,  0, 0, 0,  // Couleurs dans la palette
+            0,  0, 0, 0   // Couleurs importantes
+        };
+
+        // Insérer la largeur et la hauteur dans l'en-tête d'information
+        infoHeader[4] = m_width;
+        infoHeader[5] = m_width >> 8;
+        infoHeader[6] = m_width >> 16;
+        infoHeader[7] = m_width >> 24;
+        infoHeader[8] = m_height;
+        infoHeader[9] = m_height >> 8;
+        infoHeader[10] = m_height >> 16;
+        infoHeader[11] = m_height >> 24;
+
+        // Écrire les en-têtes dans le fichier
+        file.write(reinterpret_cast<char*>(fileHeader), sizeof(fileHeader));
+        file.write(reinterpret_cast<char*>(infoHeader), sizeof(infoHeader));
+
+        // Écrire les données des pixels
+        for (int y = m_height - 1; y >= 0; --y) {  // BMP commence du bas vers le haut
+            for (int x = 0; x < m_width; ++x) {
+                int index = (y * m_width + x) * 3;
+                file.write(reinterpret_cast<char*>(&m_pixels[index]), 3);
+            }
+            // Ajout de padding si nécessaire
+            uint8_t padding[3] = {0, 0, 0};
+            file.write(reinterpret_cast<char*>(padding), paddingSize);
+        }
+
+        file.close();
+        return *this;
+    }
+
+private:
+    uint8_t m_getByteFromLinearFloat(float vValue) {
+        if (vValue < 0.0f) {
+            vValue = 0.0f;
+        }
+        if (vValue > 1.0f) {
+            vValue = 1.0f;
+        }
+        return static_cast<uint8_t>(vValue * 255.0f);
+    }
+};
+
+}  // namespace img
+}  // namespace ez
