@@ -53,7 +53,7 @@ public:
             // BMP save color in BGR
             m_pixels[index++] = m_getByteFromInt32(vBlue);
             m_pixels[index++] = m_getByteFromInt32(vGreen);
-            m_pixels[index] = m_getByteFromInt32(vBlue);
+            m_pixels[index] = m_getByteFromInt32(vRed);
         }
         return *this;
     }
@@ -62,8 +62,8 @@ public:
         return setPixel(vX,  //
                         vY, 
                         m_getByteFromLinearFloat(vRed),
-                        m_getByteFromLinearFloat(vRed),
-                        m_getByteFromLinearFloat(vRed));
+                        m_getByteFromLinearFloat(vGreen),
+                        m_getByteFromLinearFloat(vBlue));
     }
 
     // Sauvegarde l'image en tant que fichier BMP
@@ -76,7 +76,7 @@ public:
         int paddingSize = (4 - (m_width * 3) % 4) % 4;
         int fileSize = 54 + (m_width * m_height * 3) + (m_height * paddingSize);
 
-        // En-tête de fichier BMP
+        // En-tï¿½te de fichier BMP
         uint8_t fileHeader[14] = {
             'B',
             'M',  // Signature
@@ -87,35 +87,35 @@ public:
             0,
             0,
             0,
-            0,  // Réservé
+            0,  // Rï¿½servï¿½
             54,
             0,
             0,
-            0  // Offset vers les données d'image
+            0  // Offset vers les donnï¿½es d'image
         };
 
-        // Insérer la taille du fichier dans l'en-tête
+        // Insï¿½rer la taille du fichier dans l'en-tï¿½te
         fileHeader[2] = fileSize;
         fileHeader[3] = fileSize >> 8;
         fileHeader[4] = fileSize >> 16;
         fileHeader[5] = fileSize >> 24;
 
-        // En-tête d'information BMP
+        // En-tï¿½te d'information BMP
         uint8_t infoHeader[40] = {
-            40, 0, 0, 0,  // Taille de l'en-tête d'information
+            40, 0, 0, 0,  // Taille de l'en-tï¿½te d'information
             0,  0, 0, 0,  // Largeur
             0,  0, 0, 0,  // Hauteur
             1,  0,        // Nombre de plans (1)
             24, 0,        // Bits par pixel (24 bits)
             0,  0, 0, 0,  // Compression (aucune)
-            0,  0, 0, 0,  // Taille de l'image (non compressée)
-            0,  0, 0, 0,  // Résolution horizontale (pixels par mètre)
-            0,  0, 0, 0,  // Résolution verticale (pixels par mètre)
+            0,  0, 0, 0,  // Taille de l'image (non compressï¿½e)
+            0,  0, 0, 0,  // Rï¿½solution horizontale (pixels par mï¿½tre)
+            0,  0, 0, 0,  // Rï¿½solution verticale (pixels par mï¿½tre)
             0,  0, 0, 0,  // Couleurs dans la palette
             0,  0, 0, 0   // Couleurs importantes
         };
 
-        // Insérer la largeur et la hauteur dans l'en-tête d'information
+        // Insï¿½rer la largeur et la hauteur dans l'en-tï¿½te d'information
         infoHeader[4] = m_width;
         infoHeader[5] = m_width >> 8;
         infoHeader[6] = m_width >> 16;
@@ -125,17 +125,17 @@ public:
         infoHeader[10] = m_height >> 16;
         infoHeader[11] = m_height >> 24;
 
-        // Écrire les en-têtes dans le fichier
+        // ï¿½crire les en-tï¿½tes dans le fichier
         file.write(reinterpret_cast<char*>(fileHeader), sizeof(fileHeader));
         file.write(reinterpret_cast<char*>(infoHeader), sizeof(infoHeader));
 
-        // Écrire les données des pixels
+        // ï¿½crire les donnï¿½es des pixels
         for (int32_t y = static_cast<int32_t>(m_height - 1); y >= 0; --y) {  // BMP commence du bas vers le haut
             for (int32_t x = 0; x < static_cast<int32_t>(m_width); ++x) {
                 size_t index = static_cast<size_t>((y * m_width + x) * 3);
                 file.write(reinterpret_cast<char*>(&m_pixels[index]), 3);
             }
-            // Ajout de padding si nécessaire
+            // Ajout de padding si nï¿½cessaire
             uint8_t padding[3] = {0, 0, 0};
             file.write(reinterpret_cast<char*>(padding), paddingSize);
         }

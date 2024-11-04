@@ -8,6 +8,11 @@
 namespace ez {
 namespace img {
 
+// Gif file format :
+// https://en.wikipedia.org/wiki/GIF
+// LZW algo :
+// https://fr.wikipedia.org/wiki/Lempel-Ziv-Welch
+
 class Gif {
     friend class TestGif;
 
