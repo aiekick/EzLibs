@@ -16,7 +16,8 @@ file(GLOB SRC_RECURSE
 	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzLog.hpp
 	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzXmlConfig.hpp
 	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzBmp.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzGif.hpp)
+	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzGif.hpp
+	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzPng.hpp)
 source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/EzLibs PREFIX Libs FILES ${SRC_RECURSE})
 
 add_executable(${PROJECT} 
@@ -47,3 +48,10 @@ AddTest("TestEzBmp_Save_1")
 
 AddTest("TestEzGif_Save_0")
 AddTest("TestEzGif_Save_1")
+
+##########################################################
+##### TESTS EzPng ########################################
+##########################################################
+
+AddTest("TestEzPng_Save_0")
+AddTest("TestEzPng_Save_1")
