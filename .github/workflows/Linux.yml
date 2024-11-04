@@ -18,7 +18,7 @@ jobs:
       with:
         ref: master
     - name: configure
-      run: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DTESTING_EZ_EXPR=ON -DTESTING_EZ_GRAPH=ON -DTESTING_EZ_GRAPH=ON -DTESTING_EZ_TOOLS=ON
+      run: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_EZ_LIBS_TESTING=ON
     - name: build
       run: cmake --build build
     - name: test
