@@ -5,7 +5,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CmakeTargets")
 
 option(TESTING_APP "Enable testing of Time related libs" ON)
-option(TESTING_COMPPRESSION "Enable testing of Compression related libs" ON)
+option(TESTING_COMPRESSION "Enable testing of Compression related libs" ON)
 option(TESTING_FILE "Enable testing of File related libs" ON)
 option(TESTING_MATH "Enable testing of Math related libs" ON)
 option(TESTING_MISC "Enable testing of Misc related libs" ON)
@@ -42,7 +42,7 @@ if (TESTING_APP)
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/TestApp)
 endif()
 
-if (TESTING_COMPPRESSION)
+if (TESTING_COMPRESSION)
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/TestComp)
 endif()
 
