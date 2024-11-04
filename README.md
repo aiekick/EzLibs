@@ -44,6 +44,12 @@ toto.cpp : No more define needed
 |[EzApp](doc/EzApp.md)|:no_entry:|:no_entry:|:construction:|App Manipulation, Current working dir|
 |[EzArgs](doc/EzArgs.md)|:construction:|:heavy_check_mark:|:heavy_check_mark:|Command Options parsing|
 
+# Comp :
+
+|Lib|Doc|Tested|Status|Description|
+|-|-|-|-|-|
+|[EzLzw](doc/EzMLzw.md)|:no_entry:|:no_entry:|:construction:|Compress/Decomp LZW|
+
 # File :
 
 |Lib|Doc|Tested|Status|Description|
@@ -60,6 +66,7 @@ toto.cpp : No more define needed
 |-|-|-|-|-|
 |[EzBmp](doc/EzBmp.md)|:no_entry:|:no_entry:|:construction:|Bitmap Reader/Writer|
 |[EzGif](doc/EzGif.md)|:no_entry:|:no_entry:|:construction:|Gif Reader/Writer|
+|[EzPng](doc/EzPng.md)|:no_entry:|:no_entry:|:construction:|Gif Reader/Writer|
 
 |3D Model|Doc|Tested|Status|Description|
 |-|-|-|-|-|
