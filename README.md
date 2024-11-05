@@ -48,7 +48,7 @@ toto.cpp : No more define needed
 
 |Lib|Doc|Tested|Status|Description|
 |-|-|-|-|-|
-|[EzLzw](doc/EzMLzw.md)|:no_entry:|:no_entry:|:construction:|Compress/Decomp LZW|
+|[EzLzw](doc/EzMLzw.md)|:no_entry:|:construction:|:construction:|Compress/Decomp LZW|
 
 # File :
 
@@ -64,8 +64,8 @@ toto.cpp : No more define needed
 
 |2D Img|Doc|Tested|Status|Description|
 |-|-|-|-|-|
-|[EzBmp](doc/EzBmp.md)|:no_entry:|:no_entry:|:construction:|Bitmap Reader/Writer|
-|[EzGif](doc/EzGif.md)|:no_entry:|:no_entry:|:construction:|Gif Reader/Writer|
+|[EzBmp](doc/EzBmp.md)|:no_entry:|:construction:|:construction:|Bitmap Reader/Writer|
+|[EzGif](doc/EzGif.md)|:no_entry:|:construction:|:construction:|Gif Reader/Writer|
 |[EzPng](doc/EzPng.md)|:no_entry:|:no_entry:|:construction:|Gif Reader/Writer|
 
 |3D Model|Doc|Tested|Status|Description|
@@ -78,10 +78,10 @@ toto.cpp : No more define needed
 |Lib|Doc|Tested|Status|Description|
 |-|-|-|-|-|
 |[EzExpr](doc/EzExpr.md)|:construction:|:heavy_check_mark:|:heavy_check_mark:|Math expression parsing and computing|
-|[EzMath](doc/EzMath.md)|:no_entry:|:no_entry:|:construction:|Math methods|
-|[EzVec2](doc/EzVec2.md)|:no_entry:|:no_entry:|:heavy_check_mark:|Vec2 Manipulation|
-|[EzVec3](doc/EzVec3.md)|:no_entry:|:no_entry:|:heavy_check_mark:|Vec3 Manipulation|
-|[EzVec4](doc/EzVec4.md)|:no_entry:|:no_entry:|:heavy_check_mark:|Vec4 Manipulation|
+|[EzMath](doc/EzMath.md)|:no_entry:|:construction:|:construction:|Math methods|
+|[EzVec2](doc/EzVec2.md)|:no_entry:|:construction:|:heavy_check_mark:|Vec2 Manipulation|
+|[EzVec3](doc/EzVec3.md)|:no_entry:|:construction:|:heavy_check_mark:|Vec3 Manipulation|
+|[EzVec4](doc/EzVec4.md)|:no_entry:|:construction:|:heavy_check_mark:|Vec4 Manipulation|
 |[EzQuat](doc/EzQuat.md)|:no_entry:|:no_entry:|:construction:|Quaternion Manipulation|
 |[EzPlane](doc/EzPlane.md)|:no_entry:|:no_entry:|:construction:|***WIP***|
 |[EzAABB](doc/EzAABB.md)|:no_entry:|:no_entry:|:construction:|***WIP***|
@@ -93,8 +93,8 @@ toto.cpp : No more define needed
 |Lib|Doc|Tested|Status|Description|
 |-|-|-|-|-|
 |[EzGraph](doc/EzGraph.md)|:no_entry:|:heavy_check_mark:|:heavy_check_mark:|Internal Node Graph System|
-|[EzStr](doc/EzStr.md)|:no_entry:|:no_entry:|:construction:|String Manipulation|
-|[EzXml](doc/EzXml.md)|:no_entry:|:no_entry:|:heavy_check_mark:|xml Parsing|
+|[EzStr](doc/EzStr.md)|:no_entry:|:construction:|:construction:|String Manipulation|
+|[EzXml](doc/EzXml.md)|:no_entry:|:heavy_check_mark:|:heavy_check_mark:|xml Parsing|
 
 # Opengl :
 
