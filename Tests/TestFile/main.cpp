@@ -1,5 +1,6 @@
 #include <TestEzBmp.h>
 #include <TestEzGif.h>
+#include <TestEzPng.h>
 
 #include <string>
 
@@ -13,6 +14,7 @@
 bool TestFile(const std::string& vTest) {
     IfTestCollectionExist(TestEzBmp);
     IfTestCollectionExist(TestEzGif);
+    IfTestCollectionExist(TestEzPng);
     return false;
 }
 

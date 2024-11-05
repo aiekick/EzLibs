@@ -33,5 +33,4 @@ target_include_directories(${PROJECT} PRIVATE
 ##### TESTS EzLzw ########################################
 ##########################################################
 
-AddTest("TestEzLzw_Comp_0")
-AddTest("TestEzLzw_Extract_0")
+AddTest("TestEzLzw_0")

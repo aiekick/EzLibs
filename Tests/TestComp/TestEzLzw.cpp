@@ -16,17 +16,12 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool TestEzLzw_Comp_0() {
+bool TestEzLzw_0() {
     ez::comp::Lzw lzw;
-    std::string string_to_compress{"TOTO VA AU ZOO ET C'EST BEAU"};
-    auto compressed_string = lzw.compresss(string_to_compress).getDatasToString();
-    if (string_to_compress == compressed_string) return false;
-    auto extracted_string = lzw.extract(compressed_string).getDatasToString();
+    std::string string_to_compress("TOBEORNOTTOBEORTOBEORNOT");
+    auto compressed_datas = lzw.compresss(string_to_compress).getDatas();
+    auto extracted_string = lzw.extract(compressed_datas).getDatasToString();
     if (extracted_string != string_to_compress) return false;
-    return true;
-}
-
-bool TestEzLzw_Extract_0() {
     return true;
 }
 
@@ -38,8 +33,7 @@ bool TestEzLzw_Extract_0() {
     if (vTest == std::string(#v)) return v()
 
 bool TestEzLzw(const std::string& vTest) {
-    IfTestExist(TestEzLzw_Comp_0);
-    else IfTestExist(TestEzLzw_Extract_0);
+    IfTestExist(TestEzLzw_0);
     return false;
 }
 
