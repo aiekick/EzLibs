@@ -23,5 +23,5 @@ jobs:
       run: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_EZ_LIBS_TESTING=ON
     - name: build
       run: cmake --build build
-    - name: test
-      run: ctest --output-on-failure
+    - name: ctest
+      run: ctest --test-dir build --output-on-failure
