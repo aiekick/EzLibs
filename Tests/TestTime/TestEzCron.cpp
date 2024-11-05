@@ -46,7 +46,7 @@ time_t getEpochTime(int32_t vMin, int32_t vHour, int32_t vMonthDay, int32_t vMon
     time_info.tm_hour = vHour;        // 18h
     time_info.tm_min = vMin;          // 00 minutes
     time_info.tm_sec = 25;            // 00 secondes
-    time_info.tm_isdst = 1;           // heure ete
+    time_info.tm_isdst = -1;          // laisse le systeme calculer automatiquement l'heure ete
     return std::mktime(&time_info);
 }
 
