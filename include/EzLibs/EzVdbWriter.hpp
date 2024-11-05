@@ -407,12 +407,12 @@ private:
 
 public:
     template <typename TTtree>
-    TTtree* getLayer(uint32_t vLayerId, const std::string& vLayerName) {
+    TTtree& getLayer(uint32_t vLayerId, const std::string& vLayerName) {
         auto& key = m_Trees[m_CurrentKeyFrame];
         if (key.find(vLayerId) == key.end()) {
             key[vLayerId] = std::unique_ptr<TTtree>(new TTtree(vLayerName));
         }
-        return static_cast<TTtree*>(key.at(vLayerId).get());
+        return static_cast<TTtree&>(*(key.at(vLayerId).get()));
     }
 
     Writer& setKeyFrame(uint32_t vKeyFrame) {
@@ -446,22 +446,22 @@ public:
     }
 
     // common grid types
-    VdbFloatGrid* getFloatLayer(uint32_t vLayerId, const std::string& vLayerName) {
+    VdbFloatGrid& getFloatLayer(uint32_t vLayerId, const std::string& vLayerName) {
         return getLayer<VdbFloatGrid>(vLayerId, vLayerName);
     }
-    VdbDoubleGrid* getDoubleLayer(uint32_t vLayerId, const std::string& vLayerName) {
+    VdbDoubleGrid& getDoubleLayer(uint32_t vLayerId, const std::string& vLayerName) {
         return getLayer<VdbDoubleGrid>(vLayerId, vLayerName);
     }
-    VdbVec3sGrid* getVec3sLayer(uint32_t vLayerId, const std::string& vLayerName) {
+    VdbVec3sGrid& getVec3sLayer(uint32_t vLayerId, const std::string& vLayerName) {
         return getLayer<VdbVec3sGrid>(vLayerId, vLayerName);
     }
-    VdbVec3dGrid* getVec3dLayer(uint32_t vLayerId, const std::string& vLayerName) {
+    VdbVec3dGrid& getVec3dLayer(uint32_t vLayerId, const std::string& vLayerName) {
         return getLayer<VdbVec3dGrid>(vLayerId, vLayerName);
     }
-    VdbVec3iGrid* getVec3iLayer(uint32_t vLayerId, const std::string& vLayerName) {
+    VdbVec3iGrid& getVec3iLayer(uint32_t vLayerId, const std::string& vLayerName) {
         return getLayer<VdbVec3iGrid>(vLayerId, vLayerName);
     }
-    VdbVec3uiGrid* getVec3uiLayer(uint32_t vLayerId, const std::string& vLayerName) {
+    VdbVec3uiGrid& getVec3uiLayer(uint32_t vLayerId, const std::string& vLayerName) {
         return getLayer<VdbVec3uiGrid>(vLayerId, vLayerName);
     }
 

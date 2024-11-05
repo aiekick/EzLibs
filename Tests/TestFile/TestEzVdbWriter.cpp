@@ -26,19 +26,19 @@ bool TestEzVdbWriter_Save_0() {
     float time = 0.0f;
     for (int32_t f = 0; f < FRAMES; ++f) {
         vdb.setKeyFrame(f);
-        auto* floatLayerPtr = vdb.getFloatLayer(0, "density");
-        auto* vec3sLayerPtr = vdb.getVec3sLayer(1, "color");
+        auto& floatLayer = vdb.getFloatLayer(0, "density");
+        auto& vec3sLayer = vdb.getVec3sLayer(1, "color");
         for (int32_t i = -SIZE; i < SIZE; ++i) {
             for (int32_t j = -SIZE; j < SIZE; ++j) {
                 float len = (i * i + j * j) * len_ratio;
                 int32_t pz = (int32_t)((std::sin(len * 10.0 + time) * 0.5 + 0.5) * (std::abs(50.0f - 25.0f * len)) * Z_SCALE);
                 auto px = i + SIZE;
                 auto py = j + SIZE;
-                floatLayerPtr->addVoxel(px, py, pz, 1.0f);
+                floatLayer.addVoxel(px, py, pz, 1.0f);
                 r = sin(len * 10.0f) * 0.5f + 0.5f;
                 g = sin(len * 7.0f) * 0.5f + 0.5f;
                 b = sin(len * 5.0f) * 0.5f + 0.5f;
-                vec3sLayerPtr->addVoxel(px, py, pz, r, g, b);
+                vec3sLayer.addVoxel(px, py, pz, r, g, b);
             }
         }
         time += 0.5f;
