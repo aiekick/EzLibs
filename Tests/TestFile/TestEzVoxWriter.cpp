@@ -1,4 +1,4 @@
-#include <EzLibs/EzGif.hpp>
+#include <EzLibs/EzVoxWriter.hpp>
 #include <string>
 
 // D�sactivation des warnings de conversion
@@ -16,41 +16,37 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool TestEzGif_Save_0() {
-    ez::img::Gif gif;
-    gif.setSize(100, 100);
-    gif.setColor(0, 255, 0, 0);    // Rouge
-    gif.setColor(1, 0, 255, 0);    // Vert
-    gif.setColor(2, 0, 0, 255);    // Bleu
-    gif.setColor(3, 255, 255, 0);  // Jaune
-    for (int y = 0; y < 100; ++y) {
-        for (int x = 0; x < 100; ++x) {
-            uint8_t colorIndex = (x / 25) + (y / 25);  // one color per block of 25x25
-            switch (colorIndex) {
-                case 0:
-                case 6: {
-                    gif.setPixel(x, y, 0);
-                } break;
-                case 1:
-                case 5: {
-                    gif.setPixel(x, y, 1);
-                } break;
-                case 2:
-                case 4: {
-                    gif.setPixel(x, y, 2);
-                } break;
-                case 3: {
-                    gif.setPixel(x, y, 3);
-                } break;
-                default: break;
+bool TestEzVoxWriter_Save_0() {
+    const int32_t SIZE = 189;
+    const int32_t OFFSET = SIZE;
+    const float Z_SCALE = 1.0f;
+    const int32_t FRAMES = 10;
+    const float len_ratio = 1.0f / (SIZE * SIZE);
+    ez::file::vox::Writer vox;
+    vox.setKeyFrameTimeLoggingFunctor([](const ez::file::vox::KeyFrame& vKeyFrame, const double& vValue) {  //
+        std::cout << "Elapsed time for Frame " << vKeyFrame << " : " << vValue << " secs" << std::endl;
+    });
+    vox.startTimeLogging();
+    float time = 0.0f;
+    for (int32_t k = 0; k < FRAMES; ++k) {
+        vox.setKeyFrame(k);
+        for (int32_t i = -SIZE; i < SIZE; ++i) {
+            for (int32_t j = -SIZE; j < SIZE; ++j) {
+                float len = (i * i + j * j) * len_ratio;
+                int32_t pz = (int32_t)((std::sin(len * 10.0 + time) * 0.5 + 0.5) * (std::abs(50.0f - 25.0f * len)) * Z_SCALE);
+                int32_t cube_color = (int32_t)(len * 100.0) % 255 + 1;
+                vox.addVoxel(i + OFFSET, j + OFFSET, pz, cube_color);
             }
         }
+        time += 0.5f;
     }
-    gif.save(PROJECT_PATH "test.gif");
+    vox.stopTimeLogging();
+    vox.save(PROJECT_PATH "test.vox");
+    vox.printStats();
     return true;
 }
 
-bool TestEzGif_Save_1() {
+bool TestEzVoxWriter_Save_1() {
     return true;
 }
 
@@ -58,12 +54,13 @@ bool TestEzGif_Save_1() {
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-#define IfTestExist(v) \
-    if (vTest == std::string(#v)) return v()
+#define IfTestExist(v)            \
+    if (vTest == std::string(#v)) \
+    return v()
 
-bool TestEzGif(const std::string& vTest) {
-    IfTestExist(TestEzGif_Save_0);
-    else IfTestExist(TestEzGif_Save_1);
+bool TestEzVoxWriter(const std::string& vTest) {
+    IfTestExist(TestEzVoxWriter_Save_0);
+    else IfTestExist(TestEzVoxWriter_Save_1);
     return false;
 }
 

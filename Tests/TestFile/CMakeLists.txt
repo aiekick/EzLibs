@@ -17,7 +17,9 @@ file(GLOB SRC_RECURSE
 	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzXmlConfig.hpp
 	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzBmp.hpp
 	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzGif.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzPng.hpp)
+	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzPng.hpp
+	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzVdbWriter.hpp
+	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzVoxWriter.hpp)
 source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/EzLibs PREFIX Libs FILES ${SRC_RECURSE})
 
 add_executable(${PROJECT} 
@@ -55,3 +57,17 @@ AddTest("TestEzGif_Save_1")
 
 AddTest("TestEzPng_Save_0")
 AddTest("TestEzPng_Save_1")
+
+##########################################################
+##### TESTS EzVoxWriter ##################################
+##########################################################
+
+AddTest("TestEzVoxWriter_Save_0")
+AddTest("TestEzVoxWriter_Save_1")
+
+##########################################################
+##### TESTS EzVdbWriter ##################################
+##########################################################
+
+AddTest("TestEzVdbWriter_Save_0")
+AddTest("TestEzVdbWriter_Save_1")

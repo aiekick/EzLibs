@@ -37,3 +37,5 @@
 /test.bmp
 /test.gif
 /benchmark_results.md
+/*.vdb
+/*.vox

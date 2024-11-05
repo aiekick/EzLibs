@@ -1,6 +1,8 @@
 #include <TestEzBmp.h>
 #include <TestEzGif.h>
 #include <TestEzPng.h>
+#include <TestEzVdbWriter.h>
+#include <TestEzVoxWriter.h>
 
 #include <string>
 
@@ -13,8 +15,10 @@
 
 bool TestFile(const std::string& vTest) {
     IfTestCollectionExist(TestEzBmp);
-    IfTestCollectionExist(TestEzGif);
-    IfTestCollectionExist(TestEzPng);
+    else IfTestCollectionExist(TestEzGif);
+    else IfTestCollectionExist(TestEzPng);
+    else IfTestCollectionExist(TestEzVdbWriter);
+    else IfTestCollectionExist(TestEzVoxWriter);
     return false;
 }
 
@@ -28,5 +32,5 @@ int main(int argc, char** argv) {
         return TestFile(argv[1]) ? 0 : 1;
     }
     // User testing
-    return TestFile("TestEzBmp_Save_0") ? 0 : 1;
+    return TestFile("TestEzVdbWriter_Save_0") ? 0 : 1;
 }
