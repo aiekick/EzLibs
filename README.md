@@ -64,14 +64,14 @@ toto.cpp : No more define needed
 
 |2D Img|Doc|Tested|Status|Description|
 |-|-|-|-|-|
-|[EzBmp](doc/EzBmp.md)|:no_entry:|:construction:|:construction:|Bitmap Reader/Writer|
-|[EzGif](doc/EzGif.md)|:no_entry:|:construction:|:construction:|Gif Reader/Writer|
-|[EzPng](doc/EzPng.md)|:no_entry:|:no_entry:|:construction:|Gif Reader/Writer|
+|[EzBmp](doc/EzBmp.md)|:no_entry:|:construction:|:construction:|Bitmap Writer|
+|[EzGif](doc/EzGif.md)|:no_entry:|:construction:|:construction:|Gif Writer|
+|[EzPng](doc/EzPng.md)|:no_entry:|:no_entry:|:construction:|Png Writer|
 
 |3D Model|Doc|Tested|Status|Description|
 |-|-|-|-|-|
 |[EzVdbWriter](doc/EzVdbWriter.md)|:no_entry:|:no_entry:|:construction:|OpenVdb partial file format writer|
-|[EzVoxWriter](doc/EzVoxWriter.md)|:no_entry:|:no_entry:|:construction:|Magicavoxel vox file format writer|
+|[EzVoxWriter](doc/EzVoxWriter.md)|:no_entry:|:no_entry:|:construction:|Magicavoxel partial file format writer|
 
 # Math :
 
