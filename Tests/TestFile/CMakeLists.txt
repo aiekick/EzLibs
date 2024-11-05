@@ -41,33 +41,28 @@ target_include_directories(${PROJECT} PRIVATE
 ##### TESTS EzBmp ########################################
 ##########################################################
 
-AddTest("TestEzBmp_Save_0")
-AddTest("TestEzBmp_Save_1")
+AddTest("TestEzBmp_Writer")
 
 ##########################################################
 ##### TESTS EzGif ########################################
 ##########################################################
 
-AddTest("TestEzGif_Save_0")
-AddTest("TestEzGif_Save_1")
+AddTest("TestEzGif_Writer")
 
 ##########################################################
 ##### TESTS EzPng ########################################
 ##########################################################
 
-AddTest("TestEzPng_Save_0")
-AddTest("TestEzPng_Save_1")
+AddTest("TestEzPng_Writer")
 
 ##########################################################
 ##### TESTS EzVoxWriter ##################################
 ##########################################################
 
-AddTest("TestEzVoxWriter_Save_0")
-AddTest("TestEzVoxWriter_Save_1")
+AddTest("TestEzVoxWriter_Writer")
 
 ##########################################################
 ##### TESTS EzVdbWriter ##################################
 ##########################################################
 
-AddTest("TestEzVdbWriter_Save_0")
-AddTest("TestEzVdbWriter_Save_1")
+AddTest("TestEzVdbWriter_Writer")

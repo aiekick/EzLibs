@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool TestEzVoxWriter_Save_0() {
+bool TestEzVoxWriter_Writer() {
     const int32_t SIZE = 189;
     const int32_t OFFSET = SIZE;
     const float Z_SCALE = 1.0f;
@@ -46,10 +46,6 @@ bool TestEzVoxWriter_Save_0() {
     return true;
 }
 
-bool TestEzVoxWriter_Save_1() {
-    return true;
-}
-
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -59,8 +55,7 @@ bool TestEzVoxWriter_Save_1() {
     return v()
 
 bool TestEzVoxWriter(const std::string& vTest) {
-    IfTestExist(TestEzVoxWriter_Save_0);
-    else IfTestExist(TestEzVoxWriter_Save_1);
+    IfTestExist(TestEzVoxWriter_Writer);
     return false;
 }
 

@@ -400,7 +400,8 @@ typedef uint32_t LayerId;
 
 class Writer {
 private:
-    std::unordered_map<KeyFrame, std::unordered_map<LayerId, std::unique_ptr<ATree>>> m_Trees;
+    typedef std::unordered_map<LayerId, std::unique_ptr<ATree>> LayerContainer;
+    std::unordered_map<KeyFrame, LayerContainer> m_Trees;
     KeyFrame m_CurrentKeyFrame = 0U;
     FILE* m_File = nullptr;
     int32_t m_LastError = 0;
@@ -466,7 +467,7 @@ public:
     }
 
 private:
-    static void writeVdb(FILE* fp, const std::unordered_map<LayerId, std::unique_ptr<ATree>>& vTrees) {
+    static void writeVdb(FILE* fp, const LayerContainer& vTrees) {
         std::array<uint8_t, 8> header = {0x20, 0x42, 0x44, 0x56, 0x0, 0x0, 0x0, 0x0};
         write_ptr(fp, header.data(), sizeof(uint8_t), header.size());
         write_data<uint32_t>(fp, 224);

@@ -48,7 +48,7 @@ toto.cpp : No more define needed
 
 |Lib|Doc|Tested|Status|Description|
 |-|-|-|-|-|
-|[EzLzw](doc/EzMLzw.md)|:no_entry:|:construction:|:construction:|Compress/Decomp LZW|
+|[EzLzw](doc/EzMLzw.md)|:no_entry:|:heavy_check_mark:|:heavy_check_mark:|Compress/Decompress LZW|
 
 # File :
 
@@ -78,15 +78,15 @@ toto.cpp : No more define needed
 |Lib|Doc|Tested|Status|Description|
 |-|-|-|-|-|
 |[EzExpr](doc/EzExpr.md)|:construction:|:heavy_check_mark:|:heavy_check_mark:|Math expression parsing and computing|
-|[EzMath](doc/EzMath.md)|:no_entry:|:construction:|:construction:|Math methods|
-|[EzVec2](doc/EzVec2.md)|:no_entry:|:construction:|:heavy_check_mark:|Vec2 Manipulation|
-|[EzVec3](doc/EzVec3.md)|:no_entry:|:construction:|:heavy_check_mark:|Vec3 Manipulation|
-|[EzVec4](doc/EzVec4.md)|:no_entry:|:construction:|:heavy_check_mark:|Vec4 Manipulation|
+|[EzMath](doc/EzMath.md)|:no_entry:|:heavy_check_mark:|:construction:|Math methods|
+|[EzVec2](doc/EzVec2.md)|:no_entry:|:heavy_check_mark:|:heavy_check_mark:|Vec2 Manipulation|
+|[EzVec3](doc/EzVec3.md)|:no_entry:|:heavy_check_mark:|:heavy_check_mark:|Vec3 Manipulation|
+|[EzVec4](doc/EzVec4.md)|:no_entry:|:heavy_check_mark:|:heavy_check_mark:|Vec4 Manipulation|
 |[EzQuat](doc/EzQuat.md)|:no_entry:|:no_entry:|:construction:|Quaternion Manipulation|
-|[EzPlane](doc/EzPlane.md)|:no_entry:|:no_entry:|:construction:|***WIP***|
-|[EzAABB](doc/EzAABB.md)|:no_entry:|:no_entry:|:construction:|***WIP***|
-|[EzAABBCCC](doc/EzAABBCCC.md)|:no_entry:|:no_entry:|:construction:|***WIP***|
-|[EzVariant](doc/EzVariant.md)|:no_entry:|:no_entry:|:construction:|***WIP***|
+|[EzPlane](doc/EzPlane.md)|:no_entry:|:no_entry:|:construction:|3D Plane Manipulation|
+|[EzAABB](doc/EzAABB.md)|:no_entry:|:no_entry:|:construction:|2D AABB Manipulation|
+|[EzAABBCCC](doc/EzAABBCCC.md)|:no_entry:|:no_entry:|:construction:|3D AABBCC Manipulation|
+|[EzVariant](doc/EzVariant.md)|:no_entry:|:no_entry:|:construction:|Variant/Conversion for EzLIbs compatible types|
 
 # Misc :
 

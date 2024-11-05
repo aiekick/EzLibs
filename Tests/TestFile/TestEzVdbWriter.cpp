@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool TestEzVdbWriter_Save_0() {
+bool TestEzVdbWriter_Writer() {
     const int32_t SIZE = 150;
     const float Z_SCALE = 0.5f;
     const int32_t FRAMES = 10;
@@ -47,10 +47,6 @@ bool TestEzVdbWriter_Save_0() {
     return true;
 }
 
-bool TestEzVdbWriter_Save_1() {
-    return true;
-}
-
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -60,8 +56,7 @@ bool TestEzVdbWriter_Save_1() {
     return v()
 
 bool TestEzVdbWriter(const std::string& vTest) {
-    IfTestExist(TestEzVdbWriter_Save_0);
-    else IfTestExist(TestEzVdbWriter_Save_1);
+    IfTestExist(TestEzVdbWriter_Writer);
     return false;
 }
 

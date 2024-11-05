@@ -16,11 +16,7 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool TestEzPng_Save_0() {
-    return true;
-}
-
-bool TestEzPng_Save_1() {
+bool TestEzPng_Writer() {
     return true;
 }
 
@@ -33,8 +29,7 @@ bool TestEzPng_Save_1() {
     return v()
 
 bool TestEzPng(const std::string& vTest) {
-    IfTestExist(TestEzPng_Save_0);
-    else IfTestExist(TestEzPng_Save_1);
+    IfTestExist(TestEzPng_Writer);
     return false;
 }
 
