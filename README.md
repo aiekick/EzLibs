@@ -70,8 +70,8 @@ toto.cpp : No more define needed
 
 |3D Model|Doc|Tested|Status|Description|
 |-|-|-|-|-|
-|[EzVdbWriter](doc/EzVdbWriter.md)|:no_entry:|:no_entry:|:construction:|OpenVdb partial file format writer|
-|[EzVoxWriter](doc/EzVoxWriter.md)|:no_entry:|:no_entry:|:construction:|Magicavoxel partial file format writer|
+|[EzVdbWriter](doc/EzVdbWriter.md)|:no_entry:|:construction:|:heavy_check_mark:|OpenVdb partial file format writer|
+|[EzVoxWriter](doc/EzVoxWriter.md)|:no_entry:|:construction:|:heavy_check_mark:|Magicavoxel partial file format writer|
 
 # Math :
 
