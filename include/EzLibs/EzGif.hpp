@@ -24,18 +24,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <fstream>
+#include <vector>
+#include <cstdio>
 #include <vector>
 #include <cstdint>
+#include <fstream>
 #include <algorithm>
+#include <unordered_map>
+
+#include "EzLzw.hpp"
 
 namespace ez {
 namespace img {
 
 // Gif file format :
-// https://en.wikipedia.org/wiki/GIF
-// LZW algo :
-// https://fr.wikipedia.org/wiki/Lempel-Ziv-Welch
+// https://www.loc.gov/preservation/digital/formats/fdd/fdd000133.shtml
+// https://www.matthewflickinger.com/lab/whatsinagif/index.html
+// https://www.matthewflickinger.com/lab/whatsinagif/gif_explorer.asp
 
 class Gif {
     friend class TestGif;
@@ -44,7 +49,9 @@ private:
     uint32_t m_width{};
     uint32_t m_height{};
     std::vector<uint8_t> m_pixels;
-    std::vector<uint8_t> m_palette; // RGB
+    std::vector<uint8_t> m_palette;  // RGB
+    std::unordered_map<std::string, uint16_t> m_dicoComp;  // Dictionnaire de compression
+
 
 public:
     Gif() : m_palette(256 * 3, 255) {
@@ -76,51 +83,39 @@ public:
     }
 
     Gif& setPixel(int32_t vX, int32_t vY, uint8_t colorIndex) {
-        if (vX >= 0 && vX < static_cast<int32_t>(m_width) && //
-            vY >= 0 && vY < static_cast<int32_t>(m_height)) {
+        if (vX >= 0 && vX < static_cast<int32_t>(m_width) && vY >= 0 && vY < static_cast<int32_t>(m_height)) {
             m_pixels[vY * m_width + vX] = colorIndex;
         }
         return *this;
     }
 
     Gif& save(const std::string& filename) {
-        std::ofstream file(filename, std::ios::binary);
+        FILE* file = fopen(filename.c_str(), "wb");
+        if (!file) return *this;
 
         // En-tête GIF et bloc de description logique
-        file << "GIF89a";
+        fwrite("GIF89a", 1, 6, file);
         m_writeShort(file, m_width);
         m_writeShort(file, m_height);
-        file.put(0xF7);  // GCT flag set + 256 colors + sorted
-        file.put(0);     // Background color index
-        file.put(0);     // Aspect ratio
+        fputc(0xF7, file);  // GCT flag set + 256 colors + sorted
+        fputc(0, file);     // Background color index
+        fputc(0, file);     // Aspect ratio
 
         // Écrire la palette de couleurs
-        file.write(reinterpret_cast<const char*>(m_palette.data()), m_palette.size());
+        fwrite(m_palette.data(), sizeof(uint8_t), m_palette.size(), file);
 
         // Bloc d'image
-        file.put(0x2C);                // Image separator
-        m_writeShort(file, 0);         // Image left
-        m_writeShort(file, 0);         // Image top
-        m_writeShort(file, m_width);   // Image width
-        m_writeShort(file, m_height);  // Image height
-        file.put(0x00);                // No interlace, no sort, no local color table
-
-        // Image data (non compressée pour simplification)
-        file.put(8);  // LZW minimum code size (8 bits)
-        int dataSize = m_width * m_height + m_height;
-        file.put(dataSize);  // Block size (naïve approach without compression)
-
-        // Ajouter des lignes de pixels
-        for (uint32_t y = 0; y < m_height; ++y) {
-            file.put(m_width);  // Taille de la ligne
-            file.write(reinterpret_cast<const char*>(&m_pixels[y * m_width]), m_width);
-        }
-        file.put(0);  // Fin du bloc d'image
+        m_writeImageBlock(file);
+#if 0
+        m_writeUnComrpessedDataBlock(file);
+#else
+        m_writeCompressedDataBlock(file);
+#endif
 
         // Bloc de fin GIF
-        file.put(0x3B);
+        fputc(0x3B, file);
 
-        file.close();
+        fclose(file);
         return *this;
     }
 
@@ -133,11 +128,133 @@ private:
         return static_cast<uint8_t>(std::max(0.0f, std::min(1.0f, vValue)) * 255.0f);
     }
 
-    void m_writeShort(std::ofstream& file, uint16_t value) {
-        file.put(value & 0xFF);
-        file.put((value >> 8) & 0xFF);
+    void m_writeShort(FILE* file, uint16_t value) {
+        fputc(value & 0xFF, file);
+        fputc((value >> 8) & 0xFF, file);
+    }
+
+    void m_writeImageBlock(FILE* vpFile) {
+        fputc(0x2C, vpFile);           // Image separator
+        m_writeShort(vpFile, 0);       // Image left
+        m_writeShort(vpFile, 0);       // Image top
+        m_writeShort(vpFile, m_width);  // Image width
+        m_writeShort(vpFile, m_height);  // Image height
+        fputc(0x00, vpFile);             // No interlace, no sort, no local color table
+    }
+
+    void m_writeUnComrpessedDataBlock(FILE* vpFile) {
+        fputc(8, vpFile);                        // LZW minimum code size (8 bits)
+        uint32_t dataSize = m_width * m_height;  // Naïve approach without compression
+        fputc(dataSize, vpFile);                 // Block size
+        for (uint32_t y = 0; y < m_height; ++y) {
+            fputc(m_width, vpFile);  // Taille de la ligne
+            fwrite(&m_pixels[y * m_width], 1, m_width, vpFile);
+        }
+        fputc(0, vpFile);  // Fin du bloc d'image
+    }
+
+    void m_writeCompressedDataBlock(FILE* vpFile) {
+        int minCodeSize = 8;
+        fputc(minCodeSize, vpFile);  // LZW minimum code size (8 bits)
+        auto compressedData = packToGifBlocks(m_compress(m_pixels, minCodeSize), minCodeSize);
+        fputc(0xFF, vpFile);  // clear code
+        fputc(compressedData.size(), vpFile);  // Taille du bloc compressé
+        fwrite(compressedData.data(), 1, compressedData.size(), vpFile);
+        fputc(0, vpFile);  // Fin du bloc d'image
+    }
+
+    std::vector<uint16_t> m_compress(const std::vector<uint8_t>& vDatas, int minCodeSize) {
+        std::vector<uint16_t> result;
+        uint16_t code = 1 << minCodeSize;  // Commence après le clear code et end code
+        uint16_t clearCode = 1 << minCodeSize;
+        uint16_t endOfInfoCode = clearCode + 1;
+
+        // Initialiser le dictionnaire avec les codes de base (valeurs de 0 à 255)
+        m_dicoComp.clear();
+        for (int i = 0; i < 256; ++i) {
+            m_dicoComp[std::string(1, static_cast<char>(i))] = i;
+        }
+
+        // Ajouter le clear code au début des données
+        result.push_back(clearCode);
+
+        std::string p;
+        p += static_cast<char>(vDatas.at(0));
+
+        for (size_t idx = 1; idx < vDatas.size(); ++idx) {
+            char c = static_cast<char>(vDatas.at(idx));
+            std::string pc = p + c;
+
+            if (m_dicoComp.find(pc) != m_dicoComp.end()) {
+                p = pc;
+            } else {
+                result.push_back(m_dicoComp[p]);
+                if (code < 4096) {  // Limite de la table de codes LZW
+                    m_dicoComp[pc] = code++;
+                }
+                p = c;
+            }
+        }
+
+        // Ajouter le dernier code
+        result.push_back(m_dicoComp[p]);
+
+        // Ajouter le code de fin
+        result.push_back(endOfInfoCode);
+
+        return result;
+    }
+
+    std::vector<uint8_t> packToGifBlocks(const std::vector<uint16_t>& compressedData, int minCodeSize) {
+        std::vector<uint8_t> result;
+        int bitPos = 0;
+        uint32_t buffer = 0;
+        int codeSize = minCodeSize + 1;
+
+        std::vector<uint8_t> block;
+        block.reserve(255);  // Pré-allocation pour les blocs GIF (taille max de 255)
+
+        for (auto code : compressedData) {
+            buffer |= (code << bitPos);
+            bitPos += codeSize;
+
+            while (bitPos >= 8) {
+                block.push_back(static_cast<uint8_t>(buffer & 0xFF));
+                buffer >>= 8;
+                bitPos -= 8;
+
+                // Lorsque le bloc atteint 255 octets, on l'ajoute au résultat
+                if (block.size() == 255) {
+                    result.push_back(static_cast<uint8_t>(block.size()));
+                    result.insert(result.end(), block.begin(), block.end());
+                    block.clear();
+                }
+            }
+
+            // Augmenter la taille des codes si nécessaire
+            if (code == (1 << codeSize) - 1 && codeSize < 12) {
+                ++codeSize;
+            }
+        }
+
+        // Ajouter les bits restants dans le buffer
+        if (bitPos > 0) {
+            block.push_back(static_cast<uint8_t>(buffer & 0xFF));
+        }
+
+        // Ajouter le dernier bloc si non vide
+        if (!block.empty()) {
+            result.push_back(static_cast<uint8_t>(block.size()));
+            result.insert(result.end(), block.begin(), block.end());
+        }
+
+        // Bloc de fin GIF avec une taille de zéro
+        result.push_back(0x00);
+
+        return result;
     }
 };
+
 
 }  // namespace img
 }  // namespace ez

@@ -32,5 +32,5 @@ int main(int argc, char** argv) {
         return TestFile(argv[1]) ? 0 : 1;
     }
     // User testing
-    return TestFile("TestEzVdbWriter_Writer") ? 0 : 1;
+    return TestFile("TestEzGif_Writer") ? 0 : 1;
 }
