@@ -19,28 +19,28 @@
 bool TestEzGif_Writer() {
     ez::img::Gif gif;
     gif.setSize(100, 100);
-    gif.setColor(0, 255, 0, 0);    // Rouge
-    gif.setColor(1, 0, 255, 0);    // Vert
-    gif.setColor(2, 0, 0, 255);    // Bleu
-    gif.setColor(3, 255, 255, 0);  // Jaune
+    gif.addColor(0, ez::img::Gif::RGB(255, 0, 0));    // Rouge
+    gif.addColor(1, ez::img::Gif::RGB(0, 255, 0));    // Vert
+    gif.addColor(2, ez::img::Gif::RGB(0, 0, 255));    // Bleu
+    gif.addColor(3, ez::img::Gif::RGB(255, 255, 0));  // Jaune
     for (int y = 0; y < 100; ++y) {
         for (int x = 0; x < 100; ++x) {
             uint8_t colorIndex = (x / 25) + (y / 25);  // one color per block of 25x25
             switch (colorIndex) {
                 case 0:
                 case 6: {
-                    gif.setPixel(x, y, 0);
+                    gif.addPixel(x, y, 0);
                 } break;
                 case 1:
                 case 5: {
-                    gif.setPixel(x, y, 1);
+                    gif.addPixel(x, y, 1);
                 } break;
                 case 2:
                 case 4: {
-                    gif.setPixel(x, y, 2);
+                    gif.addPixel(x, y, 2);
                 } break;
                 case 3: {
-                    gif.setPixel(x, y, 3);
+                    gif.addPixel(x, y, 3);
                 } break;
                 default: break;
             }

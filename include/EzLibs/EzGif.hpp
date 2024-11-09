@@ -24,15 +24,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <unordered_map>
+#include <algorithm>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <cstdint>
+#include <string>
 #include <vector>
 #include <cstdio>
-#include <vector>
-#include <cstdint>
-#include <fstream>
-#include <algorithm>
-#include <unordered_map>
-
-#include "EzLzw.hpp"
+#include <cmath>
+#include <map>
 
 namespace ez {
 namespace img {
@@ -42,219 +44,284 @@ namespace img {
 // https://www.matthewflickinger.com/lab/whatsinagif/index.html
 // https://www.matthewflickinger.com/lab/whatsinagif/gif_explorer.asp
 
+// https://www.matthewflickinger.com/lab/whatsinagif/lzw_image_data.asp
+
 class Gif {
-    friend class TestGif;
+public:
+    typedef uint8_t ColorIndex;
+
+    struct RGB {
+        uint8_t r = 0U;
+        uint8_t g = 0U;
+        uint8_t b = 0U;
+
+        RGB() = default;
+
+        RGB(uint8_t vR, uint8_t vG, uint8_t vB) : r(vR), g(vG), b(vB) {
+        }
+    };
 
 private:
-    uint32_t m_width{};
-    uint32_t m_height{};
-    std::vector<uint8_t> m_pixels;
-    std::vector<uint8_t> m_palette;  // RGB
-    std::unordered_map<std::string, uint16_t> m_dicoComp;  // Dictionnaire de compression
-
+    FILE *mp_file = nullptr;
+    int32_t m_LastError = 0;
+    uint16_t m_width = 0U;
+    uint16_t m_height = 0U;
+    uint8_t m_minCodeSize = 0U;
+    std::map<ColorIndex, RGB> m_colors;
+    std::vector<ColorIndex> m_pixels;
 
 public:
-    Gif() : m_palette(256 * 3, 255) {
-    }
-    ~Gif() = default;
-
-    Gif& setSize(uint32_t vWidth, uint32_t vHeight) {
+    Gif& setSize(uint16_t vWidth, uint16_t vHeight) {
         m_width = vWidth;
         m_height = vHeight;
+        // todo : il faudra sauver les pixel
+        // avant resize et transferer apres
         m_pixels.resize(m_width * m_height);
         return *this;
     }
 
-    Gif& clear() {
-        m_width = 0U;
-        m_height = 0U;
-        m_pixels.clear();
-        m_palette.assign(256 * 3, 255);
+    Gif &addColor(ColorIndex vIndex, const RGB &vColor) {
+        m_colors[vIndex] = vColor;
         return *this;
     }
 
-    Gif& setColor(uint8_t index, uint8_t red, uint8_t green, uint8_t blue) {
-        if (index < 256) {
-            m_palette[index * 3] = red;
-            m_palette[index * 3 + 1] = green;
-            m_palette[index * 3 + 2] = blue;
+    Gif &addPixel(uint16_t vX, uint16_t vY, ColorIndex vIndex) {
+        m_pixels[vY * m_width + vX] = vIndex;
+        return *this;
+    }
+
+    bool save(const std::string &vFilePathName) {
+        if (vFilePathName.empty()) {
+            return false;
         }
-        return *this;
-    }
-
-    Gif& setPixel(int32_t vX, int32_t vY, uint8_t colorIndex) {
-        if (vX >= 0 && vX < static_cast<int32_t>(m_width) && vY >= 0 && vY < static_cast<int32_t>(m_height)) {
-            m_pixels[vY * m_width + vX] = colorIndex;
+        #ifdef _MSC_VER
+        #else
+        #endif
+        if (m_openFileForWriting(vFilePathName)) {
+            m_writeHeader();
+            m_writeLogicalScreenDescriptor();
+            m_writeGlobalColorTable();
+            m_writeGraphicControlExtension();
+            m_writeImageDescriptor();
+            m_writeImageData();
+            m_writeTrailer();
+            m_closeFile();
         }
-        return *this;
-    }
-
-    Gif& save(const std::string& filename) {
-        FILE* file = fopen_s(filename.c_str(), "wb");
-        if (!file) return *this;
-
-        // En-tête GIF et bloc de description logique
-        fwrite("GIF89a", 1, 6, file);
-        m_writeShort(file, m_width);
-        m_writeShort(file, m_height);
-        fputc(0xF7, file);  // GCT flag set + 256 colors + sorted
-        fputc(0, file);     // Background color index
-        fputc(0, file);     // Aspect ratio
-
-        // Écrire la palette de couleurs
-        fwrite(m_palette.data(), sizeof(uint8_t), m_palette.size(), file);
-
-        // Bloc d'image
-        m_writeImageBlock(file);
-#if 0
-        m_writeUnComrpessedDataBlock(file);
-#else
-        m_writeCompressedDataBlock(file);
-#endif
-
-        // Bloc de fin GIF
-        fputc(0x3B, file);
-
-        fclose(file);
-        return *this;
+        return true;
     }
 
 private:
-    uint8_t m_getByteFromInt32(int32_t vValue) {
-        return static_cast<uint8_t>(std::max(0, std::min(255, vValue)));
+    bool m_openFileForWriting(const std::string &vFilePathName) {
+#if _MSC_VER
+        m_LastError = fopen_s(&mp_file, vFilePathName.c_str(), "wb");
+#else
+        m_File = fopen(vFilePathName.c_str(), "wb");
+        m_LastError = m_File ? 0 : errno;
+#endif
+        return (m_LastError == 0);
     }
 
-    uint8_t m_getByteFromLinearFloat(float vValue) {
-        return static_cast<uint8_t>(std::max(0.0f, std::min(1.0f, vValue)) * 255.0f);
+    void m_closeFile() {
+        fclose(mp_file);
     }
 
-    void m_writeShort(FILE* file, uint16_t value) {
-        fputc(value & 0xFF, file);
-        fputc((value >> 8) & 0xFF, file);
+    void m_writeHeader() {
+        m_writerString("GIF89a");
     }
 
-    void m_writeImageBlock(FILE* vpFile) {
-        fputc(0x2C, vpFile);           // Image separator
-        m_writeShort(vpFile, 0);       // Image left
-        m_writeShort(vpFile, 0);       // Image top
-        m_writeShort(vpFile, m_width);  // Image width
-        m_writeShort(vpFile, m_height);  // Image height
-        fputc(0x00, vpFile);             // No interlace, no sort, no local color table
+    void m_writeLogicalScreenDescriptor() {
+        m_writeShort(m_width);   // width
+        m_writeShort(m_height);  // height
+        m_writeByte(0x91);       // packed field. to detail in few times
+        m_writeByte(0);          // bg color index
+        m_writeByte(0);          // pixel aspect ratio
     }
 
-    void m_writeUnComrpessedDataBlock(FILE* vpFile) {
-        fputc(8, vpFile);                        // LZW minimum code size (8 bits)
-        uint32_t dataSize = m_width * m_height;  // Naïve approach without compression
-        fputc(dataSize, vpFile);                 // Block size
-        for (uint32_t y = 0; y < m_height; ++y) {
-            fputc(m_width, vpFile);  // Taille de la ligne
-            fwrite(&m_pixels[y * m_width], 1, m_width, vpFile);
+    void m_writeGlobalColorTable() {
+        auto bits_count = m_getBitsCount(m_colors.size());
+        m_minCodeSize = static_cast<uint8_t>(bits_count);
+        auto colorCount = m_getMaxNumForBitCount(bits_count);
+        // colors
+        for (const auto &color : m_colors) {
+            m_writeByte(color.second.r);
+            m_writeByte(color.second.g);
+            m_writeByte(color.second.b);
+            --colorCount;
         }
-        fputc(0, vpFile);  // Fin du bloc d'image
+        // padding
+        for (size_t idx = 0; idx < colorCount; ++idx) {
+            m_writeByte(0x00);
+            m_writeByte(0x00);
+            m_writeByte(0x00);
+        }
     }
 
-    void m_writeCompressedDataBlock(FILE* vpFile) {
-        int minCodeSize = 8;
-        fputc(minCodeSize, vpFile);  // LZW minimum code size (8 bits)
-        auto compressedData = packToGifBlocks(m_compress(m_pixels, minCodeSize), minCodeSize);
-        fputc(0xFF, vpFile);  // clear code
-        fputc(compressedData.size(), vpFile);  // Taille du bloc compressé
-        fwrite(compressedData.data(), 1, compressedData.size(), vpFile);
-        fputc(0, vpFile);  // Fin du bloc d'image
+    void m_writeGraphicControlExtension() {
+        m_writeByte(0x21);     // always 21
+        m_writeByte(0xF9);     // always F9
+        m_writeByte(0x04);     // byte size
+        m_writeByte(0x00);     // packed field
+        m_writeShort(0x0000);  // delay time
+        m_writeByte(0x00);     // transparent color index
+        m_writeByte(0x00);     // always 0
     }
 
-    std::vector<uint16_t> m_compress(const std::vector<uint8_t>& vDatas, int minCodeSize) {
+    void m_writeImageDescriptor() {
+        m_writeByte(0x2C);     // always 2C
+        m_writeShort(0x0000);  // image left
+        m_writeShort(0x0000);  // image top
+        m_writeShort(10);      // image width
+        m_writeShort(10);      // image height
+        m_writeByte(0x00);     // packed field
+    }
+
+    void m_writeImageData() {
+        m_writeByte(m_minCodeSize);
+        m_writeCodeTable();
+        m_writeByte(0x00);  // Bloc de terminaison pour l'image
+    }
+
+    static size_t m_getBitsCount(size_t vValue) {
+        return (size_t)std::floor(log2((double)vValue)) + 1;
+    }
+
+    static size_t m_getMaxNumForBitCount(size_t vValue) {
+        return (1ULL << vValue);
+    }
+
+    void m_writeCodeTable() {
+        // m_writeCodeTableHeader();
+        m_writeCompressedData(m_compress(m_pixels));
+    }
+
+    uint8_t m_getClearCode() const {
+        return 1 << m_minCodeSize;
+    }
+
+    uint8_t m_getEndOfInfoCode() const {
+        return m_getClearCode() + 1;
+    }
+
+    void m_writeCodeTableHeader() {
+        auto colorCount = m_getMaxNumForBitCount(m_minCodeSize);
+        // colors
+        for (const auto &color_index : m_colors) {
+            m_writeByte(color_index.first);
+            --colorCount;
+        }
+        // colors padding
+        for (size_t idx = 0; idx < colorCount; ++idx) {
+            m_writeByte(static_cast<uint8_t>(m_colors.size() + idx));
+        }
+        // clear code
+        m_writeByte(m_getClearCode());
+        // end of information code
+        m_writeByte(m_getEndOfInfoCode());
+    }
+
+    void m_writeTrailer() {
+        m_writeByte(0x3B);
+    }
+
+    void m_writeBuffer(const std::vector<uint8_t> &vBuffer, size_t vOffset = 0, size_t vMaxSize = 0) {
+        if (!vMaxSize) {
+            vMaxSize = vBuffer.size();
+        }
+        fwrite(&vBuffer.at(vOffset), sizeof(uint8_t), vMaxSize, mp_file);
+    }
+
+    void m_writerString(const std::string &vValue) {
+        fwrite(vValue.c_str(), sizeof(uint8_t), vValue.size(), mp_file);
+    }
+
+    void m_writeByte(uint8_t vValue) {
+        fputc(vValue, mp_file);
+        std::cout << "write "
+                  << "0x" << std::setfill('0') << std::setw(2) << std::right << std::uppercase << std::hex << (int32_t)vValue << std::endl;
+    }
+
+    void m_writeShort(uint16_t vValue) {
+        m_writeByte(vValue & 0xFF);
+        m_writeByte((vValue >> 8) & 0xFF);
+    }
+
+    std::vector<uint16_t> m_compress(const std::vector<uint8_t> &vDatas) {
         std::vector<uint16_t> result;
-        uint16_t code = 1 << minCodeSize;  // Commence après le clear code et end code
-        uint16_t clearCode = 1 << minCodeSize;
-        uint16_t endOfInfoCode = clearCode + 1;
-
-        // Initialiser le dictionnaire avec les codes de base (valeurs de 0 à 255)
-        m_dicoComp.clear();
-        for (int i = 0; i < 256; ++i) {
-            m_dicoComp[std::string(1, static_cast<char>(i))] = i;
+        result.push_back(m_getClearCode());
+        std::map<std::vector<uint16_t>, uint16_t> dico;
+        for (uint16_t i = 0; i < 256; ++i) {
+            dico[{i}] = i;
         }
-
-        // Ajouter le clear code au début des données
-        result.push_back(clearCode);
-
-        std::string p;
-        p += static_cast<char>(vDatas.at(0));
-
+        uint16_t code = 256U;
+        uint16_t c = vDatas.at(0);
+        std::vector<uint16_t> p{c};
+        std::vector<uint16_t> pc;
         for (size_t idx = 1; idx < vDatas.size(); ++idx) {
-            char c = static_cast<char>(vDatas.at(idx));
-            std::string pc = p + c;
-
-            if (m_dicoComp.find(pc) != m_dicoComp.end()) {
-                p = pc;
+            c = vDatas.at(idx);
+            pc = p;
+            pc.push_back(c);
+            if (dico.find(pc) != dico.end()) {
+                p.push_back(c);
             } else {
-                result.push_back(m_dicoComp[p]);
-                if (code < 4096) {  // Limite de la table de codes LZW
-                    m_dicoComp[pc] = code++;
+                result.push_back(dico.at(p));
+                dico[pc] = code++;
+                p = {c};
+                if (code >= 4096) {
+                    result.push_back(m_getClearCode());
+                    dico.clear();
+                    for (uint16_t i = 0; i < 256; ++i) {
+                        dico[{i}] = i;
+                    }
+                    code = 258;
                 }
-                p = c;
             }
         }
-
-        // Ajouter le dernier code
-        result.push_back(m_dicoComp[p]);
-
-        // Ajouter le code de fin
-        result.push_back(endOfInfoCode);
-
+        result.push_back(dico.at(p));
+        result.push_back(m_getEndOfInfoCode());
         return result;
     }
 
-    std::vector<uint8_t> packToGifBlocks(const std::vector<uint16_t>& compressedData, int minCodeSize) {
-        std::vector<uint8_t> result;
-        int bitPos = 0;
-        uint32_t buffer = 0;
-        int codeSize = minCodeSize + 1;
+    void m_writeCompressedData(const std::vector<uint16_t> &compressedData) {
+        uint8_t bitBuffer = 0;                        // Buffer de bits pour l'écriture des octets
+        int bitCount = 0;                             // Nombre de bits accumulés dans le buffer
+        uint8_t currentCodeSize = m_minCodeSize + 1;  // Taille actuelle des codes
 
-        std::vector<uint8_t> block;
-        block.reserve(255);  // Pré-allocation pour les blocs GIF (taille max de 255)
+        std::vector<uint8_t> outputBytes;
 
         for (auto code : compressedData) {
-            buffer |= (code << bitPos);
-            bitPos += codeSize;
+            // Ajouter le code au buffer de bits
+            bitBuffer |= (code << bitCount);
+            bitCount += currentCodeSize;
 
-            while (bitPos >= 8) {
-                block.push_back(static_cast<uint8_t>(buffer & 0xFF));
-                buffer >>= 8;
-                bitPos -= 8;
-
-                // Lorsque le bloc atteint 255 octets, on l'ajoute au résultat
-                if (block.size() == 255) {
-                    result.push_back(static_cast<uint8_t>(block.size()));
-                    result.insert(result.end(), block.begin(), block.end());
-                    block.clear();
-                }
+            // Écrire les octets entiers dans le buffer jusqu'à ce qu'on n'ait plus de 8 bits
+            while (bitCount >= 8) {
+                outputBytes.push_back(bitBuffer & 0xFF);  // Écrire le byte entier
+                bitBuffer >>= 8;                          // Décaler le buffer vers la droite de 8 bits
+                bitCount -= 8;
             }
 
-            // Augmenter la taille des codes si nécessaire
-            if (code == (1 << codeSize) - 1 && codeSize < 12) {
-                ++codeSize;
+            // Augmenter la taille des codes au fur et à mesure que le dictionnaire grandit
+            if (code == (1 << currentCodeSize) - 1 && currentCodeSize < 12) {
+                ++currentCodeSize;
             }
         }
 
-        // Ajouter les bits restants dans le buffer
-        if (bitPos > 0) {
-            block.push_back(static_cast<uint8_t>(buffer & 0xFF));
+        // Écrire les bits restants dans le buffer (si non vide)
+        if (bitCount > 0) {
+            outputBytes.push_back(bitBuffer & 0xFF);
         }
 
-        // Ajouter le dernier bloc si non vide
-        if (!block.empty()) {
-            result.push_back(static_cast<uint8_t>(block.size()));
-            result.insert(result.end(), block.begin(), block.end());
+        // Écrire les données en blocs de 255 octets maximum
+        size_t index = 0;
+        while (index < outputBytes.size()) {
+            size_t blockSize = std::min(size_t(255), outputBytes.size() - index);
+            m_writeByte(static_cast<uint8_t>(blockSize));  // Taille du bloc
+            m_writeBuffer(outputBytes, index, blockSize);
+            index += blockSize;
         }
-
-        // Bloc de fin GIF avec une taille de zéro
-        result.push_back(0x00);
-
-        return result;
+        m_writeByte(0x00);  // Bloc de terminaison pour l'image
     }
 };
-
 
 }  // namespace img
 }  // namespace ez
