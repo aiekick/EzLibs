@@ -217,17 +217,18 @@ private:
     std::vector<Token> m_split(const std::string& vText, const std::string& vDelimiters) {
         std::vector<Token> arr;
         if (!vText.empty()) {
-            std::string::size_type start = 0;
-            std::string::size_type end = vText.find_first_of(vDelimiters, start);
+            size_t start = 0;
+            std::string token;
+            auto end = vText.find_first_of(vDelimiters, start);
             if (end != std::string::npos) {
                 while (end != std::string::npos) {
-                    std::string token = vText.substr(start, end - start);
-                    arr.emplace_back(std::make_pair(start, token));  // empty token or not
+                    token = vText.substr(start, end - start);
+                    arr.push_back(std::make_pair(static_cast<CharPos>(start), token));  // empty token or not
                     start = end + 1;
                     end = vText.find_first_of(vDelimiters, start);
                 }
-                std::string token = vText.substr(start);
-                arr.emplace_back(std::make_pair(start, token));  // empty token or not
+                token = vText.substr(start);
+                arr.push_back(std::make_pair(static_cast<CharPos>(start), token));  // empty token or not
             }
         }
         return arr;

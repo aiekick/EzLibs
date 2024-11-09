@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#include <EzTools/EzTools.hpp>
+#include <EzLibs/EzTools.hpp>
 
 namespace ez {
 
