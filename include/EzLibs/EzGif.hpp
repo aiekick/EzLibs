@@ -90,7 +90,7 @@ public:
     }
 
     Gif& save(const std::string& filename) {
-        FILE* file = fopen(filename.c_str(), "wb");
+        FILE* file = fopen_s(filename.c_str(), "wb");
         if (!file) return *this;
 
         // En-tête GIF et bloc de description logique
