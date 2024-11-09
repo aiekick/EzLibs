@@ -115,8 +115,8 @@ private:
 #if _MSC_VER
         m_LastError = fopen_s(&mp_file, vFilePathName.c_str(), "wb");
 #else
-        m_File = fopen(vFilePathName.c_str(), "wb");
-        m_LastError = m_File ? 0 : errno;
+        mp_file = fopen(vFilePathName.c_str(), "wb");
+        m_LastError = mp_file ? 0 : errno;
 #endif
         return (m_LastError == 0);
     }
