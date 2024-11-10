@@ -84,7 +84,7 @@ public:
         m_Options.push_back(opt);
     }
 
-    void addHelpOption(const std::string& vHelpText) {
+    void addHelpText(const std::string& vHelpText) {
         Option opt;
         opt.opts.emplace("h");
         opt.opts.emplace("help");
@@ -102,7 +102,7 @@ public:
 
             // print help
             if (m_HelpOption.opts.find(arg) != m_HelpOption.opts.end()) {
-                m_printHelp();
+                printHelp();
                 return true;
             }
 
@@ -158,6 +158,22 @@ public:
         return {};
     }
 
+    void printHelp() const {
+        std::cout << m_HelpOption.help_text << std::endl;
+        std::cout << "Usage:" << std::endl;
+        for (const auto& opt : m_Options) {
+            std::cout << " [";
+            size_t idx = 0;
+            for (const auto& o : opt.opts) {
+                if (idx++ > 0) {
+                    std::cout << ':';
+                }
+                std::cout << o;
+            }
+            std::cout << "] : " << opt.help_text << std::endl;
+        }
+    }
+
 private:
     Option m_addOption(const std::string& vOpt, const std::string& vHelpText, const ValueType vType) {
         Option res;
@@ -183,22 +199,6 @@ private:
             }
         }
         return nullptr;
-    }
-
-    void m_printHelp() const {
-        std::cout << m_HelpOption.help_text << std::endl;
-        std::cout << "Usage:" << std::endl;
-        for (const auto& opt : m_Options) {
-            std::cout << " [";
-            size_t idx = 0;
-            for (const auto& o : opt.opts) {
-                if (idx++ > 0) {
-                    std::cout << ':';
-                }
-                std::cout << o;
-            }
-            std::cout << "] : " << opt.help_text << std::endl;
-        }
     }
 };
 
