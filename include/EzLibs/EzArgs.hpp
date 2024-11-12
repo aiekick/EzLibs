@@ -228,9 +228,26 @@ public:
             }
 
             // get args values
+            std::string token = arg;
+            std::string value;
             bool is_optional = false;
             for (auto& arg_ref : m_Optionals) {
-                if (arg_ref.m_full_args.find(arg) != arg_ref.m_full_args.end()) {
+                if (arg_ref.m_delimiter != 0 && arg_ref.m_delimiter != ' ') {
+                    if (token.find(arg_ref.m_delimiter) != std::string::npos) {
+                        auto arr = ez::str::splitStringToVector(token, arg_ref.m_delimiter);
+                        if (arr.size() == 2) {
+                            token = arr.at(0);
+                            value = arr.at(1);
+                        } else {
+                            if (arr.size() < 2) {
+                                throw std::runtime_error("bad parsing of key \"" + token + "\". no value");
+                            } else if (arr.size() > 2) {
+                                throw std::runtime_error("bad parsing of key \"" + token + "\". more than one value");
+                            }
+                        }
+                    }
+                }
+                if (arg_ref.m_full_args.find(token) != arg_ref.m_full_args.end()) {
                     arg_ref.m_is_present = true;
                     is_optional = true;
                     if (arg_ref.m_delimiter == ' ') {
@@ -239,17 +256,7 @@ public:
                             arg_ref.m_value = vArgv[idx];
                         }
                     } else if (arg_ref.m_delimiter != 0) {
-                        std::string arg_str = vArgv[idx];
-                        auto arr = ez::str::splitStringToVector(arg_str, arg_ref.m_delimiter);
-                        if (arr.size() == 2) {
-                            arg_ref.m_value = arr.at(1);
-                        } else {
-                            if (arr.size() < 2) {
-                                throw std::runtime_error("bad parsing of key \"" + arg_str + "\". no value");
-                            } else if (arr.size() > 2) {
-                                throw std::runtime_error("bad parsing of key \"" + arg_str + "\". more than one value");
-                            }
-                        }
+                        arg_ref.m_value = value;
                     }
                 }
             }

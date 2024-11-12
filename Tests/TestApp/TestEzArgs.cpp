@@ -37,12 +37,12 @@ bool TestEzArgs_help() {
 
 bool TestEzArgs_delimiter_space() {
     try {
-        std::vector<char*> arr{"-s", "sample.txt", "conversion.csv", "5"};
+        std::vector<char*> arr{"-s", "sample.txt", "-t=target.txt", "-n:5"};
         ez::Args args("Test");
         args.addHeader("=========== test tool ===========").addFooter("=========== Thats all folks ===========").addDescription("Just a test");
         args.addOptional("-s/--source").help("Source file", "SOURCE").delimiter(' ');
-        args.addArgument("target").help("converted file", "TARGET");
-        args.addArgument("n").help("count files to generate", "COUNT");
+        args.addOptional("-t/--target").help("Target file", "TARGET").delimiter('=');
+        args.addOptional("-n/--count").help("count files", "COUNT").delimiter(':');
         if (!args.parse(static_cast<int32_t>(arr.size()), arr.data(), 0U)) {
             return false;
         }
@@ -65,10 +65,10 @@ bool TestEzArgs_delimiter_space() {
         if (args.getValue<std::string>("-s") != "sample.txt") {
             return false;
         }
-        if (args.getValue<std::string>("target") != "conversion.csv") {
+        if (args.getValue<std::string>("-t") != "target.txt") {
             return false;
         }
-        if (args.getValue<int>("n") != 5) {
+        if (args.getValue<int>("-n") != 5) {
             return false;
         }
     } catch (std::exception& ex) {
