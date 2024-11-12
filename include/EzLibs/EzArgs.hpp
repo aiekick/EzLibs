@@ -370,7 +370,7 @@ private:
     }
 
     template <typename T>
-    T m_convertString(const std::string& str)const {
+    T m_convertString(const std::string& str) const {
         std::istringstream iss(str);
         T value;
         if (!(iss >> value)) {
@@ -378,16 +378,15 @@ private:
         }
         return value;
     }
-
-    template <>
-    bool m_convertString<bool>(const std::string& str) const {
-        if (str == "true" || str == "1") {
-            return true;
-        } else if (str == "false" || str == "0") {
-            return false;
-        }
-        throw std::runtime_error("Invalid boolean string");
-    }
 };
 
+template <>
+bool Args::m_convertString<bool>(const std::string& str) const {
+    if (str == "true" || str == "1") {
+        return true;
+    } else if (str == "false" || str == "0") {
+        return false;
+    }
+    throw std::runtime_error("Invalid boolean string");
+}
 }  // namespace ez
