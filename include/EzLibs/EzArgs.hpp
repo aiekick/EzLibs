@@ -37,62 +37,183 @@ SOFTWARE.
 #include <cstdio>   // FILENAME_MAX
 #include <cstdint>  // int32_t
 #include <iostream>
+#include <stdexcept>
+#include <algorithm>
 
 #include "EzStr.hpp"
 
+#include "EzLog.hpp"
+
 namespace ez {
+
+class Argument {
+    friend class Args;
+
+private:
+    std::vector<std::string> m_base_args;  // base args
+    std::set<std::string> m_full_args;  // full args
+    std::string m_help_text;
+    std::string m_help_var_name;
+    std::string m_type;
+    bool m_required = false;
+    char m_delimiter = 0;       // delimiter used for arguments : toto a, toto=a, toto:a, etc...
+    bool m_is_present = false;  // found during parsing
+    std::string m_value;        // value
+
+public:
+    Argument() = default;
+
+    Argument& help(const std::string& vHelp, const std::string& vVarName = {}) {
+        m_help_text = vHelp;
+        m_help_var_name = vVarName;
+        return *this;
+    }
+    Argument& def(const std::string& vDefValue) {
+        m_value = vDefValue;
+        return *this;
+    }
+    Argument& type(const std::string& vType) {
+        m_type = vType;
+        return *this;
+    }
+    Argument& delimiter(char vDelimiter) {
+        m_delimiter = vDelimiter;
+        return *this;
+    }
+    Argument& required(bool vValue) {
+        m_required = vValue;
+        return *this;
+    }
+
+private:
+    typedef std::pair<std::string, std::string> HelpCnt;
+    HelpCnt m_getHelp(bool vPositional, size_t& vInOutFirstColSize) const {
+        HelpCnt res;
+        std::stringstream ss;
+        if (vPositional) {
+            std::string token = m_help_var_name;
+            if (token.empty()) {
+                token = *(m_base_args.begin());
+            }
+            ss << "  " << token;
+        } else {
+            size_t idx = 0;
+            ss << "  ";
+            for (const auto& arg : m_base_args) {
+                if (idx++ > 0) {
+                    ss << ", ";
+                }
+                ss << arg;
+            }
+            if (!m_help_var_name.empty()) {
+                ss << " " << m_help_var_name;
+            }
+        }
+        auto ret = ss.str();
+        if (vInOutFirstColSize < ret.size()) {
+            vInOutFirstColSize = ret.size();
+        }
+        return std::make_pair(ret, m_help_text);
+    }
+};
 
 class Args {
 private:
-    enum class ValueType {
-        None = 0,
-        Bool,    // option is present ? value = true : value = false
-        String,  // option value
-        Int      // option value
-    };
-
-private:
-    struct Option {
-        std::set<std::string> opts;
-        std::string help_text;
-        bool required = true;
-        ValueType type = ValueType::None;
-        std::string value_string;
-        bool value_bool = false;
-        int32_t value_int = 0;
-    };
-    Option m_HelpOption;
-    std::vector<std::string> m_Args;
-    std::vector<Option> m_Options;
+    std::string m_AppName;
+    std::string m_HelpHeader;
+    std::string m_HelpFooter;
+    std::string m_HelpDescription;
+    Argument m_HelpArgument;
+    std::vector<Argument> m_Positionals;
+    std::vector<Argument> m_Optionals;
 
 public:
-    void addBoolOption(const std::string& vOpt, const std::string& vHelpText, const bool vDefaultValue = false) {
-        auto opt = m_addOption(vOpt, vHelpText, ValueType::Bool);
-        opt.value_bool = vDefaultValue;
-        m_Options.push_back(opt);
+    Args(const std::string& vName) : m_AppName(vName) {
+        if (vName.empty()) {
+            throw std::runtime_error("Name cant be empty");
+        }
+        m_addOptional(m_HelpArgument , "-h/--help").help("Show the usage");
     }
 
-    void addIntOption(const std::string& vOpt, const std::string& vHelpText, const int32_t vDefaultValue = false) {
-        auto opt = m_addOption(vOpt, vHelpText, ValueType::Int);
-        opt.value_int = vDefaultValue;
-        m_Options.push_back(opt);
+    Args& addHeader(const std::string& vHeader) {
+        m_HelpHeader = vHeader;
+        return *this;
     }
 
-    void addStringOption(const std::string& vOpt, const std::string& vHelpText, const std::string& vDefaultValue = {}) {
-        auto opt = m_addOption(vOpt, vHelpText, ValueType::String);
-        opt.value_string = vDefaultValue;
-        m_Options.push_back(opt);
+    Args& addFooter(const std::string& vFooter) {
+        m_HelpFooter = vFooter;
+        return *this;
     }
 
-    void addHelpText(const std::string& vHelpText) {
-        Option opt;
-        opt.opts.emplace("h");
-        opt.opts.emplace("help");
-        opt.help_text = vHelpText;
-        m_HelpOption = opt;
+    Args& addDescription(const std::string& vDescription) {
+        m_HelpDescription = vDescription;
+        return *this;
     }
 
-    bool parseOptions(int32_t vArgc, char** vArgv, int32_t vStartIdx = 1U) {
+    Argument& addArgument(const std::string& vKey) {
+        if (vKey.empty()) {
+            throw std::runtime_error("argument cant be empty");
+        }
+        Argument res;
+        res.m_required = true;
+        res.m_base_args = ez::str::splitStringToVector(vKey, '/');
+        for (const auto& a : res.m_base_args) {
+            res.m_full_args.emplace(a);
+        }
+        m_Positionals.push_back(res);
+        return m_Positionals.back();
+    }
+
+    Argument& addOptional(const std::string& vKey) {
+        if (vKey.empty()) {
+            throw std::runtime_error("optinnal cant be empty");
+        }
+        Argument res;
+        m_addOptional(res, vKey);
+        m_Optionals.push_back(res);
+        return m_Optionals.back();
+    }
+
+    bool isPresent(const std::string& vKey) {
+        auto* ptr = m_getArgumentPtr(vKey, true);
+        if (ptr != nullptr) {
+            return ptr->m_is_present;
+        }
+        return false;
+    }
+
+    template <typename T>
+    T getValue(const std::string& vKey) const {
+        auto token = m_getArgumentPtr(vKey)->m_value;
+        return m_convertString<T>(token);
+    }
+
+    std::string getHelp(  //
+        const std::string& vPositionalHeader = "Positionnal arguments",
+        const std::string& vOptionalHeader = "Optional arguments") const {
+        std::string token;
+        std::stringstream ss;
+        if (!m_HelpHeader.empty()) {
+            ss << m_HelpHeader << std::endl << std::endl;
+        }
+        ss << m_getCmdLineHelp();
+        ss << std::endl;
+        if (!m_HelpDescription.empty()) {
+            ss << std::endl << " " << m_HelpDescription << std::endl;
+        }
+        ss << m_getHelpDetails(vPositionalHeader, vOptionalHeader);
+        if (!m_HelpFooter.empty()) {
+            ss << std::endl << m_HelpFooter << std::endl;
+        }
+        return ss.str();
+    }
+
+    void printHelp() const {
+        std::cout << getHelp() << std::endl;
+    }
+
+    bool parse(int32_t vArgc, char** vArgv, int32_t vStartIdx = 1U) {
+        size_t positional_idx = 0;
         for (int32_t idx = vStartIdx; idx < vArgc; ++idx) {
             std::string arg = vArgv[idx];
             auto last_minus = arg.find_last_of("-");
@@ -101,104 +222,164 @@ public:
             }
 
             // print help
-            if (m_HelpOption.opts.find(arg) != m_HelpOption.opts.end()) {
+            if (m_HelpArgument.m_full_args.find(arg) != m_HelpArgument.m_full_args.end()) {
                 printHelp();
                 return true;
             }
 
             // get args values
-            for (auto& opt : m_Options) {
-                if (opt.opts.find(arg) != opt.opts.end()) {
-                    if (opt.type == ValueType::String) {
+            bool is_optional = false;
+            for (auto& arg_ref : m_Optionals) {
+                if (arg_ref.m_full_args.find(arg) != arg_ref.m_full_args.end()) {
+                    arg_ref.m_is_present = true;
+                    is_optional = true;
+                    if (arg_ref.m_delimiter == ' ') {
                         if (idx < (vArgc + 1)) {
                             ++idx;
-                            opt.value_string = vArgv[idx];
-                            break;
+                            arg_ref.m_value = vArgv[idx];
                         }
-                    } else if (opt.type == ValueType::Bool) {
-                        opt.value_bool = true;
-                        break;
-                    } else if (opt.type == ValueType::Int) {
-                        opt.value_int = true;
-                        break;
+                    } else if (arg_ref.m_delimiter != 0) {
+                        std::string arg_str = vArgv[idx];
+                        auto arr = ez::str::splitStringToVector(arg_str, arg_ref.m_delimiter);
+                        if (arr.size() == 2) {
+                            arg_ref.m_value = arr.at(1);
+                        } else {
+                            if (arr.size() < 2) {
+                                throw std::runtime_error("bad parsing of key \"" + arg_str + "\". no value");
+                            } else if (arr.size() > 2) {
+                                throw std::runtime_error("bad parsing of key \"" + arg_str + "\". more than one value");
+                            }
+                        }
                     }
+                }
+            }
+
+            // positionals
+            if (!is_optional) {
+                if (positional_idx < m_Positionals.size()) {
+                    m_Positionals.at(positional_idx++).m_value = arg;
                 }
             }
         }
         return true;
     }
 
-    bool getBoolValue(const std::string& vKey) const {
-        auto* p_opt = m_getOptionPtr(vKey);
-        if (p_opt != nullptr) {
-            if (p_opt->type == ValueType::Bool) {
-                return p_opt->value_bool;
-            }
-        }
-        return {};
-    }
-
-    int32_t getIntValue(const std::string& vKey) const {
-        auto* p_opt = m_getOptionPtr(vKey);
-        if (p_opt != nullptr) {
-            if (p_opt->type == ValueType::Int) {
-                return p_opt->value_int;
-            }
-        }
-        return {};
-    }
-
-    std::string getStringValue(const std::string& vKey) const {
-        auto* p_opt = m_getOptionPtr(vKey);
-        if (p_opt != nullptr) {
-            if (p_opt->type == ValueType::String) {
-                return p_opt->value_string;
-            }
-        }
-        return {};
-    }
-
-    void printHelp() const {
-        std::cout << m_HelpOption.help_text << std::endl;
-        std::cout << "Usage:" << std::endl;
-        for (const auto& opt : m_Options) {
-            std::cout << " [";
-            size_t idx = 0;
-            for (const auto& o : opt.opts) {
-                if (idx++ > 0) {
-                    std::cout << ':';
-                }
-                std::cout << o;
-            }
-            std::cout << "] : " << opt.help_text << std::endl;
-        }
-    }
-
 private:
-    Option m_addOption(const std::string& vOpt, const std::string& vHelpText, const ValueType vType) {
-        Option res;
-        auto opts = ez::str::splitStringToVector(vOpt, '/');
-        for (auto& opt : opts) {
-            auto short_last_minus = opt.find_last_of("-");
-            if (short_last_minus != std::string::npos) {
-                opt = opt.substr(short_last_minus + 1);
+    const Argument* m_getArgumentPtr(const std::string& vKey, bool vNoExcept = false) const {
+        const Argument* ret = nullptr;
+        for (const auto& arg : m_Positionals) {
+            if (arg.m_full_args.find(vKey) != arg.m_full_args.end()) {
+                ret = &arg;
             }
         }
-        for (const auto& opt : opts) {
-            res.opts.emplace(opt);
+        if (ret == nullptr) {
+            for (const auto& arg : m_Optionals) {
+                if (arg.m_full_args.find(vKey) != arg.m_full_args.end()) {
+                    ret = &arg;
+                }
+            }
         }
-        res.help_text = vHelpText;
-        res.type = vType;
-        return res;
+        if (ret == nullptr && vNoExcept == false) {
+            throw std::runtime_error("Argument not found");
+        }
+        return ret;
     }
 
-    const Option* m_getOptionPtr(const std::string& vKey) const {
-        for (auto& opt : m_Options) {
-            if (opt.opts.find(vKey) != opt.opts.end()) {
-                return &opt;
+    Argument& m_addOptional(Argument& vInOutArgument, const std::string& vKey) {
+        if (vKey.empty()) {
+            throw std::runtime_error("optinnal cant be empty");
+        }
+        vInOutArgument.m_base_args = ez::str::splitStringToVector(vKey, '/');
+        for (const auto& a : vInOutArgument.m_base_args) {
+            vInOutArgument.m_full_args.emplace(a);
+        }
+        for (const auto& arg : vInOutArgument.m_base_args) {
+            // tofix : may fail if arg is --toto-titi.
+            // we will get titi but we want toto-titi
+            auto short_last_minus = arg.find_last_of("-");
+            if (short_last_minus != std::string::npos) {
+                vInOutArgument.m_full_args.emplace(arg.substr(short_last_minus + 1));
             }
         }
-        return nullptr;
+        return vInOutArgument;
+    }
+
+    std::string m_getCmdLineHelp() const {
+        std::stringstream ss;
+        ss << " Usage : " << m_AppName;
+        for (const auto& arg : m_Optionals) {
+            ss << " [";
+            size_t idx = 0;
+            for (const auto& o : arg.m_base_args) {
+                if (idx++ > 0) {
+                    ss << ':';
+                }
+                ss << o;
+            }
+            if (!arg.m_help_var_name.empty()) {
+                ss << " " << arg.m_help_var_name;
+            }
+            ss << "]";
+        }
+        for (const auto& arg : m_Positionals) {
+            std::string token = arg.m_help_var_name;
+            if (token.empty()) {
+                token = *(arg.m_base_args.begin());
+            }
+            ss << " " << token;
+        }
+        return ss.str();
+    }
+
+    std::string m_getHelpDetails(  //
+        const std::string& vPositionalHeader,
+        const std::string& vOptionalHeader) const {
+        // collect infos with padding
+        size_t first_col_size = 0U;
+        std::vector<Argument::HelpCnt> cnt_pos;
+        for (const auto& arg : m_Positionals) {
+            cnt_pos.push_back(arg.m_getHelp(true, first_col_size));
+        }
+        std::vector<Argument::HelpCnt> cnt_opt;
+        for (const auto& opt : m_Optionals) {
+            cnt_opt.push_back(opt.m_getHelp(false, first_col_size));
+        }
+        // display
+        first_col_size += 4U;
+        std::stringstream ss;
+        if (!cnt_pos.empty()) {
+            ss << std::endl << " " << vPositionalHeader << " : " << std::endl;
+            for (const auto& it : cnt_pos) {
+                ss << it.first << std::string(first_col_size - it.first.size(), ' ') << it.second << std::endl;
+            }
+        }
+        if (!cnt_opt.empty()) {
+            ss << std::endl << " " << vOptionalHeader << " : " << std::endl;
+            for (const auto& it : cnt_opt) {
+                ss << it.first << std::string(first_col_size - it.first.size(), ' ') << it.second << std::endl;
+            }
+        }
+        return ss.str();
+    }
+
+    template <typename T>
+    T m_convertString(const std::string& str)const {
+        std::istringstream iss(str);
+        T value;
+        if (!(iss >> value)) {
+            throw std::runtime_error("Conversion failed");
+        }
+        return value;
+    }
+
+    template <>
+    bool m_convertString<bool>(const std::string& str) const {
+        if (str == "true" || str == "1") {
+            return true;
+        } else if (str == "false" || str == "0") {
+            return false;
+        }
+        throw std::runtime_error("Invalid boolean string");
     }
 };
 

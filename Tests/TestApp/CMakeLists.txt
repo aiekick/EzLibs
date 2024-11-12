@@ -33,4 +33,5 @@ target_include_directories(${PROJECT} PRIVATE
 ##### EzArgs #############################################
 ##########################################################
 
-AddTest("TestEzArgs_0")
+AddTest("TestEzArgs_help")
+AddTest("TestEzArgs_delimiter_space")

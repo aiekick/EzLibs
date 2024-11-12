@@ -1,6 +1,7 @@
 #include <TestEzArgs.h>
 #include <EzLibs/EzArgs.hpp>
 
+#include <exception>
 #include <iostream>
 #include <string>
 #include <array>
@@ -20,34 +21,59 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool TestEzArgs_0() {
-    std::vector<char*> arr{"-s", "toto.json", "--auto", "z"};
-    ez::Args args;
-    args.addStringOption("-s/--source", "Source file");
-    args.addBoolOption("-a/--auto", "Auto mode");
-    args.addBoolOption("-w/--write", "Write");
-    args.addBoolOption("z/zozo", "zozo");
-    args.addStringOption("-d/default", "Default option", "empty");
-    if (!args.parseOptions(static_cast<int32_t>(arr.size()), arr.data(), 0U))
+bool TestEzArgs_help() {
+    try {
+        std::vector<char*> arr{"-h"};
+        ez::Args args("Test");
+        args.addHeader("=========== test tool ===========").addFooter("=========== Thats all folks ===========");
+        if (!args.parse(static_cast<int32_t>(arr.size()), arr.data(), 0U)) {
+            return false;
+        }
+    } catch (std::exception& ex) {
         return false;
-    if (args.getStringValue("s") != "toto.json")
-        return false;
-    if (args.getStringValue("source") != "toto.json") // the option "s" is active the related option "source" also
-        return false;
-    if (!args.getBoolValue("a"))
-        return false;
-    if (!args.getBoolValue("auto"))
-        return false;
-    if (args.getBoolValue("w"))
-        return false;
-    if (!args.getBoolValue("z"))
-        return false;
-    if (args.getStringValue("d") != "empty")
-        return false;
+    }
     return true;
 }
 
-bool TestEzArgs_1() {
+bool TestEzArgs_delimiter_space() {
+    try {
+        std::vector<char*> arr{"-s", "sample.txt", "conversion.csv", "5"};
+        ez::Args args("Test");
+        args.addHeader("=========== test tool ===========").addFooter("=========== Thats all folks ===========").addDescription("Just a test");
+        args.addOptional("-s/--source").help("Source file", "SOURCE").delimiter(' ');
+        args.addArgument("target").help("converted file", "TARGET");
+        args.addArgument("n").help("count files to generate", "COUNT");
+        if (!args.parse(static_cast<int32_t>(arr.size()), arr.data(), 0U)) {
+            return false;
+        }
+        args.printHelp();
+        if (!args.isPresent("-s")) {
+            return false;
+        }
+        if (!args.isPresent("s")) {
+            return false;
+        }
+        if (!args.isPresent("--source")) {
+            return false;
+        }
+        if (!args.isPresent("source")) {
+            return false;
+        }
+        if (args.isPresent("-src")) {
+            return false;
+        }
+        if (args.getValue<std::string>("-s") != "sample.txt") {
+            return false;
+        }
+        if (args.getValue<std::string>("target") != "conversion.csv") {
+            return false;
+        }
+        if (args.getValue<int>("n") != 5) {
+            return false;
+        }
+    } catch (std::exception& ex) {
+        return false;
+    }
     return true;
 }
 
@@ -60,8 +86,8 @@ bool TestEzArgs_1() {
     return v()
 
 bool TestEzArgs(const std::string& vTest) {
-    IfTestExist(TestEzArgs_0);
-    else IfTestExist(TestEzArgs_1);
+    IfTestExist(TestEzArgs_help);
+    else IfTestExist(TestEzArgs_delimiter_space);
     return false;
 }
 
