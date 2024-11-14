@@ -28,6 +28,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// EzVec3 is part od the EzLibs project : https://github.com/aiekick/EzLibs.git
+
 #include <type_traits>
 #include <cmath>
 #include <string>

@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// EzLog is part od the EzLibs project : https://github.com/aiekick/EzLibs.git
+
 /*
 for use the lib you need to define this the implem one time only before include
 EzLog ou EzTools

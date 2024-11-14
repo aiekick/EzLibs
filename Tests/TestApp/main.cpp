@@ -22,5 +22,5 @@ int main(int argc, char** argv) {
         return TestApp(argv[1]) ? 0 : 1;
     }
     // User testing
-    return TestApp("TestEzArgs_delimiter_space") ? 0 : 1;
+    return TestApp("TestEzArgs_delimiters") ? 0 : 1;
 }

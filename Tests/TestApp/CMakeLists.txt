@@ -34,4 +34,5 @@ target_include_directories(${PROJECT} PRIVATE
 ##########################################################
 
 AddTest("TestEzArgs_help")
-AddTest("TestEzArgs_delimiter_space")
+AddTest("TestEzArgs_delimiters")
+AddTest("TestEzArgs_groupeds")

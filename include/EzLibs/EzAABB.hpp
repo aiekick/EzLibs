@@ -24,6 +24,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// EzAABB is part od the EzLibs project : https://github.com/aiekick/EzLibs.git
+
 namespace ez {
 
 template <typename T>

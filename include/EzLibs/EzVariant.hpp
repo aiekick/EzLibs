@@ -28,6 +28,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// EzVariant is part od the EzLibs project : https://github.com/aiekick/EzLibs.git
+
 #include <set>
 #include <string>
 #include <vector>

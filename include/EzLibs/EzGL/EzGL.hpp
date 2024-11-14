@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// EzGL is part od the EzLibs project : https://github.com/aiekick/EzLibs.git
+
 #pragma once
 
 #ifdef OPENGL_LOADER

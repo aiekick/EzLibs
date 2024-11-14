@@ -24,6 +24,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// EzExpr is part od the EzLibs project : https://github.com/aiekick/EzLibs.git
+
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif // _USE_MATH_DEFINES
