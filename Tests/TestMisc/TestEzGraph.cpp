@@ -1,7 +1,7 @@
 #include "TestEzGraph.h"
 #include "TestEzGraphSlot.h"
 #include "TestEzGraphNode.h"
-#include <EzLibs/EzGraph.hpp>
+#include <ezlibs/ezGraph.hpp>
 
 class TestSlot;
 typedef std::shared_ptr<TestSlot> TestSlotPtr;

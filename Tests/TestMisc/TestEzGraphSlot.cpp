@@ -1,5 +1,5 @@
 #include "TestEzGraphSlot.h"
-#include <EzLibs/EzGraph.hpp>
+#include <ezlibs/ezGraph.hpp>
 
 using namespace ez;
 

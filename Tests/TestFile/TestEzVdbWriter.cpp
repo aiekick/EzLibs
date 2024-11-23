@@ -1,4 +1,4 @@
-#include <EzLibs/EzVdbWriter.hpp>
+#include <ezlibs/ezVdbWriter.hpp>
 #include <string>
 
 // D�sactivation des warnings de conversion

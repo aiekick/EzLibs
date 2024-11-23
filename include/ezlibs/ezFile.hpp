@@ -254,5 +254,20 @@ inline std::string simplifyFilePath(const std::string &vFilePath) {
     return newPath;
 }
 
+inline std::string composePath(const std::string &vPath, const std::string &vFileName, const std::string &vExt) {
+    const auto path = correctSlashTypeForFilePathName(vPath);
+    std::string res = path;
+    if (!vFileName.empty()) {
+        if (!path.empty()) {
+            res += EZ_FILE_SLASH_TYPE;
+        }
+        res += vFileName;
+        if (!vExt.empty()) {
+            res += "." + vExt;
+        }
+    }
+    return res;
+}
+
 }  // namespace file
 }  // namespace ez

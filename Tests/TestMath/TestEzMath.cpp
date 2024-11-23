@@ -1,5 +1,5 @@
 #include <TestEzMath.h>
-#include <EzLibs/EzMath.hpp>
+#include <ezlibs/ezMath.hpp>
 #include <cmath>
 #include <limits>
 

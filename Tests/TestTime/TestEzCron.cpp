@@ -1,6 +1,6 @@
 #include <TestEzCron.h>
-#include <EzLibs/EzCron.hpp>
-#include <EzLibs/EzTime.hpp>
+#include <ezlibs/ezCron.hpp>
+#include <ezlibs/ezTime.hpp>
 
 #include <iostream>
 #include <string>
@@ -17,7 +17,7 @@
 #endif
 
 #define EZ_LOG_IMPLEMENTATION
-#include <EzLibs/EzLog.hpp>
+#include <ezlibs/ezLog.hpp>
 
 using namespace ez::time;
 

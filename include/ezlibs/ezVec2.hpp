@@ -105,6 +105,22 @@ struct vec2 {
         y = vY;
     }
 
+#ifdef IMGUI_API
+
+    // only for float or double
+    template <typename = std::enable_if_t<std::is_floating_point<T>::value>>
+    operator ImVec2() const {
+        return ImVec2(static_cast<float>(x), static_cast<float>(y));
+    }
+
+    // only for float or double
+    template <typename = std::enable_if_t<std::is_floating_point<T>::value>>
+    operator ImVec4() const {
+        return ImVec4(static_cast<float>(x), static_cast<float>(y), (T)0, (T)0);
+    }
+
+#endif
+
     // Negation operator
     vec2 operator-() const {
         static_assert(std::is_signed<T>::value, "Negation operator is only valid for signed types");

@@ -167,6 +167,30 @@ struct vec4 {
         return vec2<T>(z, w);
     }
 
+    operator vec2<T>() const {
+        return vec2<T>(x, y);
+    }
+
+    operator vec3<T>() const {
+        return vec3<T>(x, y, z);
+    }
+
+    #ifdef IMGUI_API
+    
+    // only for float or double
+    template <typename = std::enable_if_t<std::is_floating_point<T>::value>>
+    operator ImVec2() const {
+        return ImVec2(static_cast<float>(x), static_cast<float>(y));
+    }
+
+    // only for float or double
+    template <typename = std::enable_if_t<std::is_floating_point<T>::value>>
+    operator ImVec4() const {
+        return ImVec4(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(w));
+    }
+
+    #endif
+
     // Pre-increment and pre-decrement operators
     vec4& operator++() {
         ++x;
