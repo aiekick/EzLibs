@@ -305,14 +305,14 @@ inline T mix(T a, T b, T t) {
 
 }  // namespace ez
 
-#include "EzStr.hpp"
-#include "EzVec2.hpp"
-#include "EzVec3.hpp"
-#include "EzVec4.hpp"
-#include "EzAABB.hpp"
-#include "EzQuat.hpp"
-#include "EzPlane.hpp"
-#include "EzAABBCC.hpp"
+#include "ezStr.hpp"
+#include "ezVec2.hpp"
+#include "ezVec3.hpp"
+#include "ezVec4.hpp"
+#include "ezAABB.hpp"
+#include "ezQuat.hpp"
+#include "ezPlane.hpp"
+#include "ezAABBCC.hpp"
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////

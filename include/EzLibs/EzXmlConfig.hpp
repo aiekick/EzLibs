@@ -34,17 +34,17 @@ SOFTWARE.
 #include <vector>
 #include <fstream>
 
-#include "EzXml.hpp"
-#include "EzLog.hpp"
+#include "ezXml.hpp"
+#include "ezLog.hpp"
 
 namespace ez {
 namespace xml {
 
 class Config {
 public:
-    virtual std::string getXml(const std::string& vOffset, const std::string& vUserDatas) = 0;
+    virtual ez::xml::Nodes getXmlNodes(const std::string& vUserDatas = "") = 0;
     // return true for continue xml parsing of childs in this node or false for interrupt the child exploration (if we want explore child ourselves)
-    virtual bool setFromXml(const Node& vNode, const Node& vParent, const std::string& vUserDatas) = 0;
+    virtual bool setFromXmlNodes(const ez::xml::Node& vNode, const ez::xml::Node& vParent, const std::string& vUserDatas) = 0;
 
 public:
     bool LoadConfigString(const std::string& vConfigString, const std::string& vUserDatas) {

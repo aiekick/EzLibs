@@ -28,9 +28,9 @@ SOFTWARE.
 for use the lib you need to define this the implem one time only before include
 EzLog ou EzTools
 #define EZ_LOG_IMPLEMENTATION
-#include "EzTools.hpp"
+#include "ezTools.hpp"
 or
-#include "EzLog.hpp"
+#include "ezLog.hpp"
 */
 #pragma once
 #pragma warning(disable : 4251)
@@ -39,8 +39,8 @@ or
 #define EZ_TOOLS_LOG
 #endif  // EZ_TOOLS_LOG
 
-#include "EzStr.hpp"
-#include "EzTime.hpp"
+#include "ezStr.hpp"
+#include "ezTime.hpp"
 
 #ifdef USE_GLFW3
 #include <GLFW/glfw3.h>

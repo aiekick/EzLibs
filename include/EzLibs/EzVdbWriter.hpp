@@ -40,7 +40,7 @@ SOFTWARE.
 #include <array>
 #include <map>
 
-#include "EzMath.hpp"
+#include "ezMath.hpp"
 
 namespace ez {
 namespace file {

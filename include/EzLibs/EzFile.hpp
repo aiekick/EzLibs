@@ -32,7 +32,7 @@ SOFTWARE.
 #include <string>
 #include <ctime>
 
-#include "EzStr.hpp"
+#include "ezStr.hpp"
 
 #ifndef EZ_FILE_SLASH_TYPE
 #ifdef WIN32

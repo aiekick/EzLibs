@@ -32,10 +32,13 @@ SOFTWARE.
 #include <vector>
 #include <sstream>
 
-#include "EzStr.hpp"
+#include "ezStr.hpp"
 
 namespace ez {
 namespace xml {
+
+class Node;
+typedef std::vector<Node> Nodes;
 
 class Node {
 public:
@@ -49,32 +52,33 @@ private:
     std::string m_Name;
     std::map<std::string, std::string> m_Attributes;
     std::string m_Content;
-    std::vector<Node> m_Children;
+    Nodes m_Children;
     Type m_Type = Type::None;
 
 public:
     Node(const std::string& vName = "") : m_Name(vName) {
     }
 
-    void setType(Type vType) {
-        m_Type = vType;
-    }
-
-    Type getType() const {
-        return m_Type;
-    }
-
-    void addChild(const Node& vChild) {
+    Node& addChild(const Node& vChild) {
         m_Children.push_back(vChild);
-    }
-
-    Node& addChild(const std::string& vName) {
-        m_Children.emplace_back(vName);
         return m_Children.back();
     }
 
-    void setAttribute(const std::string& vKey, const std::string& vValue) {
+    Node& addChild(const std::string& vName) {
+        Node node(vName);
+        return addChild(vName);
+    }
+
+    Node& addChilds(const Nodes& vChilds) {
+        for (const auto& node : vChilds) {
+            m_Children.push_back(node);
+        }
+        return *this;
+    }
+
+    Node& addAttribute(const std::string& vKey, const std::string& vValue) {
         m_Attributes[vKey] = vValue;
+        return *this;
     }
 
     bool isAttributeExist(const std::string& vKey) const {
@@ -89,16 +93,30 @@ public:
         return "";
     }
 
-    void setContent(const std::string& vContent) {
+    template <typename T>
+    Node& setContent(const T& vContent) {
+        std::stringstream ss;
+        ss << vContent;
+        m_Content = ss.str();
+        return *this;
+    }
+
+    Node& setContent(const std::string& vContent) {
         m_Content = vContent;
+        return *this;
     }
 
     const std::string& getContent() const {
         return m_Content;
     }
 
-    const std::vector<Node>& getChildren() const {
+    const Nodes& getChildren() const {
         return m_Children;
+    }
+
+    Node& setName(const std::string& vName) {
+        m_Name = vName;
+        return *this;
     }
 
     const std::string& getName() const {
@@ -110,7 +128,7 @@ public:
         std::ostringstream oss;
 
         oss << indent;
-        if (vNode.getType() != xml::Node::Type::Comment) {
+        if (vNode.m_getType() != xml::Node::Type::Comment) {
             oss << "<" << vNode.getName();
             for (const auto& attr : vNode.m_Attributes) {
                 oss << " " << attr.first << "=\"" << xml::Node::unEscapeXml(attr.second) << "\"";
@@ -123,13 +141,13 @@ public:
         if (content.empty() && children.empty()) {
             oss << "/>" << std::endl;
         } else {
-            if (vNode.getType() != xml::Node::Type::Comment) {
+            if (vNode.m_getType() != xml::Node::Type::Comment) {
                 oss << ">";
             }
             if (!content.empty()) {
                 oss << xml::Node::unEscapeXml(content);
             }
-            if (vNode.getType() == xml::Node::Type::Comment) {
+            if (vNode.m_getType() == xml::Node::Type::Comment) {
                 oss << std::endl;
             }
             if (!children.empty()) {
@@ -139,7 +157,7 @@ public:
                 }
                 oss << indent;
             }
-            if (vNode.getType() != xml::Node::Type::Comment) {
+            if (vNode.m_getType() != xml::Node::Type::Comment) {
                 oss << "</" << vNode.getName() << ">" << std::endl;
             }
         }
@@ -152,6 +170,23 @@ public:
     }
 
 public:
+    Node& m_addChild(const std::string& vName) {
+        m_Children.emplace_back(vName);
+        return m_Children.back();
+    }
+
+    void m_setAttribute(const std::string& vKey, const std::string& vValue) {
+        m_Attributes[vKey] = vValue;
+    }
+
+    void m_setType(Type vType) {
+        m_Type = vType;
+    }
+
+    Type m_getType() const {
+        return m_Type;
+    }
+
     static std::string escapeXml(const std::string& vDatas) {
         std::string escaped = vDatas;
         replaceAll(escaped, "&", "&amp;");
@@ -230,16 +265,16 @@ public:
                     tagName = m_extractTagName(token.first);
                 }
                 xml::Node newNode(tagName);
-                newNode.setType(xml::Node::Type::Token);
+                newNode.m_setType(xml::Node::Type::Token);
                 if (token.second == TokenType::COMMENT) {
-                    newNode.setType(xml::Node::Type::Comment);
+                    newNode.m_setType(xml::Node::Type::Comment);
                     newNode.setContent(token.first);
                 } else {
                     if (!m_extractAttributes(token.first, attributes)) {
                         return false;
                     }
                     for (const auto& kv : attributes) {
-                        newNode.setAttribute(kv.first, kv.second);
+                        newNode.m_setAttribute(kv.first, kv.second);
                     }
                 }
                 m_NodeStack.top()->addChild(newNode);

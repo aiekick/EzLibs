@@ -128,7 +128,7 @@ bool TestEzArgs_groupeds() {
     return v()
 
 bool TestEzArgs(const std::string& vTest) {
-    IfTestExist(TestEzArgs_help);
+    IfTestExist(TestEzArgs_parsing);
     else IfTestExist(TestEzArgs_delimiters);
     else IfTestExist(TestEzArgs_groupeds);
     return false;

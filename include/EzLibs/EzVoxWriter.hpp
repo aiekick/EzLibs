@@ -38,8 +38,8 @@ SOFTWARE.
 #include <iostream>
 #include <functional>
 
-#include "EzMath.hpp"
-#include "EzStr.hpp"
+#include "ezMath.hpp"
+#include "ezStr.hpp"
 
 // This File is a helper for write a vox file after 0.99 release to support
 // the world mode editor
@@ -618,7 +618,7 @@ public:
             {
                 LAYR layr;
                 layr.nodeId = i;
-                layr.nodeAttribs.Add("_name", ez::toStr(i));
+                layr.nodeAttribs.Add("_name", ez::str::toStr(i));
                 layr.write(m_File);
             }*/
 

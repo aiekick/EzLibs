@@ -42,9 +42,9 @@ SOFTWARE.
 #include <stdexcept>
 #include <algorithm>
 
-#include "EzStr.hpp"
+#include "ezStr.hpp"
 
-#include "EzLog.hpp"
+#include "ezLog.hpp"
 
 namespace ez {
 
