@@ -30,17 +30,22 @@ SOFTWARE.
 #include <stack>
 #include <string>
 #include <vector>
+#include <cassert>
 #include <sstream>
 
 #include "ezStr.hpp"
 
 namespace ez {
+class Xml;
+
 namespace xml {
 
 class Node;
 typedef std::vector<Node> Nodes;
 
 class Node {
+    friend class ez::Xml;
+
 public:
     enum class Type {
         None = 0,
@@ -52,26 +57,65 @@ private:
     std::string m_Name;
     std::map<std::string, std::string> m_Attributes;
     std::string m_Content;
+    std::string m_ParentNodeName;
     Nodes m_Children;
     Type m_Type = Type::None;
 
 public:
+    static std::string escapeXml(const std::string& vDatas) {
+        std::string escaped = vDatas;
+        replaceAll(escaped, "&", "&amp;");
+        replaceAll(escaped, "<", "&lt;");
+        replaceAll(escaped, "\"", "&quot;");
+        replaceAll(escaped, "'", "&apos;");
+        replaceAll(escaped, ">", "&gt;");
+        return escaped;
+    }
+
+    // replace xml excaped pattern by corresponding good pattern
+    static std::string unEscapeXml(const std::string& vDatas) {
+        std::string unescaped = vDatas;
+        replaceAll(unescaped, "&lt;", "<");
+        replaceAll(unescaped, "&amp;", "&");
+        replaceAll(unescaped, "&quot;", "\"");
+        replaceAll(unescaped, "&apos;", "'");
+        replaceAll(unescaped, "&gt;", ">");
+        return unescaped;
+    }
+
+    static void replaceAll(std::string& vStr, const std::string& vFrom, const std::string& vTo) {
+        if (vFrom.empty()) return;
+        size_t startPos = 0;
+        while ((startPos = vStr.find(vFrom, startPos)) != std::string::npos) {
+            vStr.replace(startPos, vFrom.length(), vTo);
+            startPos += vTo.length();
+        }
+    }
+
+public:
+    Node() {}
     Node(const std::string& vName = "") : m_Name(vName) {
+    }
+
+    Node& setName(const std::string& vName) {
+        m_Name = vName;
+        return *this;
     }
 
     Node& addChild(const Node& vChild) {
         m_Children.push_back(vChild);
+        m_Children.back().m_setParentNodeName(getName());
         return m_Children.back();
     }
 
     Node& addChild(const std::string& vName) {
         Node node(vName);
-        return addChild(vName);
+        return addChild(node);
     }
 
     Node& addChilds(const Nodes& vChilds) {
         for (const auto& node : vChilds) {
-            m_Children.push_back(node);
+            addChild(node);
         }
         return *this;
     }
@@ -114,9 +158,8 @@ public:
         return m_Children;
     }
 
-    Node& setName(const std::string& vName) {
-        m_Name = vName;
-        return *this;
+    const std::string& getParentNodeName() {
+        return m_ParentNodeName;
     }
 
     const std::string& getName() const {
@@ -169,11 +212,7 @@ public:
         return dump(*this);
     }
 
-public:
-    Node& m_addChild(const std::string& vName) {
-        m_Children.emplace_back(vName);
-        return m_Children.back();
-    }
+private:
 
     void m_setAttribute(const std::string& vKey, const std::string& vValue) {
         m_Attributes[vKey] = vValue;
@@ -187,35 +226,8 @@ public:
         return m_Type;
     }
 
-    static std::string escapeXml(const std::string& vDatas) {
-        std::string escaped = vDatas;
-        replaceAll(escaped, "&", "&amp;");
-        replaceAll(escaped, "<", "&lt;");
-        replaceAll(escaped, "\"", "&quot;");
-        replaceAll(escaped, "'", "&apos;");
-        replaceAll(escaped, ">", "&gt;");
-        return escaped;
-    }
-
-    // replace xml excaped pattern by corresponding good pattern
-    static std::string unEscapeXml(const std::string& vDatas) {
-        std::string unescaped = vDatas;
-        replaceAll(unescaped, "&lt;", "<");
-        replaceAll(unescaped, "&amp;", "&");
-        replaceAll(unescaped, "&quot;", "\"");
-        replaceAll(unescaped, "&apos;", "'");
-        replaceAll(unescaped, "&gt;", ">");
-        return unescaped;
-    }
-
-    static void replaceAll(std::string& vStr, const std::string& vFrom, const std::string& vTo) {
-        if (vFrom.empty())
-            return;
-        size_t startPos = 0;
-        while ((startPos = vStr.find(vFrom, startPos)) != std::string::npos) {
-            vStr.replace(startPos, vFrom.length(), vTo);
-            startPos += vTo.length();
-        }
+    void m_setParentNodeName(const std::string& vName) {
+        m_ParentNodeName = vName;
     }
 };
 

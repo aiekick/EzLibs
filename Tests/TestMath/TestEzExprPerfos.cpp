@@ -24,7 +24,7 @@ SOFTWARE.
 */
 
 #include <TestEzExprPerfos.h>
-#include <ezlibs/ezExpr.hpp>
+#include <EzLibs/EzExpr.hpp>
 #include <functional>
 #include <iostream>
 #include <cassert>

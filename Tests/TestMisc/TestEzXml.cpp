@@ -1,5 +1,5 @@
 #include <TestEzXml.h>
-#include <ezlibs/ezXmlConfig.hpp>
+#include <ezlibs/ezXml.hpp>
 
 #include <iostream>
 #include <string>
@@ -14,23 +14,6 @@
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wfloat-conversion"
 #endif
-
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-
-class TestConfig : public ez::xml::Config {
-public:
-    std::string getXml(const std::string& /*vOffset*/, const std::string& /*vUserDatas*/) final {
-        return "";
-    }
-
-    // return true for continue xml parsing of childs in this node or 
-    // false for interrupt the child exploration (if we want explore child ourselves)
-    bool setFromXml(const ez::xml::Node& /*vNode*/, const ez::xml::Node& /*vParent*/, const std::string& /*vUserDatas*/) final {
-        return true;
-    }
-};
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////

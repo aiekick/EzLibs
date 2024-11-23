@@ -1,5 +1,5 @@
-#include <TestEzXml.h>
-#include <ezlibs/ezXmlConfig.hpp>
+#include <TestEzXmlConfig.h>
+#include <EzLibs/EzXmlConfig.hpp>
 
 #include <iostream>
 #include <string>
@@ -21,13 +21,12 @@
 
 class TestConfig : public ez::xml::Config {
 public:
-    std::string getXml(const std::string& /*vOffset*/, const std::string& /*vUserDatas*/) final {
-        return "";
+    virtual ez::xml::Nodes getXmlNodes(const std::string& vUserDatas = "") final {
+        ez::xml::Node node("root");
+        return node.getChildren();
     }
-
-    // return true for continue xml parsing of childs in this node or 
-    // false for interrupt the child exploration (if we want explore child ourselves)
-    bool setFromXml(const ez::xml::Node& /*vNode*/, const ez::xml::Node& /*vParent*/, const std::string& /*vUserDatas*/) final {
+    // return true for continue xml parsing of childs in this node or false for interrupt the child exploration (if we want explore child ourselves)
+    virtual bool setFromXmlNodes(const ez::xml::Node& vNode, const ez::xml::Node& vParent, const std::string& vUserDatas) final {
         return true;
     }
 };
@@ -36,7 +35,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-bool TestEzXmlParsingOK() {
+bool TestEzXmlConfigParsingOK() {
     const auto& doc = u8R"(
 <config>
 	<!-- Comment 1 -->

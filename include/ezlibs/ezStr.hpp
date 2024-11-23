@@ -239,7 +239,7 @@ inline std::string toStr(const char* fmt, ...) {
     return std::string();
 }
 
-inline std::string toUpper(const std::string& vStr, const std::locale& vLocale) {
+inline std::string toUpper(const std::string& vStr, const std::locale& vLocale = {}) {
     std::string str = vStr;
     for (size_t i = 0U; i < str.size(); ++i) {
         str[i] = ::std::toupper(str[i], vLocale);
@@ -247,7 +247,7 @@ inline std::string toUpper(const std::string& vStr, const std::locale& vLocale) 
     return str;
 }
 
-inline std::string toLower(const std::string& vStr, const std::locale& vLocale) {
+inline std::string toLower(const std::string& vStr, const std::locale& vLocale = {}) {
     std::string str = vStr;
     for (size_t i = 0U; i < str.size(); ++i) {
         str[i] = ::std::tolower(str[i], vLocale);

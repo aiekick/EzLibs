@@ -52,7 +52,7 @@ public:
     }
 
     std::string SaveConfigString(const std::string& vUserDatas, const std::string& vFirstElement) {
-        return "<" + vFirstElement + ">\n" + getXml("\t", vUserDatas) + "</" + vFirstElement + ">\n";
+        return ez::xml::Node(vFirstElement).addChilds(getXmlNodes(vUserDatas)).dump();
     }
 
     bool LoadConfigFile(const std::string& vFilePathName, const std::string& vUserDatas) {
@@ -89,14 +89,14 @@ public:
         ez::Xml doc;
         res = doc.parse(datas);
         if (res) {
-            Node parent;
+            Node parent("root");
             RecursParsingConfig(doc.getRoot(), parent, vUserDatas);
         }
         return res;
     }
 
     void RecursParsingConfig(const Node& vNode, const Node& vParent, const std::string& vUserDatas) {
-        if (setFromXml(vNode, vParent, vUserDatas)) {
+        if (setFromXmlNodes(vNode, vParent, vUserDatas)) {
             RecursParsingConfigChilds(vNode, vUserDatas);
         }
     }

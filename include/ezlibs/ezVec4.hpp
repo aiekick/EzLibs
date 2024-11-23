@@ -52,24 +52,23 @@ struct vec4 {
 
     // Constructor with type conversion
     template <typename U>
-    vec4(const vec4<U>& a) : x(static_cast<T>(a.x)), y(static_cast<T>(a.y)), z(static_cast<T>(a.z)), w(static_cast<T>(a.w)) {
-    }
+    vec4(const vec4<U>& a) : x(static_cast<T>(a.x)), y(static_cast<T>(a.y)), z(static_cast<T>(a.z)), w(static_cast<T>(a.w)) {}
+
+    // Constructor with type conversion
+    template <typename U>
+    vec4(const U& a) : x(static_cast<T>(a.x)), y(static_cast<T>(a.y)), z(static_cast<T>(a.z)), w(static_cast<T>(a.w)) {}
 
     // Constructor using vec2 components
-    vec4(const vec2<T>& xy, const vec2<T>& zw) : x(xy.x), y(xy.y), z(zw.x), w(zw.y) {
-    }
+    vec4(const vec2<T>& xy, const vec2<T>& zw) : x(xy.x), y(xy.y), z(zw.x), w(zw.y) {}
 
     // Constructor using vec3 and a scalar
-    vec4(const vec3<T>& xyz, T w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {
-    }
+    vec4(const vec3<T>& xyz, T w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
 
     // Constructor with a single scalar for all components
-    vec4(T xyzw) : x(xyzw), y(xyzw), z(xyzw), w(xyzw) {
-    }
+    vec4(T xyzw) : x(xyzw), y(xyzw), z(xyzw), w(xyzw) {}
 
     // Constructor with specific values
-    vec4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {
-    }
+    vec4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
 
     // Constructor from a string
     vec4(const std::string& vec, char c = ';', vec4<T>* def = nullptr) {
@@ -98,7 +97,7 @@ struct vec4 {
             y = def->y;
             z = def->z;
             w = def->w;
-        } 
+        }
         std::vector<T> result = str::stringToNumberVector<T>(vec, c);
         const size_t s = result.size();
         if (static_cast<int>(s) != n) {
@@ -125,14 +124,10 @@ struct vec4 {
     }
 
     // Indexing operator
-    T& operator[](size_t i) {
-        return (&x)[i];
-    }
+    T& operator[](size_t i) { return (&x)[i]; }
 
     // Offset the vector
-    vec4 Offset(T vX, T vY, T vZ, T vW) const {
-        return vec4(x + vX, y + vY, z + vZ, w + vW);
-    }
+    vec4 Offset(T vX, T vY, T vZ, T vW) const { return vec4(x + vX, y + vY, z + vZ, w + vW); }
 
     // Set the vector's components
     void Set(T vX, T vY, T vZ, T vW) {
@@ -155,41 +150,15 @@ struct vec4 {
     }
 
     // Extract 2D and 3D vectors from 4D vector
-    vec2<T> xy() const {
-        return vec2<T>(x, y);
-    }
+    vec2<T> xy() const { return vec2<T>(x, y); }
 
-    vec3<T> xyz() const {
-        return vec3<T>(x, y, z);
-    }
+    vec3<T> xyz() const { return vec3<T>(x, y, z); }
 
-    vec2<T> zw() const {
-        return vec2<T>(z, w);
-    }
+    vec2<T> zw() const { return vec2<T>(z, w); }
 
-    operator vec2<T>() const {
-        return vec2<T>(x, y);
-    }
+    operator vec2<T>() const { return vec2<T>(x, y); }
 
-    operator vec3<T>() const {
-        return vec3<T>(x, y, z);
-    }
-
-    #ifdef IMGUI_API
-    
-    // only for float or double
-    template <typename = std::enable_if_t<std::is_floating_point<T>::value>>
-    operator ImVec2() const {
-        return ImVec2(static_cast<float>(x), static_cast<float>(y));
-    }
-
-    // only for float or double
-    template <typename = std::enable_if_t<std::is_floating_point<T>::value>>
-    operator ImVec4() const {
-        return ImVec4(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(w));
-    }
-
-    #endif
+    operator vec3<T>() const { return vec3<T>(x, y, z); }
 
     // Pre-increment and pre-decrement operators
     vec4& operator++() {
@@ -279,27 +248,17 @@ struct vec4 {
     }
 
     // Size and position operations
-    vec2<T> SizeLBRT() const {
-        return vec2<T>(z - x, w - y);
-    }  // Considers vec4 as a rectangle with LBRT (Left, Bottom, Right, Top)
+    vec2<T> SizeLBRT() const { return vec2<T>(z - x, w - y); }  // Considers vec4 as a rectangle with LBRT (Left, Bottom, Right, Top)
 
-    vec2<T> pos() const {
-        return xy();
-    }
+    vec2<T> pos() const { return xy(); }
 
-    vec2<T> size() const {
-        return zw();
-    }
+    vec2<T> size() const { return zw(); }
 
     // Length of the vector
-    T length() const {
-        return static_cast<T>(ez::sqrt(lengthSquared()));
-    }
+    T length() const { return static_cast<T>(ez::sqrt(lengthSquared())); }
 
     // Squared length of the vector
-    T lengthSquared() const {
-        return x * x + y * y + z * z + w * w;
-    }
+    T lengthSquared() const { return x * x + y * y + z * z + w * w; }
 
     // Normalize the vector
     T normalize() {
@@ -322,39 +281,25 @@ struct vec4 {
     }
 
     // Check if all components are zero (AND)
-    bool emptyAND() const {
-        return x == static_cast<T>(0) && y == static_cast<T>(0) && z == static_cast<T>(0) && w == static_cast<T>(0);
-    }
+    bool emptyAND() const { return x == static_cast<T>(0) && y == static_cast<T>(0) && z == static_cast<T>(0) && w == static_cast<T>(0); }
 
     // Check if any component is zero (OR)
-    bool emptyOR() const {
-        return x == static_cast<T>(0) || y == static_cast<T>(0) || z == static_cast<T>(0) || w == static_cast<T>(0);
-    }
+    bool emptyOR() const { return x == static_cast<T>(0) || y == static_cast<T>(0) || z == static_cast<T>(0) || w == static_cast<T>(0); }
 
     // Sum of components
-    T sum() const {
-        return x + y + z + w;
-    }
+    T sum() const { return x + y + z + w; }
 
     // Sum of absolute values of components
-    T sumAbs() const {
-        return ez::abs(x) + ez::abs(y) + ez::abs(z) + ez::abs(w);
-    }
+    T sumAbs() const { return ez::abs(x) + ez::abs(y) + ez::abs(z) + ez::abs(w); }
 
     // Convert to string
-    std::string string(char c = ';') const {
-        return ez::str::toStr(x) + c + ez::str::toStr(y) + c + ez::str::toStr(z) + c + ez::str::toStr(w);
-    }
+    std::string string(char c = ';') const { return ez::str::toStr(x) + c + ez::str::toStr(y) + c + ez::str::toStr(z) + c + ez::str::toStr(w); }
 
     // Minimum component
-    T mini() const {
-        return ez::mini(x, ez::mini(y, ez::mini(z, w)));
-    }
+    T mini() const { return ez::mini(x, ez::mini(y, ez::mini(z, w))); }
 
     // Maximum component
-    T maxi() const {
-        return ez::maxi(x, ez::maxi(y, ez::maxi(z, w)));
-    }
+    T maxi() const { return ez::maxi(x, ez::maxi(y, ez::maxi(z, w))); }
 };
 
 // Operators for vec4

@@ -1,4 +1,4 @@
-#include <ezlibs/ezVoxWriter.hpp>
+#include <EzLibs/EzVoxWriter.hpp>
 #include <string>
 
 // D�sactivation des warnings de conversion

@@ -2,7 +2,7 @@
 
 #ifndef EZ_TOOLS_VEC2
 #define EZ_TOOLS_VEC2
-#endif // EZ_TOOLS_VEC2
+#endif  // EZ_TOOLS_VEC2
 
 /*
 MIT License
@@ -37,21 +37,18 @@ SOFTWARE.
 
 #ifdef min
 #undef min
-#endif // min
+#endif  // min
 
 #ifdef max
 #undef max
-#endif // max
+#endif  // max
 
 // Namespace ez
 namespace ez {
 
 // Disable specific types for template functions
 template <typename T>
-struct is_valid_type :
-    std::integral_constant<bool,
-                           (std::is_floating_point<T>::value ||
-                            (std::is_integral<T>::value && sizeof(T) > 1))> {};
+struct is_valid_type : std::integral_constant<bool, (std::is_floating_point<T>::value || (std::is_integral<T>::value && sizeof(T) > 1))> {};
 
 // Vector 2D template class
 template <typename T>
@@ -64,17 +61,17 @@ struct vec2 {
     // Constructors
     vec2() = default;
 
+    // Constructor with type conversion
     template <typename U>
-    vec2(const vec2<U>& a) {
-        x = static_cast<T>(a.x);
-        y = static_cast<T>(a.y);
-    }
+    vec2(const vec2<U>& a) : x(static_cast<T>(a.x)), y(static_cast<T>(a.y)) {}
 
-    vec2(T a) : x(a), y(a) {
-    }
+    // Constructor with type conversion
+    template <typename U>
+    vec2(const U& a) : x(static_cast<T>(a.x)), y(static_cast<T>(a.y)) {}
 
-    vec2(T a, T b) : x(a), y(b) {
-    }
+    vec2(T a) : x(a), y(a) {}
+
+    vec2(T a, T b) : x(a), y(b) {}
 
     vec2(const std::string& vec, char c = ';', const vec2<T>* def = nullptr) {
         if (def) {
@@ -90,36 +87,16 @@ struct vec2 {
     }
 
     // Element access operator
-    T& operator[](size_t i) {
-        return (&x)[i];
-    }
+    T& operator[](size_t i) { return (&x)[i]; }
 
     // Offset function
-    vec2 Offset(T vX, T vY) const {
-        return vec2(x + vX, y + vY);
-    }
+    vec2 Offset(T vX, T vY) const { return vec2(x + vX, y + vY); }
 
     // Set function
     void Set(T vX, T vY) {
         x = vX;
         y = vY;
     }
-
-#ifdef IMGUI_API
-
-    // only for float or double
-    template <typename = std::enable_if_t<std::is_floating_point<T>::value>>
-    operator ImVec2() const {
-        return ImVec2(static_cast<float>(x), static_cast<float>(y));
-    }
-
-    // only for float or double
-    template <typename = std::enable_if_t<std::is_floating_point<T>::value>>
-    operator ImVec4() const {
-        return ImVec4(static_cast<float>(x), static_cast<float>(y), (T)0, (T)0);
-    }
-
-#endif
 
     // Negation operator
     vec2 operator-() const {
@@ -200,30 +177,18 @@ struct vec2 {
     }
 
     // Comparison operators
-    bool operator==(T a) const {
-        return (x == a) && (y == a);
-    }
+    bool operator==(T a) const { return (x == a) && (y == a); }
 
-    bool operator==(const vec2<T>& v) const {
-        return (x == v.x) && (y == v.y);
-    }
+    bool operator==(const vec2<T>& v) const { return (x == v.x) && (y == v.y); }
 
-    bool operator!=(T a) const {
-        return (x != a) || (y != a);
-    }
+    bool operator!=(T a) const { return (x != a) || (y != a); }
 
-    bool operator!=(const vec2<T>& v) const {
-        return (x != v.x) || (y != v.y);
-    }
+    bool operator!=(const vec2<T>& v) const { return (x != v.x) || (y != v.y); }
 
     // Length and normalization
-    T lengthSquared() const {
-        return x * x + y * y;
-    }
+    T lengthSquared() const { return x * x + y * y; }
 
-    T length() const {
-        return static_cast<T>(ez::sqrt(lengthSquared()));
-    }
+    T length() const { return static_cast<T>(ez::sqrt(lengthSquared())); }
 
     T normalize() {
         T len = length();
@@ -242,27 +207,17 @@ struct vec2 {
     }
 
     // Sum functions
-    T sum() const {
-        return x + y;
-    }
+    T sum() const { return x + y; }
 
-    T sumAbs() const {
-        return ez::abs(x) + ez::abs(y);
-    }
+    T sumAbs() const { return ez::abs(x) + ez::abs(y); }
 
     // Empty checks
-    bool emptyAND() const {
-        return x == static_cast<T>(0) && y == static_cast<T>(0);
-    }
+    bool emptyAND() const { return x == static_cast<T>(0) && y == static_cast<T>(0); }
 
-    bool emptyOR() const {
-        return x == static_cast<T>(0) || y == static_cast<T>(0);
-    }
+    bool emptyOR() const { return x == static_cast<T>(0) || y == static_cast<T>(0); }
 
     // Convert to string
-    std::string string(char c = ';') const {
-        return str::toStr(x) + c + str::toStr(y);
-    }
+    std::string string(char c = ';') const { return str::toStr(x) + c + str::toStr(y); }
 
     // Ratio functions
     template <typename U>
@@ -280,13 +235,9 @@ struct vec2 {
     }
 
     // Min and max
-    T min() const {
-        return x < y ? x : y;
-    }
+    T min() const { return x < y ? x : y; }
 
-    T max() const {
-        return x > y ? x : y;
-    }
+    T max() const { return x > y ? x : y; }
 };
 
 // Operators
@@ -539,4 +490,3 @@ inline typename std::enable_if<std::is_floating_point<T>::value, T>::type radAng
 }
 
 }  // namespace ez
-

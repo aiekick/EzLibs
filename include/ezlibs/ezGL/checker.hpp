@@ -28,8 +28,8 @@ SOFTWARE.
 #include OPENGL_LOADER
 #endif  // OPENGL_LOADER
 
-#include <ezlibs/ezStr.hpp>
-#include <ezlibs/ezLog.hpp>
+#include <EzLibs/EzStr.hpp>
+#include <EzLibs/EzLog.hpp>
 
 #include <map>
 #include <string>

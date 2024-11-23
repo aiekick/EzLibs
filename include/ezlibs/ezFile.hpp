@@ -100,7 +100,7 @@ inline std::vector<uint8_t> loadFileToBin(const std::string &vFilePathName) {
     return ret;
 }
 
-inline bool saveBinToFile(const std::vector<uint8_t>& vDatas, const std::string &vFilePathName, bool vAddTimeStamp = false) {
+inline bool saveBinToFile(const std::vector<uint8_t> &vDatas, const std::string &vFilePathName, bool vAddTimeStamp = false) {
     std::string fpn = vFilePathName;
     if (!fpn.empty()) {
         if (vAddTimeStamp) {
@@ -112,9 +112,9 @@ inline bool saveBinToFile(const std::vector<uint8_t>& vDatas, const std::string 
                 fpn += ez::str::toStr("_%llu", epoch);
             }
         }
-        std::ofstream out(fpn, std::ios::out|std::ios::binary);
+        std::ofstream out(fpn, std::ios::out | std::ios::binary);
         if (!out.bad()) {
-            out.write(reinterpret_cast<const char*>(vDatas.data()), vDatas.size());
+            out.write(reinterpret_cast<const char *>(vDatas.data()), vDatas.size());
             out.close();
             return true;
         }
@@ -266,6 +266,166 @@ inline std::string composePath(const std::string &vPath, const std::string &vFil
             res += "." + vExt;
         }
     }
+    return res;
+}
+
+inline bool isFileExist(const std::string &name) {
+    auto fileToOpen = correctSlashTypeForFilePathName(name);
+    ez::str::replaceString(fileToOpen, "\"", "");
+    ez::str::replaceString(fileToOpen, "\n", "");
+    ez::str::replaceString(fileToOpen, "\r", "");
+    std::ifstream docFile(fileToOpen, std::ios::in);
+    if (docFile.is_open()) {
+        docFile.close();
+        return true;
+    }
+    return false;
+}
+
+inline bool isDirectoryExist(const std::string &name) {
+    if (!name.empty()) {
+        const std::string dir = correctSlashTypeForFilePathName(name);
+        struct stat sb;
+        if (stat(dir.c_str(), &sb)) {
+            return (sb.st_mode & S_IFDIR);
+        }
+    }
+    return false;
+}
+
+inline bool destroyFile(const std::string &vFilePathName) {
+    if (!vFilePathName.empty()) {
+        const auto filePathName = correctSlashTypeForFilePathName(vFilePathName);
+        if (isFileExist(filePathName)) {
+            if (remove(filePathName.c_str()) == 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+inline bool createDirectoryIfNotExist(const std::string &name) {
+    bool res = false;
+    if (!name.empty()) {
+        const auto filePathName = correctSlashTypeForFilePathName(name);
+        if (!isDirectoryExist(filePathName)) {
+            res = true;
+#ifdef WIN32
+            CreateDirectory(filePathName.c_str(), nullptr);
+#elif defined(UNIX)
+            char buffer[MAX_PATH] = {};
+            snprintf(buffer, MAX_PATH, "mkdir -p %s", filePathName.c_str());
+            const int dir_err = std::system(buffer);
+            if (dir_err == -1) {
+                printf("FileHelper::CreateDirectoryIfNotExist : Error creating directory %s", filePathName.c_str());
+                res = false;
+            }
+#endif
+        }
+    }
+    return res;
+}
+
+inline bool createPathIfNotExist(const std::string &vPath) {
+    bool res = false;
+    if (!vPath.empty()) {
+        auto path = correctSlashTypeForFilePathName(vPath);
+        if (!isDirectoryExist(path)) {
+            res = true;
+            ez::str::replaceString(path, "/", "|");
+            ez::str::replaceString(path, "\\", "|");
+            auto arr = ez::str::splitStringToVector(path, "|");
+            std::string fullPath;
+            for (auto it = arr.begin(); it != arr.end(); ++it) {
+                fullPath += *it;
+                res &= createDirectoryIfNotExist(fullPath);
+                fullPath += EZ_FILE_SLASH_TYPE;
+            }
+        }
+    }
+    return res;
+}
+
+// will open the file is the associated app
+inline void openFile(const std::string &vShaderToOpen) {
+    const auto shaderToOpen = correctSlashTypeForFilePathName(vShaderToOpen);
+#if defined(WIN32)
+    auto *result = ShellExecute(nullptr, "", shaderToOpen.c_str(), nullptr, nullptr, SW_SHOW);
+    if (result < (HINSTANCE)32) {  //-V112
+        // try to open an editor
+        result = ShellExecute(nullptr, "edit", shaderToOpen.c_str(), nullptr, nullptr, SW_SHOW);
+        if (result == (HINSTANCE)SE_ERR_ASSOCINCOMPLETE || result == (HINSTANCE)SE_ERR_NOASSOC) {
+            // open associating dialog
+            const std::string sCmdOpenWith = "shell32.dll,OpenAs_RunDLL \"" + shaderToOpen + "\"";
+            result = ShellExecute(nullptr, "", "rundll32.exe", sCmdOpenWith.c_str(), nullptr, SW_NORMAL);
+        }
+        if (result < (HINSTANCE)32) {  // open in explorer //-V112
+            const std::string sCmdExplorer = "/select,\"" + shaderToOpen + "\"";
+            ShellExecute(
+                nullptr, "", "explorer.exe", sCmdExplorer.c_str(), nullptr, SW_NORMAL);  // ce serait peut etre mieu d'utilsier la commande system comme dans SelectFile
+        }
+    }
+#elif defined(LINUX)
+    int pid = fork();
+    if (pid == 0) {
+        execl("/usr/bin/xdg-open", "xdg-open", shaderToOpen.c_str(), (char *)0);
+    }
+#elif defined(APPLE)
+    std::string command = "open " + shaderToOpen;
+    std::system(command.c_str());
+#endif
+}
+
+// will open the url in the related browser
+inline void openUrl(const std::string &vUrl) {
+    const auto url = correctSlashTypeForFilePathName(vUrl);
+#ifdef WIN32
+    ShellExecute(nullptr, nullptr, url.c_str(), nullptr, nullptr, SW_SHOW);
+#elif defined(LINUX)
+    char buffer[MAX_PATH] = {};
+    snprintf(buffer, MAX_PATH, "<mybrowser> %s", url.c_str());
+    std::system(buffer);
+#elif defined(APPLE)
+    // std::string sCmdOpenWith = "open -a Firefox " + vUrl;
+    std::string sCmdOpenWith = "open " + url;
+    std::system(sCmdOpenWith.c_str());
+#endif
+}
+
+// will open the current file explorer and will select the file
+inline void selectFile(const std::string &vFileToSelect) {
+    const auto fileToSelect = correctSlashTypeForFilePathName(vFileToSelect);
+#ifdef WIN32
+    if (!fileToSelect.empty()) {
+        const std::string sCmdOpenWith = "explorer /select," + fileToSelect;
+        std::system(sCmdOpenWith.c_str());
+    }
+#elif defined(LINUX)
+    // todo : is there a similar command on linux ?
+    assert(nullptr);
+#elif defined(APPLE)
+    if (!fileToSelect.empty()) {
+        std::string sCmdOpenWith = "open -R " + fileToSelect;
+        std::system(sCmdOpenWith.c_str());
+    }
+#endif
+}
+
+std::vector<std::string> getDrives() {
+    std::vector<std::string> res;
+#ifdef WIN32
+    const DWORD mydrives = 2048;
+    char lpBuffer[2048];
+    const DWORD countChars = GetLogicalDriveStrings(mydrives, lpBuffer);
+    if (countChars > 0) {
+        std::string var = std::string(lpBuffer, (size_t)countChars);
+        ez::str::replaceString(var, "\\", "");
+        res = ez::str::splitStringToVector(var, "\0");
+    }
+#else
+    assert(nullptr);
+#endif
     return res;
 }
 

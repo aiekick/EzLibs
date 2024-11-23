@@ -1,5 +1,5 @@
 #include "TestEzGraphNode.h"
-#include <ezlibs/ezGraph.hpp>
+#include <EzLibs/EzGraph.hpp>
 
 using namespace ez;
 

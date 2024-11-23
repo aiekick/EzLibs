@@ -45,26 +45,25 @@ struct vec3 {
     T x = static_cast<T>(0), y = static_cast<T>(0), z = static_cast<T>(0);
 
     // Default constructor
-    vec3() : x(static_cast<T>(0)), y(static_cast<T>(0)), z(static_cast<T>(0)) {
-    }
+    vec3() : x(static_cast<T>(0)), y(static_cast<T>(0)), z(static_cast<T>(0)) {}
 
     // Constructor with type conversion
     template <typename U>
-    vec3(const vec3<U>& a) : x(static_cast<T>(a.x)), y(static_cast<T>(a.y)), z(static_cast<T>(a.z)) {
-    }
+    vec3(const vec3<U>& a) : x(static_cast<T>(a.x)), y(static_cast<T>(a.y)), z(static_cast<T>(a.z)) {}
+
+    // Constructor with type conversion
+    template <typename U>
+    vec3(const U& a) : x(static_cast<T>(a.x)), y(static_cast<T>(a.y)), z(static_cast<T>(a.z)) {}
 
     // Constructor for uniform initialization
-    vec3(T xyz) : x(xyz), y(xyz), z(xyz) {
-    }
+    vec3(T xyz) : x(xyz), y(xyz), z(xyz) {}
 
     // Constructor with specific values
-    vec3(T x, T y, T z) : x(x), y(y), z(z) {
-    }
+    vec3(T x, T y, T z) : x(x), y(y), z(z) {}
 
     // Constructor using a vec2 and a scalar
     // Assumption: vec2<T> is defined elsewhere, as it is referenced but not included here.
-    vec3(const vec2<T>& xy, T z) : x(xy.x), y(xy.y), z(z) {
-    }
+    vec3(const vec2<T>& xy, T z) : x(xy.x), y(xy.y), z(z) {}
 
     // Constructor from string
     vec3(const std::string& vec, char c = ';', vec3<T>* def = nullptr) {
@@ -84,14 +83,10 @@ struct vec3 {
     }
 
     // Indexing operator
-    T& operator[](size_t i) {
-        return (&x)[i];
-    }
+    T& operator[](size_t i) { return (&x)[i]; }
 
     // Offset the vector
-    vec3 Offset(T vX, T vY, T vZ) const {
-        return vec3(x + vX, y + vY, z + vZ);
-    }
+    vec3 Offset(T vX, T vY, T vZ) const { return vec3(x + vX, y + vY, z + vZ); }
 
     // Set the vector's components
     void Set(T vX, T vY, T vZ) {
@@ -100,25 +95,7 @@ struct vec3 {
         z = vZ;
     }
 
-    operator vec2<T>() const {
-        return vec2<T>(x, y);
-    }
-
-#ifdef IMGUI_API
-
-    // only for float or double
-    template <typename = std::enable_if_t<std::is_floating_point<T>::value>>
-    operator ImVec2() const {
-        return ImVec2(static_cast<float>(x), static_cast<float>(y));
-    }
-
-    // only for float or double
-    template <typename = std::enable_if_t<std::is_floating_point<T>::value>>
-    operator ImVec4() const {
-        return ImVec4(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), (T)0);
-    }
-
-#endif
+    operator vec2<T>() const { return vec2<T>(x, y); }
 
     // Negation operator
     vec3 operator-() const {
@@ -133,22 +110,14 @@ struct vec3 {
     }
 
     // Extract 2D vectors from 3D vector
-    vec2<T> xy() const {
-        return vec2<T>(x, y);
-    }
+    vec2<T> xy() const { return vec2<T>(x, y); }
 
-    vec2<T> xz() const {
-        return vec2<T>(x, z);
-    }
+    vec2<T> xz() const { return vec2<T>(x, z); }
 
-    vec2<T> yz() const {
-        return vec2<T>(y, z);
-    }
+    vec2<T> yz() const { return vec2<T>(y, z); }
 
     // Cyclic permutation
-    vec3 yzx() const {
-        return vec3(y, z, x);
-    }
+    vec3 yzx() const { return vec3(y, z, x); }
 
     // Pre-increment and pre-decrement operators
     vec3& operator++() {
@@ -228,14 +197,10 @@ struct vec3 {
     }
 
     // Length of the vector
-    T length() const {
-        return static_cast<T>(ez::sqrt(lengthSquared()));
-    }
+    T length() const { return static_cast<T>(ez::sqrt(lengthSquared())); }
 
     // Squared length of the vector
-    T lengthSquared() const {
-        return x * x + y * y + z * z;
-    }
+    T lengthSquared() const { return x * x + y * y + z * z; }
 
     // Normalize the vector
     T normalize() {
@@ -257,39 +222,25 @@ struct vec3 {
     }
 
     // Sum of components
-    T sum() const {
-        return x + y + z;
-    }
+    T sum() const { return x + y + z; }
 
     // Sum of absolute values of components
-    T sumAbs() const {
-        return ez::abs(x) + ez::abs(y) + ez::abs(z);
-    }
+    T sumAbs() const { return ez::abs(x) + ez::abs(y) + ez::abs(z); }
 
     // Check if all components are zero (AND)
-    bool emptyAND() const {
-        return x == static_cast<T>(0) && y == static_cast<T>(0) && z == static_cast<T>(0);
-    }
+    bool emptyAND() const { return x == static_cast<T>(0) && y == static_cast<T>(0) && z == static_cast<T>(0); }
 
     // Check if any component is zero (OR)
-    bool emptyOR() const {
-        return x == static_cast<T>(0) || y == static_cast<T>(0) || z == static_cast<T>(0);
-    }
+    bool emptyOR() const { return x == static_cast<T>(0) || y == static_cast<T>(0) || z == static_cast<T>(0); }
 
     // Convert to string
-    std::string string(char c = ';') const {
-        return ez::str::toStr(x) + c + ez::str::toStr(y) + c + ez::str::toStr(z);
-    }
+    std::string string(char c = ';') const { return ez::str::toStr(x) + c + ez::str::toStr(y) + c + ez::str::toStr(z); }
 
     // Minimum component
-    T mini() const {
-        return ez::mini(x, ez::mini(y, z));
-    }
+    T mini() const { return ez::mini(x, ez::mini(y, z)); }
 
     // Maximum component
-    T maxi() const {
-        return ez::maxi(x, ez::maxi(y, z));
-    }
+    T maxi() const { return ez::maxi(x, ez::maxi(y, z)); }
 };
 
 // Operators for vec3

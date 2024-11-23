@@ -1,5 +1,5 @@
 #include <TestEzArgs.h>
-#include <ezlibs/ezArgs.hpp>
+#include <EzLibs/EzArgs.hpp>
 
 #include <exception>
 #include <iostream>
