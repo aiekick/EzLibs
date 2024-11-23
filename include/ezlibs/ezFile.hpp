@@ -30,6 +30,7 @@ SOFTWARE.
 #include <sstream>
 #include <cstdint>
 #include <string>
+#include <vector>
 #include <ctime>
 
 #include "ezStr.hpp"
@@ -37,6 +38,7 @@ SOFTWARE.
 #ifndef EZ_FILE_SLASH_TYPE
 #ifdef WIN32
 #define EZ_FILE_SLASH_TYPE "\\"
+#include <Windows.h>
 #else  // UNIX
 #define EZ_FILE_SLASH_TYPE "/"
 #endif
@@ -412,7 +414,7 @@ inline void selectFile(const std::string &vFileToSelect) {
 #endif
 }
 
-std::vector<std::string> getDrives() {
+inline std::vector<std::string> getDrives() {
     std::vector<std::string> res;
 #ifdef WIN32
     const DWORD mydrives = 2048;

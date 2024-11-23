@@ -2,14 +2,14 @@
 #include <TestEzXml.h>
 #include <TestEzStr.h>
 
-#define IfTestCollectionExist(v)        \
+#define IfTestCollectionExist(v)             \
     if (vTest.find(#v) != std::string::npos) \
     return v(vTest)
-	
-bool TestMisc(const std::string &vTest) {
-	IfTestCollectionExist(TestEzGraph);
-	else IfTestCollectionExist(TestEzXml);
-	else IfTestCollectionExist(TestEzStr);
+
+bool TestMisc(const std::string& vTest) {
+    IfTestCollectionExist(TestEzGraph);
+    else IfTestCollectionExist(TestEzXml);
+    else IfTestCollectionExist(TestEzStr);
     return false;
 }
 
@@ -23,5 +23,5 @@ int main(int argc, char** argv) {
         return TestMisc(argv[1]) ? 0 : 1;
     }
     // User testing
-    return TestMisc("TestEzGraph_Evaluation") ? 0 : 1;
+    return TestMisc("TestEzXmlParsingOK") ? 0 : 1;
 }

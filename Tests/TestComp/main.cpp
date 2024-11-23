@@ -6,8 +6,9 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-#define IfTestCollectionExist(v) \
-    if (vTest.find(#v) != std::string::npos) return v(vTest)
+#define IfTestCollectionExist(v)             \
+    if (vTest.find(#v) != std::string::npos) \
+    return v(vTest)
 
 bool TestFile(const std::string& vTest) {
     IfTestCollectionExist(TestEzLzw);

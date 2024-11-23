@@ -54,8 +54,9 @@ bool TestEzGif_Writer() {
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-#define IfTestExist(v) \
-    if (vTest == std::string(#v)) return v()
+#define IfTestExist(v)            \
+    if (vTest == std::string(#v)) \
+    return v()
 
 bool TestEzGif(const std::string& vTest) {
     IfTestExist(TestEzGif_Writer);

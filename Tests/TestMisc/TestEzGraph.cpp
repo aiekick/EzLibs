@@ -72,9 +72,7 @@ public:
     }
 
 public:
-    ez::RetCodes connectSlots(ez::SlotWeak vFrom, ez::SlotWeak vTo) {
-        return m_connectSlots(vFrom, vTo);
-    }
+    ez::RetCodes connectSlots(ez::SlotWeak vFrom, ez::SlotWeak vTo) { return m_connectSlots(vFrom, vTo); }
 };
 
 class NodeNumber;
@@ -95,12 +93,8 @@ private:
     float m_Value = 0.0f;
 
 public:
-    void setValue(const float vValue) {
-        m_Value = vValue;
-    }
-    float getValue() {
-        return m_Value;
-    }
+    void setValue(const float vValue) { m_Value = vValue; }
+    float getValue() { return m_Value; }
 };
 
 class NodeOpAdd;

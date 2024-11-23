@@ -20,16 +20,17 @@
 ////////////////////////////////////////////////////////////////////////////
 
 bool TestEzXmlParsingOK() {
-    const auto& doc = u8R"(
-<config>
+    const auto& doc =
+        u8R"(
+ < config > 
 	<!-- Comment 1 -->
     <NumberOneLine>60</NumberOneLine>
-    <Tests>
+    <Tests> 
 	    <!-- Comment 2 -->
         <Test name="test1" number="50"/>
-        <Test name="test2" number="100"/>
-        <Test name="test3" number="150"/>
-        <Test name="test4" number="200">
+        <Test name ="test2" number="100"/>
+        <Test name= "test3" number="150"/>
+        <Test name = "test4" number="200">
             <SubTest name="subTest1" number="250"/>
             <SubTest name="subTest2" number="300"/>
         </Test>
@@ -95,7 +96,7 @@ bool TestEzXmlParsingOK() {
     return true;
 }
 
- // all attributes value must be some strings
+// all attributes value must be some strings
 bool TestEzXmlParsingNOK_0() {
     const auto& doc =
         u8R"(
@@ -110,7 +111,7 @@ bool TestEzXmlParsingNOK_0() {
     return true;
 }
 
- // to tag end
+// to tag end
 bool TestEzXmlParsingNOK_1() {
     const auto& doc =
         u8R"(

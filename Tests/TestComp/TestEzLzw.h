@@ -3,4 +3,3 @@
 #include <string>
 
 bool TestEzLzw(const std::string& vTest);
-

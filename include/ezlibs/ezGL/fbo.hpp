@@ -59,9 +59,7 @@ public:
 
 public:
     FBO() = default;
-    virtual ~FBO() {
-        unit();
-    }
+    virtual ~FBO() { unit(); }
 
     bool init(const GLsizei& vSX, const GLsizei& vSY, const GLuint vCountBuffers, const bool vUseMipMapping) {
         bool res = false;
@@ -109,9 +107,9 @@ public:
         PROFILER_SCOPED("FBO", "clearBuffer");
 #endif
         if (bind()) {
-            glClearColor(vColor[0], vColor[1], vColor[2], vColor[3]); 
+            glClearColor(vColor[0], vColor[1], vColor[2], vColor[3]);
             glClear(GL_COLOR_BUFFER_BIT);
-            unbind();        
+            unbind();
         }
     }
 
@@ -124,10 +122,10 @@ public:
                 if (tex_ptr != nullptr) {
                     tex_ptr->updateMipMaping();
                 }
-            }         
+            }
         }
     }
-    
+
     void selectBuffers() {
 #ifdef PROFILER_SCOPED
         PROFILER_SCOPED("FBO", "glDrawBuffers");
@@ -146,17 +144,15 @@ public:
         CheckGLErrors;
     }
 
-    GLuint getBuffersCount() const  {
-        return m_CountBuffers;
-    }
-    
+    GLuint getBuffersCount() const { return m_CountBuffers; }
+
     GLuint getTextureId(const size_t& vBufferIdx = 0U) const {
         if (m_Textures.size() > vBufferIdx) {
             return m_Textures[vBufferIdx]->getTexId();
         }
         return 0U;
     }
-    
+
     bool resize(const GLsizei& vNewSx, const GLsizei& vNewSy) {
         bool res = false;
         if (m_FBOId > 0) {
@@ -219,9 +215,9 @@ public:
 };
 
 /*
-* add front and back FBO
-* and switch between front and back after rendering
-*/
+ * add front and back FBO
+ * and switch between front and back after rendering
+ */
 
 class FBOPipeLine;
 typedef std::shared_ptr<FBOPipeLine> FBOPipeLinePtr;
@@ -245,9 +241,7 @@ public:
 
 public:
     FBOPipeLine() = default;
-    virtual ~FBOPipeLine() {
-        unit();
-    }
+    virtual ~FBOPipeLine() { unit(); }
     bool init(const GLsizei& vSX, const GLsizei& vSY, const GLuint vCountBuffers, const bool vUseMipMapping, const bool vMultiPass) {
         bool res = true;
         m_MultiPass = vMultiPass;
@@ -304,7 +298,6 @@ public:
         if (m_MultiPass) {
             swapFBOs();
         }
-
     }
     GLuint getFrontTextureId(const size_t& vBufferIdx = 0U) const {
         assert(m_FrontFBOPtr != nullptr);
@@ -315,9 +308,7 @@ public:
         assert(m_BackFBOPtr != nullptr);
         return m_BackFBOPtr->getTextureId(vBufferIdx);
     }
-    FBOWeak getFrontFBO() const {
-        return m_FrontFBOPtr;
-    }
+    FBOWeak getFrontFBO() const { return m_FrontFBOPtr; }
     FBOWeak getBackFBO() const {
         assert(m_MultiPass);
         return m_BackFBOPtr;

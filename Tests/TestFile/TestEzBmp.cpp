@@ -28,7 +28,7 @@ bool TestEzBmp_Writer() {
                     bmp.setPixel(x, y, 255, 0, 0);
                 } break;
                 case 1:
-                case 5:{
+                case 5: {
                     bmp.setPixel(x, y, 0, 255, 0);
                 } break;
                 case 2:
@@ -38,12 +38,11 @@ bool TestEzBmp_Writer() {
                 case 3: {
                     bmp.setPixel(x, y, 255, 255, 0);
                 } break;
-                default: 
-                    break;
+                default: break;
             }
         }
     }
-    bmp.save(PROJECT_PATH "test.bmp");    
+    bmp.save(PROJECT_PATH "test.bmp");
     return true;
 }
 

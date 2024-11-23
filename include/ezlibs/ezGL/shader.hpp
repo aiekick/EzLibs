@@ -65,9 +65,7 @@ public:
 
 public:
     Shader() = default;
-    ~Shader() {
-        unit();
-    }
+    ~Shader() { unit(); }
 
     bool initFromFile(const std::string& vShaderName, const GLenum vShaderType, const std::string& vFile) {
         assert(!vShaderName.empty());
@@ -113,12 +111,8 @@ public:
             m_ShaderId = 0U;
         }
     }
-    const std::string& getName() {
-        return m_ShaderName;
-    }
-    GLuint getShaderId() {
-        return m_ShaderId;
-    }
+    const std::string& getName() { return m_ShaderName; }
+    GLuint getShaderId() { return m_ShaderId; }
 
 private:
     std::string getCodeFromFile(const std::string& vFile) {

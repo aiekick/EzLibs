@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-typedef void* (* GLADloadproc)(const char *name);
+typedef void *(*GLADloadproc)(const char *name);
 GLAPI int gladLoadEGLLoader(GLADloadproc);
 
 GLAPI int gladLoadEGL(void);
@@ -63,34 +63,34 @@ typedef khronos_utime_nanoseconds_t EGLuint64NV;
 typedef khronos_uint64_t EGLuint64KHR;
 typedef int EGLNativeFileDescriptorKHR;
 typedef khronos_ssize_t EGLsizeiANDROID;
-typedef void (*EGLSetBlobFuncANDROID) (const void *key, EGLsizeiANDROID keySize, const void *value, EGLsizeiANDROID valueSize);
-typedef EGLsizeiANDROID (*EGLGetBlobFuncANDROID) (const void *key, EGLsizeiANDROID keySize, void *value, EGLsizeiANDROID valueSize);
+typedef void (*EGLSetBlobFuncANDROID)(const void *key, EGLsizeiANDROID keySize, const void *value, EGLsizeiANDROID valueSize);
+typedef EGLsizeiANDROID (*EGLGetBlobFuncANDROID)(const void *key, EGLsizeiANDROID keySize, void *value, EGLsizeiANDROID valueSize);
 struct EGLClientPixmapHI {
-    void  *pData;
+    void *pData;
     EGLint iWidth;
     EGLint iHeight;
     EGLint iStride;
 };
-EGLBoolean eglChooseConfig(EGLDisplay, const EGLint*, EGLConfig*, EGLint, EGLint*);
+EGLBoolean eglChooseConfig(EGLDisplay, const EGLint *, EGLConfig *, EGLint, EGLint *);
 EGLBoolean eglCopyBuffers(EGLDisplay, EGLSurface, EGLNativePixmapType);
-EGLContext eglCreateContext(EGLDisplay, EGLConfig, EGLContext, const EGLint*);
-EGLSurface eglCreatePbufferSurface(EGLDisplay, EGLConfig, const EGLint*);
-EGLSurface eglCreatePixmapSurface(EGLDisplay, EGLConfig, EGLNativePixmapType, const EGLint*);
-EGLSurface eglCreateWindowSurface(EGLDisplay, EGLConfig, EGLNativeWindowType, const EGLint*);
+EGLContext eglCreateContext(EGLDisplay, EGLConfig, EGLContext, const EGLint *);
+EGLSurface eglCreatePbufferSurface(EGLDisplay, EGLConfig, const EGLint *);
+EGLSurface eglCreatePixmapSurface(EGLDisplay, EGLConfig, EGLNativePixmapType, const EGLint *);
+EGLSurface eglCreateWindowSurface(EGLDisplay, EGLConfig, EGLNativeWindowType, const EGLint *);
 EGLBoolean eglDestroyContext(EGLDisplay, EGLContext);
 EGLBoolean eglDestroySurface(EGLDisplay, EGLSurface);
-EGLBoolean eglGetConfigAttrib(EGLDisplay, EGLConfig, EGLint, EGLint*);
-EGLBoolean eglGetConfigs(EGLDisplay, EGLConfig*, EGLint, EGLint*);
+EGLBoolean eglGetConfigAttrib(EGLDisplay, EGLConfig, EGLint, EGLint *);
+EGLBoolean eglGetConfigs(EGLDisplay, EGLConfig *, EGLint, EGLint *);
 EGLDisplay eglGetCurrentDisplay();
 EGLSurface eglGetCurrentSurface(EGLint);
 EGLDisplay eglGetDisplay(EGLNativeDisplayType);
 EGLint eglGetError();
-__eglMustCastToProperFunctionPointerType eglGetProcAddress(const char*);
-EGLBoolean eglInitialize(EGLDisplay, EGLint*, EGLint*);
+__eglMustCastToProperFunctionPointerType eglGetProcAddress(const char *);
+EGLBoolean eglInitialize(EGLDisplay, EGLint *, EGLint *);
 EGLBoolean eglMakeCurrent(EGLDisplay, EGLSurface, EGLSurface, EGLContext);
-EGLBoolean eglQueryContext(EGLDisplay, EGLContext, EGLint, EGLint*);
-const char* eglQueryString(EGLDisplay, EGLint);
-EGLBoolean eglQuerySurface(EGLDisplay, EGLSurface, EGLint, EGLint*);
+EGLBoolean eglQueryContext(EGLDisplay, EGLContext, EGLint, EGLint *);
+const char *eglQueryString(EGLDisplay, EGLint);
+EGLBoolean eglQuerySurface(EGLDisplay, EGLSurface, EGLint, EGLint *);
 EGLBoolean eglSwapBuffers(EGLDisplay, EGLSurface);
 EGLBoolean eglTerminate(EGLDisplay);
 EGLBoolean eglWaitGL();
@@ -101,19 +101,19 @@ EGLBoolean eglSurfaceAttrib(EGLDisplay, EGLSurface, EGLint, EGLint);
 EGLBoolean eglSwapInterval(EGLDisplay, EGLint);
 EGLBoolean eglBindAPI(EGLenum);
 EGLenum eglQueryAPI();
-EGLSurface eglCreatePbufferFromClientBuffer(EGLDisplay, EGLenum, EGLClientBuffer, EGLConfig, const EGLint*);
+EGLSurface eglCreatePbufferFromClientBuffer(EGLDisplay, EGLenum, EGLClientBuffer, EGLConfig, const EGLint *);
 EGLBoolean eglReleaseThread();
 EGLBoolean eglWaitClient();
 EGLContext eglGetCurrentContext();
-EGLSync eglCreateSync(EGLDisplay, EGLenum, const EGLAttrib*);
+EGLSync eglCreateSync(EGLDisplay, EGLenum, const EGLAttrib *);
 EGLBoolean eglDestroySync(EGLDisplay, EGLSync);
 EGLint eglClientWaitSync(EGLDisplay, EGLSync, EGLint, EGLTime);
-EGLBoolean eglGetSyncAttrib(EGLDisplay, EGLSync, EGLint, EGLAttrib*);
-EGLImage eglCreateImage(EGLDisplay, EGLContext, EGLenum, EGLClientBuffer, const EGLAttrib*);
+EGLBoolean eglGetSyncAttrib(EGLDisplay, EGLSync, EGLint, EGLAttrib *);
+EGLImage eglCreateImage(EGLDisplay, EGLContext, EGLenum, EGLClientBuffer, const EGLAttrib *);
 EGLBoolean eglDestroyImage(EGLDisplay, EGLImage);
-EGLDisplay eglGetPlatformDisplay(EGLenum, void*, const EGLAttrib*);
-EGLSurface eglCreatePlatformWindowSurface(EGLDisplay, EGLConfig, void*, const EGLAttrib*);
-EGLSurface eglCreatePlatformPixmapSurface(EGLDisplay, EGLConfig, void*, const EGLAttrib*);
+EGLDisplay eglGetPlatformDisplay(EGLenum, void *, const EGLAttrib *);
+EGLSurface eglCreatePlatformWindowSurface(EGLDisplay, EGLConfig, void *, const EGLAttrib *);
+EGLSurface eglCreatePlatformPixmapSurface(EGLDisplay, EGLConfig, void *, const EGLAttrib *);
 EGLBoolean eglWaitSync(EGLDisplay, EGLSync, EGLint);
 #define EGL_READ_SURFACE_BIT_KHR 0x0001
 #define EGL_WRITE_SURFACE_BIT_KHR 0x0002
@@ -348,10 +348,10 @@ EGLBoolean eglWaitSync(EGLDisplay, EGLSync, EGLint);
 #define EGL_VG_ALPHA_FORMAT_PRE_BIT_KHR 0x0040
 #ifndef EGL_KHR_lock_surface
 #define EGL_KHR_lock_surface 1
-typedef EGLBoolean (APIENTRYP PFNEGLLOCKSURFACEKHRPROC)(EGLDisplay, EGLSurface, const EGLint*);
+typedef EGLBoolean(APIENTRYP PFNEGLLOCKSURFACEKHRPROC)(EGLDisplay, EGLSurface, const EGLint *);
 GLAPI PFNEGLLOCKSURFACEKHRPROC glad_eglLockSurfaceKHR;
 #define eglLockSurfaceKHR glad_eglLockSurfaceKHR
-typedef EGLBoolean (APIENTRYP PFNEGLUNLOCKSURFACEKHRPROC)(EGLDisplay, EGLSurface);
+typedef EGLBoolean(APIENTRYP PFNEGLUNLOCKSURFACEKHRPROC)(EGLDisplay, EGLSurface);
 GLAPI PFNEGLUNLOCKSURFACEKHRPROC glad_eglUnlockSurfaceKHR;
 #define eglUnlockSurfaceKHR glad_eglUnlockSurfaceKHR
 #endif
@@ -363,16 +363,16 @@ GLAPI PFNEGLUNLOCKSURFACEKHRPROC glad_eglUnlockSurfaceKHR;
 #endif
 #ifndef EGL_EXT_device_enumeration
 #define EGL_EXT_device_enumeration 1
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYDEVICESEXTPROC)(EGLint, EGLDeviceEXT*, EGLint*);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYDEVICESEXTPROC)(EGLint, EGLDeviceEXT *, EGLint *);
 GLAPI PFNEGLQUERYDEVICESEXTPROC glad_eglQueryDevicesEXT;
 #define eglQueryDevicesEXT glad_eglQueryDevicesEXT
 #endif
 #ifndef EGL_MESA_drm_image
 #define EGL_MESA_drm_image 1
-typedef EGLImageKHR (APIENTRYP PFNEGLCREATEDRMIMAGEMESAPROC)(EGLDisplay, const EGLint*);
+typedef EGLImageKHR(APIENTRYP PFNEGLCREATEDRMIMAGEMESAPROC)(EGLDisplay, const EGLint *);
 GLAPI PFNEGLCREATEDRMIMAGEMESAPROC glad_eglCreateDRMImageMESA;
 #define eglCreateDRMImageMESA glad_eglCreateDRMImageMESA
-typedef EGLBoolean (APIENTRYP PFNEGLEXPORTDRMIMAGEMESAPROC)(EGLDisplay, EGLImageKHR, EGLint*, EGLint*, EGLint*);
+typedef EGLBoolean(APIENTRYP PFNEGLEXPORTDRMIMAGEMESAPROC)(EGLDisplay, EGLImageKHR, EGLint *, EGLint *, EGLint *);
 GLAPI PFNEGLEXPORTDRMIMAGEMESAPROC glad_eglExportDRMImageMESA;
 #define eglExportDRMImageMESA glad_eglExportDRMImageMESA
 #endif
@@ -381,7 +381,7 @@ GLAPI PFNEGLEXPORTDRMIMAGEMESAPROC glad_eglExportDRMImageMESA;
 #endif
 #ifndef EGL_KHR_stream_producer_eglsurface
 #define EGL_KHR_stream_producer_eglsurface 1
-typedef EGLSurface (APIENTRYP PFNEGLCREATESTREAMPRODUCERSURFACEKHRPROC)(EGLDisplay, EGLConfig, EGLStreamKHR, const EGLint*);
+typedef EGLSurface(APIENTRYP PFNEGLCREATESTREAMPRODUCERSURFACEKHRPROC)(EGLDisplay, EGLConfig, EGLStreamKHR, const EGLint *);
 GLAPI PFNEGLCREATESTREAMPRODUCERSURFACEKHRPROC glad_eglCreateStreamProducerSurfaceKHR;
 #define eglCreateStreamProducerSurfaceKHR glad_eglCreateStreamProducerSurfaceKHR
 #endif
@@ -396,22 +396,22 @@ GLAPI PFNEGLCREATESTREAMPRODUCERSURFACEKHRPROC glad_eglCreateStreamProducerSurfa
 #endif
 #ifndef EGL_EXT_device_base
 #define EGL_EXT_device_base 1
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYDEVICEATTRIBEXTPROC)(EGLDeviceEXT, EGLint, EGLAttrib*);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYDEVICEATTRIBEXTPROC)(EGLDeviceEXT, EGLint, EGLAttrib *);
 GLAPI PFNEGLQUERYDEVICEATTRIBEXTPROC glad_eglQueryDeviceAttribEXT;
 #define eglQueryDeviceAttribEXT glad_eglQueryDeviceAttribEXT
-typedef const char* (APIENTRYP PFNEGLQUERYDEVICESTRINGEXTPROC)(EGLDeviceEXT, EGLint);
+typedef const char *(APIENTRYP PFNEGLQUERYDEVICESTRINGEXTPROC)(EGLDeviceEXT, EGLint);
 GLAPI PFNEGLQUERYDEVICESTRINGEXTPROC glad_eglQueryDeviceStringEXT;
 #define eglQueryDeviceStringEXT glad_eglQueryDeviceStringEXT
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYDISPLAYATTRIBEXTPROC)(EGLDisplay, EGLint, EGLAttrib*);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYDISPLAYATTRIBEXTPROC)(EGLDisplay, EGLint, EGLAttrib *);
 GLAPI PFNEGLQUERYDISPLAYATTRIBEXTPROC glad_eglQueryDisplayAttribEXT;
 #define eglQueryDisplayAttribEXT glad_eglQueryDisplayAttribEXT
 #endif
 #ifndef EGL_MESA_image_dma_buf_export
 #define EGL_MESA_image_dma_buf_export 1
-typedef EGLBoolean (APIENTRYP PFNEGLEXPORTDMABUFIMAGEQUERYMESAPROC)(EGLDisplay, EGLImageKHR, int*, int*, EGLuint64KHR*);
+typedef EGLBoolean(APIENTRYP PFNEGLEXPORTDMABUFIMAGEQUERYMESAPROC)(EGLDisplay, EGLImageKHR, int *, int *, EGLuint64KHR *);
 GLAPI PFNEGLEXPORTDMABUFIMAGEQUERYMESAPROC glad_eglExportDMABUFImageQueryMESA;
 #define eglExportDMABUFImageQueryMESA glad_eglExportDMABUFImageQueryMESA
-typedef EGLBoolean (APIENTRYP PFNEGLEXPORTDMABUFIMAGEMESAPROC)(EGLDisplay, EGLImageKHR, int*, EGLint*, EGLint*);
+typedef EGLBoolean(APIENTRYP PFNEGLEXPORTDMABUFIMAGEMESAPROC)(EGLDisplay, EGLImageKHR, int *, EGLint *, EGLint *);
 GLAPI PFNEGLEXPORTDMABUFIMAGEMESAPROC glad_eglExportDMABUFImageMESA;
 #define eglExportDMABUFImageMESA glad_eglExportDMABUFImageMESA
 #endif
@@ -420,37 +420,37 @@ GLAPI PFNEGLEXPORTDMABUFIMAGEMESAPROC glad_eglExportDMABUFImageMESA;
 #endif
 #ifndef EGL_NV_system_time
 #define EGL_NV_system_time 1
-typedef EGLuint64NV (APIENTRYP PFNEGLGETSYSTEMTIMEFREQUENCYNVPROC)();
+typedef EGLuint64NV(APIENTRYP PFNEGLGETSYSTEMTIMEFREQUENCYNVPROC)();
 GLAPI PFNEGLGETSYSTEMTIMEFREQUENCYNVPROC glad_eglGetSystemTimeFrequencyNV;
 #define eglGetSystemTimeFrequencyNV glad_eglGetSystemTimeFrequencyNV
-typedef EGLuint64NV (APIENTRYP PFNEGLGETSYSTEMTIMENVPROC)();
+typedef EGLuint64NV(APIENTRYP PFNEGLGETSYSTEMTIMENVPROC)();
 GLAPI PFNEGLGETSYSTEMTIMENVPROC glad_eglGetSystemTimeNV;
 #define eglGetSystemTimeNV glad_eglGetSystemTimeNV
 #endif
 #ifndef EGL_EXT_output_base
 #define EGL_EXT_output_base 1
-typedef EGLBoolean (APIENTRYP PFNEGLGETOUTPUTLAYERSEXTPROC)(EGLDisplay, const EGLAttrib*, EGLOutputLayerEXT*, EGLint, EGLint*);
+typedef EGLBoolean(APIENTRYP PFNEGLGETOUTPUTLAYERSEXTPROC)(EGLDisplay, const EGLAttrib *, EGLOutputLayerEXT *, EGLint, EGLint *);
 GLAPI PFNEGLGETOUTPUTLAYERSEXTPROC glad_eglGetOutputLayersEXT;
 #define eglGetOutputLayersEXT glad_eglGetOutputLayersEXT
-typedef EGLBoolean (APIENTRYP PFNEGLGETOUTPUTPORTSEXTPROC)(EGLDisplay, const EGLAttrib*, EGLOutputPortEXT*, EGLint, EGLint*);
+typedef EGLBoolean(APIENTRYP PFNEGLGETOUTPUTPORTSEXTPROC)(EGLDisplay, const EGLAttrib *, EGLOutputPortEXT *, EGLint, EGLint *);
 GLAPI PFNEGLGETOUTPUTPORTSEXTPROC glad_eglGetOutputPortsEXT;
 #define eglGetOutputPortsEXT glad_eglGetOutputPortsEXT
-typedef EGLBoolean (APIENTRYP PFNEGLOUTPUTLAYERATTRIBEXTPROC)(EGLDisplay, EGLOutputLayerEXT, EGLint, EGLAttrib);
+typedef EGLBoolean(APIENTRYP PFNEGLOUTPUTLAYERATTRIBEXTPROC)(EGLDisplay, EGLOutputLayerEXT, EGLint, EGLAttrib);
 GLAPI PFNEGLOUTPUTLAYERATTRIBEXTPROC glad_eglOutputLayerAttribEXT;
 #define eglOutputLayerAttribEXT glad_eglOutputLayerAttribEXT
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYOUTPUTLAYERATTRIBEXTPROC)(EGLDisplay, EGLOutputLayerEXT, EGLint, EGLAttrib*);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYOUTPUTLAYERATTRIBEXTPROC)(EGLDisplay, EGLOutputLayerEXT, EGLint, EGLAttrib *);
 GLAPI PFNEGLQUERYOUTPUTLAYERATTRIBEXTPROC glad_eglQueryOutputLayerAttribEXT;
 #define eglQueryOutputLayerAttribEXT glad_eglQueryOutputLayerAttribEXT
-typedef const char* (APIENTRYP PFNEGLQUERYOUTPUTLAYERSTRINGEXTPROC)(EGLDisplay, EGLOutputLayerEXT, EGLint);
+typedef const char *(APIENTRYP PFNEGLQUERYOUTPUTLAYERSTRINGEXTPROC)(EGLDisplay, EGLOutputLayerEXT, EGLint);
 GLAPI PFNEGLQUERYOUTPUTLAYERSTRINGEXTPROC glad_eglQueryOutputLayerStringEXT;
 #define eglQueryOutputLayerStringEXT glad_eglQueryOutputLayerStringEXT
-typedef EGLBoolean (APIENTRYP PFNEGLOUTPUTPORTATTRIBEXTPROC)(EGLDisplay, EGLOutputPortEXT, EGLint, EGLAttrib);
+typedef EGLBoolean(APIENTRYP PFNEGLOUTPUTPORTATTRIBEXTPROC)(EGLDisplay, EGLOutputPortEXT, EGLint, EGLAttrib);
 GLAPI PFNEGLOUTPUTPORTATTRIBEXTPROC glad_eglOutputPortAttribEXT;
 #define eglOutputPortAttribEXT glad_eglOutputPortAttribEXT
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYOUTPUTPORTATTRIBEXTPROC)(EGLDisplay, EGLOutputPortEXT, EGLint, EGLAttrib*);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYOUTPUTPORTATTRIBEXTPROC)(EGLDisplay, EGLOutputPortEXT, EGLint, EGLAttrib *);
 GLAPI PFNEGLQUERYOUTPUTPORTATTRIBEXTPROC glad_eglQueryOutputPortAttribEXT;
 #define eglQueryOutputPortAttribEXT glad_eglQueryOutputPortAttribEXT
-typedef const char* (APIENTRYP PFNEGLQUERYOUTPUTPORTSTRINGEXTPROC)(EGLDisplay, EGLOutputPortEXT, EGLint);
+typedef const char *(APIENTRYP PFNEGLQUERYOUTPUTPORTSTRINGEXTPROC)(EGLDisplay, EGLOutputPortEXT, EGLint);
 GLAPI PFNEGLQUERYOUTPUTPORTSTRINGEXTPROC glad_eglQueryOutputPortStringEXT;
 #define eglQueryOutputPortStringEXT glad_eglQueryOutputPortStringEXT
 #endif
@@ -459,19 +459,19 @@ GLAPI PFNEGLQUERYOUTPUTPORTSTRINGEXTPROC glad_eglQueryOutputPortStringEXT;
 #endif
 #ifndef EGL_KHR_reusable_sync
 #define EGL_KHR_reusable_sync 1
-typedef EGLSyncKHR (APIENTRYP PFNEGLCREATESYNCKHRPROC)(EGLDisplay, EGLenum, const EGLint*);
+typedef EGLSyncKHR(APIENTRYP PFNEGLCREATESYNCKHRPROC)(EGLDisplay, EGLenum, const EGLint *);
 GLAPI PFNEGLCREATESYNCKHRPROC glad_eglCreateSyncKHR;
 #define eglCreateSyncKHR glad_eglCreateSyncKHR
-typedef EGLBoolean (APIENTRYP PFNEGLDESTROYSYNCKHRPROC)(EGLDisplay, EGLSyncKHR);
+typedef EGLBoolean(APIENTRYP PFNEGLDESTROYSYNCKHRPROC)(EGLDisplay, EGLSyncKHR);
 GLAPI PFNEGLDESTROYSYNCKHRPROC glad_eglDestroySyncKHR;
 #define eglDestroySyncKHR glad_eglDestroySyncKHR
-typedef EGLint (APIENTRYP PFNEGLCLIENTWAITSYNCKHRPROC)(EGLDisplay, EGLSyncKHR, EGLint, EGLTimeKHR);
+typedef EGLint(APIENTRYP PFNEGLCLIENTWAITSYNCKHRPROC)(EGLDisplay, EGLSyncKHR, EGLint, EGLTimeKHR);
 GLAPI PFNEGLCLIENTWAITSYNCKHRPROC glad_eglClientWaitSyncKHR;
 #define eglClientWaitSyncKHR glad_eglClientWaitSyncKHR
-typedef EGLBoolean (APIENTRYP PFNEGLSIGNALSYNCKHRPROC)(EGLDisplay, EGLSyncKHR, EGLenum);
+typedef EGLBoolean(APIENTRYP PFNEGLSIGNALSYNCKHRPROC)(EGLDisplay, EGLSyncKHR, EGLenum);
 GLAPI PFNEGLSIGNALSYNCKHRPROC glad_eglSignalSyncKHR;
 #define eglSignalSyncKHR glad_eglSignalSyncKHR
-typedef EGLBoolean (APIENTRYP PFNEGLGETSYNCATTRIBKHRPROC)(EGLDisplay, EGLSyncKHR, EGLint, EGLint*);
+typedef EGLBoolean(APIENTRYP PFNEGLGETSYNCATTRIBKHRPROC)(EGLDisplay, EGLSyncKHR, EGLint, EGLint *);
 GLAPI PFNEGLGETSYNCATTRIBKHRPROC glad_eglGetSyncAttribKHR;
 #define eglGetSyncAttribKHR glad_eglGetSyncAttribKHR
 #endif
@@ -480,10 +480,10 @@ GLAPI PFNEGLGETSYNCATTRIBKHRPROC glad_eglGetSyncAttribKHR;
 #endif
 #ifndef EGL_KHR_stream_cross_process_fd
 #define EGL_KHR_stream_cross_process_fd 1
-typedef EGLNativeFileDescriptorKHR (APIENTRYP PFNEGLGETSTREAMFILEDESCRIPTORKHRPROC)(EGLDisplay, EGLStreamKHR);
+typedef EGLNativeFileDescriptorKHR(APIENTRYP PFNEGLGETSTREAMFILEDESCRIPTORKHRPROC)(EGLDisplay, EGLStreamKHR);
 GLAPI PFNEGLGETSTREAMFILEDESCRIPTORKHRPROC glad_eglGetStreamFileDescriptorKHR;
 #define eglGetStreamFileDescriptorKHR glad_eglGetStreamFileDescriptorKHR
-typedef EGLStreamKHR (APIENTRYP PFNEGLCREATESTREAMFROMFILEDESCRIPTORKHRPROC)(EGLDisplay, EGLNativeFileDescriptorKHR);
+typedef EGLStreamKHR(APIENTRYP PFNEGLCREATESTREAMFROMFILEDESCRIPTORKHRPROC)(EGLDisplay, EGLNativeFileDescriptorKHR);
 GLAPI PFNEGLCREATESTREAMFROMFILEDESCRIPTORKHRPROC glad_eglCreateStreamFromFileDescriptorKHR;
 #define eglCreateStreamFromFileDescriptorKHR glad_eglCreateStreamFromFileDescriptorKHR
 #endif
@@ -501,7 +501,7 @@ GLAPI PFNEGLCREATESTREAMFROMFILEDESCRIPTORKHRPROC glad_eglCreateStreamFromFileDe
 #endif
 #ifndef EGL_EXT_stream_consumer_egloutput
 #define EGL_EXT_stream_consumer_egloutput 1
-typedef EGLBoolean (APIENTRYP PFNEGLSTREAMCONSUMEROUTPUTEXTPROC)(EGLDisplay, EGLStreamKHR, EGLOutputLayerEXT);
+typedef EGLBoolean(APIENTRYP PFNEGLSTREAMCONSUMEROUTPUTEXTPROC)(EGLDisplay, EGLStreamKHR, EGLOutputLayerEXT);
 GLAPI PFNEGLSTREAMCONSUMEROUTPUTEXTPROC glad_eglStreamConsumerOutputEXT;
 #define eglStreamConsumerOutputEXT glad_eglStreamConsumerOutputEXT
 #endif
@@ -522,7 +522,7 @@ GLAPI PFNEGLSTREAMCONSUMEROUTPUTEXTPROC glad_eglStreamConsumerOutputEXT;
 #endif
 #ifndef EGL_KHR_swap_buffers_with_damage
 #define EGL_KHR_swap_buffers_with_damage 1
-typedef EGLBoolean (APIENTRYP PFNEGLSWAPBUFFERSWITHDAMAGEKHRPROC)(EGLDisplay, EGLSurface, EGLint*, EGLint);
+typedef EGLBoolean(APIENTRYP PFNEGLSWAPBUFFERSWITHDAMAGEKHRPROC)(EGLDisplay, EGLSurface, EGLint *, EGLint);
 GLAPI PFNEGLSWAPBUFFERSWITHDAMAGEKHRPROC glad_eglSwapBuffersWithDamageKHR;
 #define eglSwapBuffersWithDamageKHR glad_eglSwapBuffersWithDamageKHR
 #endif
@@ -531,7 +531,7 @@ GLAPI PFNEGLSWAPBUFFERSWITHDAMAGEKHRPROC glad_eglSwapBuffersWithDamageKHR;
 #endif
 #ifndef EGL_KHR_cl_event2
 #define EGL_KHR_cl_event2 1
-typedef EGLSyncKHR (APIENTRYP PFNEGLCREATESYNC64KHRPROC)(EGLDisplay, EGLenum, const EGLAttribKHR*);
+typedef EGLSyncKHR(APIENTRYP PFNEGLCREATESYNC64KHRPROC)(EGLDisplay, EGLenum, const EGLAttribKHR *);
 GLAPI PFNEGLCREATESYNC64KHRPROC glad_eglCreateSync64KHR;
 #define eglCreateSync64KHR glad_eglCreateSync64KHR
 #endif
@@ -546,37 +546,37 @@ GLAPI PFNEGLCREATESYNC64KHRPROC glad_eglCreateSync64KHR;
 #endif
 #ifndef EGL_KHR_image_base
 #define EGL_KHR_image_base 1
-typedef EGLImageKHR (APIENTRYP PFNEGLCREATEIMAGEKHRPROC)(EGLDisplay, EGLContext, EGLenum, EGLClientBuffer, const EGLint*);
+typedef EGLImageKHR(APIENTRYP PFNEGLCREATEIMAGEKHRPROC)(EGLDisplay, EGLContext, EGLenum, EGLClientBuffer, const EGLint *);
 GLAPI PFNEGLCREATEIMAGEKHRPROC glad_eglCreateImageKHR;
 #define eglCreateImageKHR glad_eglCreateImageKHR
-typedef EGLBoolean (APIENTRYP PFNEGLDESTROYIMAGEKHRPROC)(EGLDisplay, EGLImageKHR);
+typedef EGLBoolean(APIENTRYP PFNEGLDESTROYIMAGEKHRPROC)(EGLDisplay, EGLImageKHR);
 GLAPI PFNEGLDESTROYIMAGEKHRPROC glad_eglDestroyImageKHR;
 #define eglDestroyImageKHR glad_eglDestroyImageKHR
 #endif
 #ifndef EGL_ANDROID_blob_cache
 #define EGL_ANDROID_blob_cache 1
-typedef void (APIENTRYP PFNEGLSETBLOBCACHEFUNCSANDROIDPROC)(EGLDisplay, EGLSetBlobFuncANDROID, EGLGetBlobFuncANDROID);
+typedef void(APIENTRYP PFNEGLSETBLOBCACHEFUNCSANDROIDPROC)(EGLDisplay, EGLSetBlobFuncANDROID, EGLGetBlobFuncANDROID);
 GLAPI PFNEGLSETBLOBCACHEFUNCSANDROIDPROC glad_eglSetBlobCacheFuncsANDROID;
 #define eglSetBlobCacheFuncsANDROID glad_eglSetBlobCacheFuncsANDROID
 #endif
 #ifndef EGL_NV_sync
 #define EGL_NV_sync 1
-typedef EGLSyncNV (APIENTRYP PFNEGLCREATEFENCESYNCNVPROC)(EGLDisplay, EGLenum, const EGLint*);
+typedef EGLSyncNV(APIENTRYP PFNEGLCREATEFENCESYNCNVPROC)(EGLDisplay, EGLenum, const EGLint *);
 GLAPI PFNEGLCREATEFENCESYNCNVPROC glad_eglCreateFenceSyncNV;
 #define eglCreateFenceSyncNV glad_eglCreateFenceSyncNV
-typedef EGLBoolean (APIENTRYP PFNEGLDESTROYSYNCNVPROC)(EGLSyncNV);
+typedef EGLBoolean(APIENTRYP PFNEGLDESTROYSYNCNVPROC)(EGLSyncNV);
 GLAPI PFNEGLDESTROYSYNCNVPROC glad_eglDestroySyncNV;
 #define eglDestroySyncNV glad_eglDestroySyncNV
-typedef EGLBoolean (APIENTRYP PFNEGLFENCENVPROC)(EGLSyncNV);
+typedef EGLBoolean(APIENTRYP PFNEGLFENCENVPROC)(EGLSyncNV);
 GLAPI PFNEGLFENCENVPROC glad_eglFenceNV;
 #define eglFenceNV glad_eglFenceNV
-typedef EGLint (APIENTRYP PFNEGLCLIENTWAITSYNCNVPROC)(EGLSyncNV, EGLint, EGLTimeNV);
+typedef EGLint(APIENTRYP PFNEGLCLIENTWAITSYNCNVPROC)(EGLSyncNV, EGLint, EGLTimeNV);
 GLAPI PFNEGLCLIENTWAITSYNCNVPROC glad_eglClientWaitSyncNV;
 #define eglClientWaitSyncNV glad_eglClientWaitSyncNV
-typedef EGLBoolean (APIENTRYP PFNEGLSIGNALSYNCNVPROC)(EGLSyncNV, EGLenum);
+typedef EGLBoolean(APIENTRYP PFNEGLSIGNALSYNCNVPROC)(EGLSyncNV, EGLenum);
 GLAPI PFNEGLSIGNALSYNCNVPROC glad_eglSignalSyncNV;
 #define eglSignalSyncNV glad_eglSignalSyncNV
-typedef EGLBoolean (APIENTRYP PFNEGLGETSYNCATTRIBNVPROC)(EGLSyncNV, EGLint, EGLint*);
+typedef EGLBoolean(APIENTRYP PFNEGLGETSYNCATTRIBNVPROC)(EGLSyncNV, EGLint, EGLint *);
 GLAPI PFNEGLGETSYNCATTRIBNVPROC glad_eglGetSyncAttribNV;
 #define eglGetSyncAttribNV glad_eglGetSyncAttribNV
 #endif
@@ -588,25 +588,25 @@ GLAPI PFNEGLGETSYNCATTRIBNVPROC glad_eglGetSyncAttribNV;
 #endif
 #ifndef EGL_NV_native_query
 #define EGL_NV_native_query 1
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYNATIVEDISPLAYNVPROC)(EGLDisplay, EGLNativeDisplayType*);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYNATIVEDISPLAYNVPROC)(EGLDisplay, EGLNativeDisplayType *);
 GLAPI PFNEGLQUERYNATIVEDISPLAYNVPROC glad_eglQueryNativeDisplayNV;
 #define eglQueryNativeDisplayNV glad_eglQueryNativeDisplayNV
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYNATIVEWINDOWNVPROC)(EGLDisplay, EGLSurface, EGLNativeWindowType*);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYNATIVEWINDOWNVPROC)(EGLDisplay, EGLSurface, EGLNativeWindowType *);
 GLAPI PFNEGLQUERYNATIVEWINDOWNVPROC glad_eglQueryNativeWindowNV;
 #define eglQueryNativeWindowNV glad_eglQueryNativeWindowNV
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYNATIVEPIXMAPNVPROC)(EGLDisplay, EGLSurface, EGLNativePixmapType*);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYNATIVEPIXMAPNVPROC)(EGLDisplay, EGLSurface, EGLNativePixmapType *);
 GLAPI PFNEGLQUERYNATIVEPIXMAPNVPROC glad_eglQueryNativePixmapNV;
 #define eglQueryNativePixmapNV glad_eglQueryNativePixmapNV
 #endif
 #ifndef EGL_KHR_stream_consumer_gltexture
 #define EGL_KHR_stream_consumer_gltexture 1
-typedef EGLBoolean (APIENTRYP PFNEGLSTREAMCONSUMERGLTEXTUREEXTERNALKHRPROC)(EGLDisplay, EGLStreamKHR);
+typedef EGLBoolean(APIENTRYP PFNEGLSTREAMCONSUMERGLTEXTUREEXTERNALKHRPROC)(EGLDisplay, EGLStreamKHR);
 GLAPI PFNEGLSTREAMCONSUMERGLTEXTUREEXTERNALKHRPROC glad_eglStreamConsumerGLTextureExternalKHR;
 #define eglStreamConsumerGLTextureExternalKHR glad_eglStreamConsumerGLTextureExternalKHR
-typedef EGLBoolean (APIENTRYP PFNEGLSTREAMCONSUMERACQUIREKHRPROC)(EGLDisplay, EGLStreamKHR);
+typedef EGLBoolean(APIENTRYP PFNEGLSTREAMCONSUMERACQUIREKHRPROC)(EGLDisplay, EGLStreamKHR);
 GLAPI PFNEGLSTREAMCONSUMERACQUIREKHRPROC glad_eglStreamConsumerAcquireKHR;
 #define eglStreamConsumerAcquireKHR glad_eglStreamConsumerAcquireKHR
-typedef EGLBoolean (APIENTRYP PFNEGLSTREAMCONSUMERRELEASEKHRPROC)(EGLDisplay, EGLStreamKHR);
+typedef EGLBoolean(APIENTRYP PFNEGLSTREAMCONSUMERRELEASEKHRPROC)(EGLDisplay, EGLStreamKHR);
 GLAPI PFNEGLSTREAMCONSUMERRELEASEKHRPROC glad_eglStreamConsumerReleaseKHR;
 #define eglStreamConsumerReleaseKHR glad_eglStreamConsumerReleaseKHR
 #endif
@@ -615,7 +615,7 @@ GLAPI PFNEGLSTREAMCONSUMERRELEASEKHRPROC glad_eglStreamConsumerReleaseKHR;
 #endif
 #ifndef EGL_KHR_partial_update
 #define EGL_KHR_partial_update 1
-typedef EGLBoolean (APIENTRYP PFNEGLSETDAMAGEREGIONKHRPROC)(EGLDisplay, EGLSurface, EGLint*, EGLint);
+typedef EGLBoolean(APIENTRYP PFNEGLSETDAMAGEREGIONKHRPROC)(EGLDisplay, EGLSurface, EGLint *, EGLint);
 GLAPI PFNEGLSETDAMAGEREGIONKHRPROC glad_eglSetDamageRegionKHR;
 #define eglSetDamageRegionKHR glad_eglSetDamageRegionKHR
 #endif
@@ -642,7 +642,7 @@ GLAPI PFNEGLSETDAMAGEREGIONKHRPROC glad_eglSetDamageRegionKHR;
 #endif
 #ifndef EGL_KHR_wait_sync
 #define EGL_KHR_wait_sync 1
-typedef EGLint (APIENTRYP PFNEGLWAITSYNCKHRPROC)(EGLDisplay, EGLSyncKHR, EGLint);
+typedef EGLint(APIENTRYP PFNEGLWAITSYNCKHRPROC)(EGLDisplay, EGLSyncKHR, EGLint);
 GLAPI PFNEGLWAITSYNCKHRPROC glad_eglWaitSyncKHR;
 #define eglWaitSyncKHR glad_eglWaitSyncKHR
 #endif
@@ -654,7 +654,7 @@ GLAPI PFNEGLWAITSYNCKHRPROC glad_eglWaitSyncKHR;
 #endif
 #ifndef EGL_ANDROID_native_fence_sync
 #define EGL_ANDROID_native_fence_sync 1
-typedef EGLint (APIENTRYP PFNEGLDUPNATIVEFENCEFDANDROIDPROC)(EGLDisplay, EGLSyncKHR);
+typedef EGLint(APIENTRYP PFNEGLDUPNATIVEFENCEFDANDROIDPROC)(EGLDisplay, EGLSyncKHR);
 GLAPI PFNEGLDUPNATIVEFENCEFDANDROIDPROC glad_eglDupNativeFenceFDANDROID;
 #define eglDupNativeFenceFDANDROID glad_eglDupNativeFenceFDANDROID
 #endif
@@ -675,13 +675,13 @@ GLAPI PFNEGLDUPNATIVEFENCEFDANDROIDPROC glad_eglDupNativeFenceFDANDROID;
 #endif
 #ifndef EGL_EXT_platform_base
 #define EGL_EXT_platform_base 1
-typedef EGLDisplay (APIENTRYP PFNEGLGETPLATFORMDISPLAYEXTPROC)(EGLenum, void*, const EGLint*);
+typedef EGLDisplay(APIENTRYP PFNEGLGETPLATFORMDISPLAYEXTPROC)(EGLenum, void *, const EGLint *);
 GLAPI PFNEGLGETPLATFORMDISPLAYEXTPROC glad_eglGetPlatformDisplayEXT;
 #define eglGetPlatformDisplayEXT glad_eglGetPlatformDisplayEXT
-typedef EGLSurface (APIENTRYP PFNEGLCREATEPLATFORMWINDOWSURFACEEXTPROC)(EGLDisplay, EGLConfig, void*, const EGLint*);
+typedef EGLSurface(APIENTRYP PFNEGLCREATEPLATFORMWINDOWSURFACEEXTPROC)(EGLDisplay, EGLConfig, void *, const EGLint *);
 GLAPI PFNEGLCREATEPLATFORMWINDOWSURFACEEXTPROC glad_eglCreatePlatformWindowSurfaceEXT;
 #define eglCreatePlatformWindowSurfaceEXT glad_eglCreatePlatformWindowSurfaceEXT
-typedef EGLSurface (APIENTRYP PFNEGLCREATEPLATFORMPIXMAPSURFACEEXTPROC)(EGLDisplay, EGLConfig, void*, const EGLint*);
+typedef EGLSurface(APIENTRYP PFNEGLCREATEPLATFORMPIXMAPSURFACEEXTPROC)(EGLDisplay, EGLConfig, void *, const EGLint *);
 GLAPI PFNEGLCREATEPLATFORMPIXMAPSURFACEEXTPROC glad_eglCreatePlatformPixmapSurfaceEXT;
 #define eglCreatePlatformPixmapSurfaceEXT glad_eglCreatePlatformPixmapSurfaceEXT
 #endif
@@ -693,7 +693,7 @@ GLAPI PFNEGLCREATEPLATFORMPIXMAPSURFACEEXTPROC glad_eglCreatePlatformPixmapSurfa
 #endif
 #ifndef EGL_KHR_stream_fifo
 #define EGL_KHR_stream_fifo 1
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYSTREAMTIMEKHRPROC)(EGLDisplay, EGLStreamKHR, EGLenum, EGLTimeKHR*);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYSTREAMTIMEKHRPROC)(EGLDisplay, EGLStreamKHR, EGLenum, EGLTimeKHR *);
 GLAPI PFNEGLQUERYSTREAMTIMEKHRPROC glad_eglQueryStreamTimeKHR;
 #define eglQueryStreamTimeKHR glad_eglQueryStreamTimeKHR
 #endif
@@ -702,7 +702,7 @@ GLAPI PFNEGLQUERYSTREAMTIMEKHRPROC glad_eglQueryStreamTimeKHR;
 #endif
 #ifndef EGL_NV_post_sub_buffer
 #define EGL_NV_post_sub_buffer 1
-typedef EGLBoolean (APIENTRYP PFNEGLPOSTSUBBUFFERNVPROC)(EGLDisplay, EGLSurface, EGLint, EGLint, EGLint, EGLint);
+typedef EGLBoolean(APIENTRYP PFNEGLPOSTSUBBUFFERNVPROC)(EGLDisplay, EGLSurface, EGLint, EGLint, EGLint, EGLint);
 GLAPI PFNEGLPOSTSUBBUFFERNVPROC glad_eglPostSubBufferNV;
 #define eglPostSubBufferNV glad_eglPostSubBufferNV
 #endif
@@ -711,7 +711,7 @@ GLAPI PFNEGLPOSTSUBBUFFERNVPROC glad_eglPostSubBufferNV;
 #endif
 #ifndef EGL_NOK_swap_region2
 #define EGL_NOK_swap_region2 1
-typedef EGLBoolean (APIENTRYP PFNEGLSWAPBUFFERSREGION2NOKPROC)(EGLDisplay, EGLSurface, EGLint, const EGLint*);
+typedef EGLBoolean(APIENTRYP PFNEGLSWAPBUFFERSREGION2NOKPROC)(EGLDisplay, EGLSurface, EGLint, const EGLint *);
 GLAPI PFNEGLSWAPBUFFERSREGION2NOKPROC glad_eglSwapBuffersRegion2NOK;
 #define eglSwapBuffersRegion2NOK glad_eglSwapBuffersRegion2NOK
 #endif
@@ -723,7 +723,7 @@ GLAPI PFNEGLSWAPBUFFERSREGION2NOKPROC glad_eglSwapBuffersRegion2NOK;
 #endif
 #ifndef EGL_NV_stream_sync
 #define EGL_NV_stream_sync 1
-typedef EGLSyncKHR (APIENTRYP PFNEGLCREATESTREAMSYNCNVPROC)(EGLDisplay, EGLStreamKHR, EGLenum, const EGLint*);
+typedef EGLSyncKHR(APIENTRYP PFNEGLCREATESTREAMSYNCNVPROC)(EGLDisplay, EGLStreamKHR, EGLenum, const EGLint *);
 GLAPI PFNEGLCREATESTREAMSYNCNVPROC glad_eglCreateStreamSyncNV;
 #define eglCreateStreamSyncNV glad_eglCreateStreamSyncNV
 #endif
@@ -735,7 +735,7 @@ GLAPI PFNEGLCREATESTREAMSYNCNVPROC glad_eglCreateStreamSyncNV;
 #endif
 #ifndef EGL_EXT_swap_buffers_with_damage
 #define EGL_EXT_swap_buffers_with_damage 1
-typedef EGLBoolean (APIENTRYP PFNEGLSWAPBUFFERSWITHDAMAGEEXTPROC)(EGLDisplay, EGLSurface, EGLint*, EGLint);
+typedef EGLBoolean(APIENTRYP PFNEGLSWAPBUFFERSWITHDAMAGEEXTPROC)(EGLDisplay, EGLSurface, EGLint *, EGLint);
 GLAPI PFNEGLSWAPBUFFERSWITHDAMAGEEXTPROC glad_eglSwapBuffersWithDamageEXT;
 #define eglSwapBuffersWithDamageEXT glad_eglSwapBuffersWithDamageEXT
 #endif
@@ -750,25 +750,25 @@ GLAPI PFNEGLSWAPBUFFERSWITHDAMAGEEXTPROC glad_eglSwapBuffersWithDamageEXT;
 #endif
 #ifndef EGL_HI_clientpixmap
 #define EGL_HI_clientpixmap 1
-typedef EGLSurface (APIENTRYP PFNEGLCREATEPIXMAPSURFACEHIPROC)(EGLDisplay, EGLConfig, struct EGLClientPixmapHI*);
+typedef EGLSurface(APIENTRYP PFNEGLCREATEPIXMAPSURFACEHIPROC)(EGLDisplay, EGLConfig, struct EGLClientPixmapHI *);
 GLAPI PFNEGLCREATEPIXMAPSURFACEHIPROC glad_eglCreatePixmapSurfaceHI;
 #define eglCreatePixmapSurfaceHI glad_eglCreatePixmapSurfaceHI
 #endif
 #ifndef EGL_KHR_stream
 #define EGL_KHR_stream 1
-typedef EGLStreamKHR (APIENTRYP PFNEGLCREATESTREAMKHRPROC)(EGLDisplay, const EGLint*);
+typedef EGLStreamKHR(APIENTRYP PFNEGLCREATESTREAMKHRPROC)(EGLDisplay, const EGLint *);
 GLAPI PFNEGLCREATESTREAMKHRPROC glad_eglCreateStreamKHR;
 #define eglCreateStreamKHR glad_eglCreateStreamKHR
-typedef EGLBoolean (APIENTRYP PFNEGLDESTROYSTREAMKHRPROC)(EGLDisplay, EGLStreamKHR);
+typedef EGLBoolean(APIENTRYP PFNEGLDESTROYSTREAMKHRPROC)(EGLDisplay, EGLStreamKHR);
 GLAPI PFNEGLDESTROYSTREAMKHRPROC glad_eglDestroyStreamKHR;
 #define eglDestroyStreamKHR glad_eglDestroyStreamKHR
-typedef EGLBoolean (APIENTRYP PFNEGLSTREAMATTRIBKHRPROC)(EGLDisplay, EGLStreamKHR, EGLenum, EGLint);
+typedef EGLBoolean(APIENTRYP PFNEGLSTREAMATTRIBKHRPROC)(EGLDisplay, EGLStreamKHR, EGLenum, EGLint);
 GLAPI PFNEGLSTREAMATTRIBKHRPROC glad_eglStreamAttribKHR;
 #define eglStreamAttribKHR glad_eglStreamAttribKHR
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYSTREAMKHRPROC)(EGLDisplay, EGLStreamKHR, EGLenum, EGLint*);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYSTREAMKHRPROC)(EGLDisplay, EGLStreamKHR, EGLenum, EGLint *);
 GLAPI PFNEGLQUERYSTREAMKHRPROC glad_eglQueryStreamKHR;
 #define eglQueryStreamKHR glad_eglQueryStreamKHR
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYSTREAMU64KHRPROC)(EGLDisplay, EGLStreamKHR, EGLenum, EGLuint64KHR*);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYSTREAMU64KHRPROC)(EGLDisplay, EGLStreamKHR, EGLenum, EGLuint64KHR *);
 GLAPI PFNEGLQUERYSTREAMU64KHRPROC glad_eglQueryStreamu64KHR;
 #define eglQueryStreamu64KHR glad_eglQueryStreamu64KHR
 #endif
@@ -780,7 +780,7 @@ GLAPI PFNEGLQUERYSTREAMU64KHRPROC glad_eglQueryStreamu64KHR;
 #endif
 #ifndef EGL_ANGLE_query_surface_pointer
 #define EGL_ANGLE_query_surface_pointer 1
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYSURFACEPOINTERANGLEPROC)(EGLDisplay, EGLSurface, EGLint, void**);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYSURFACEPOINTERANGLEPROC)(EGLDisplay, EGLSurface, EGLint, void **);
 GLAPI PFNEGLQUERYSURFACEPOINTERANGLEPROC glad_eglQuerySurfacePointerANGLE;
 #define eglQuerySurfacePointerANGLE glad_eglQuerySurfacePointerANGLE
 #endif
@@ -789,7 +789,7 @@ GLAPI PFNEGLQUERYSURFACEPOINTERANGLEPROC glad_eglQuerySurfacePointerANGLE;
 #endif
 #ifndef EGL_KHR_lock_surface3
 #define EGL_KHR_lock_surface3 1
-typedef EGLBoolean (APIENTRYP PFNEGLQUERYSURFACE64KHRPROC)(EGLDisplay, EGLSurface, EGLint, EGLAttribKHR*);
+typedef EGLBoolean(APIENTRYP PFNEGLQUERYSURFACE64KHRPROC)(EGLDisplay, EGLSurface, EGLint, EGLAttribKHR *);
 GLAPI PFNEGLQUERYSURFACE64KHRPROC glad_eglQuerySurface64KHR;
 #define eglQuerySurface64KHR glad_eglQuerySurface64KHR
 #endif
@@ -807,7 +807,7 @@ GLAPI PFNEGLQUERYSURFACE64KHRPROC glad_eglQuerySurface64KHR;
 #endif
 #ifndef EGL_NOK_swap_region
 #define EGL_NOK_swap_region 1
-typedef EGLBoolean (APIENTRYP PFNEGLSWAPBUFFERSREGIONNOKPROC)(EGLDisplay, EGLSurface, EGLint, const EGLint*);
+typedef EGLBoolean(APIENTRYP PFNEGLSWAPBUFFERSREGIONNOKPROC)(EGLDisplay, EGLSurface, EGLint, const EGLint *);
 GLAPI PFNEGLSWAPBUFFERSREGIONNOKPROC glad_eglSwapBuffersRegionNOK;
 #define eglSwapBuffersRegionNOK glad_eglSwapBuffersRegionNOK
 #endif

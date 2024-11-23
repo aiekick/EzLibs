@@ -93,7 +93,6 @@ public:
     }
 
 public:
-    Node() {}
     Node(const std::string& vName = "") : m_Name(vName) {
     }
 
@@ -348,6 +347,24 @@ private:
         return vLine.substr(startPos, endPos - startPos);
     }
 
+    // will remove space outside of <> and ""
+    std::string m_trim(const std::string& vToken) {
+        std::string res;
+        int32_t scope = 0;
+        for (const auto c : vToken) {
+            if (scope == 1) {
+                res += c;
+            } else if (c == '"') {
+                if (scope == 0) {
+                    ++scope;
+                } else {
+                    --scope;
+                }
+            }
+        }
+        return res;
+    }
+
     bool m_extractAttributes(const std::string& vLine, std::map<std::string, std::string>& attributes) {
         size_t startPos = vLine.find(' ');
         while (startPos != std::string::npos) {
@@ -359,6 +376,9 @@ private:
             std::string key = vLine.substr(startPos, equalsPos - startPos);
             startPos = equalsPos + 1;
             char quoteChar = vLine[startPos];
+            while (quoteChar == ' ') {
+                quoteChar = vLine[++startPos];
+            }
             if (quoteChar == '"' || quoteChar == '\'') {
                 startPos++;
                 size_t endPos = vLine.find(quoteChar, startPos);

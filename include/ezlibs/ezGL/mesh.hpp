@@ -69,18 +69,10 @@ public:
 
 public:
     Mesh() = default;
-    virtual ~Mesh() {
-        unit();
-    }
-    uint32_t GetVaoID() {
-        return m_VboId;
-    }
-    uint32_t GetVboID() {
-        return m_IboId;
-    }
-    uint32_t GetIboID() {
-        return m_VaoId;
-    }
+    virtual ~Mesh() { unit(); }
+    uint32_t GetVaoID() { return m_VboId; }
+    uint32_t GetVboID() { return m_IboId; }
+    uint32_t GetIboID() { return m_VaoId; }
     bool init(std::vector<T> vVertices, std::vector<uint32_t> vIndices, std::vector<uint32_t> vFormat, bool vIsStaticDraw) {
         assert(!vVertices.empty());
         assert(!vIndices.empty());
@@ -192,25 +184,15 @@ public:
         }
     }
 
-    std::vector<T> getVertices() const {
-        return m_Vertices;
-    }
+    std::vector<T> getVertices() const { return m_Vertices; }
 
-    std::vector<T>& getVerticesRef() {
-        return m_Vertices;
-    }
+    std::vector<T>& getVerticesRef() { return m_Vertices; }
 
-    std::vector<uint32_t> getIndices() const {
-        return m_Indices;
-    }
+    std::vector<uint32_t> getIndices() const { return m_Indices; }
 
-    std::vector<uint32_t>& getIndicesRef() {
-        return m_Indices;
-    }
+    std::vector<uint32_t>& getIndicesRef() { return m_Indices; }
 
-    void needNewUpload() {
-        m_needNewMeshUpload = true;
-    }
+    void needNewUpload() { m_needNewMeshUpload = true; }
 
 private:
     void m_render(GLenum vRenderMode, const GLsizei vIndicesIdx = 0) {

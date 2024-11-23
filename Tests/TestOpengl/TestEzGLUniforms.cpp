@@ -34,8 +34,7 @@ bool TestEzGL_Uniforms_Parsing_Good_Syntax_6() {
 }
 
 bool TestEzGL_Uniforms_Parsing_Good_Syntax_7() {
-    return ez::gl::UniformParsingDatas(
-               "/* lkjdf \\nghxkl */ uniform /* d \\nsdfdf */ float /* qs \\ndsddf */ toto /* lkjdf \\nghxkl */ ; /* lkjdf \\nghxkl */ ")
+    return ez::gl::UniformParsingDatas("/* lkjdf \\nghxkl */ uniform /* d \\nsdfdf */ float /* qs \\ndsddf */ toto /* lkjdf \\nghxkl */ ; /* lkjdf \\nghxkl */ ")
         .isValid();
 }
 

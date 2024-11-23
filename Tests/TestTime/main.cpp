@@ -1,10 +1,10 @@
 #include <TestEzCron.h>
 
-#define IfTestCollectionExist(v)        \
+#define IfTestCollectionExist(v)             \
     if (vTest.find(#v) != std::string::npos) \
     return v(vTest)
-	
-bool TestTime(const std::string &vTest) {
+
+bool TestTime(const std::string& vTest) {
     IfTestCollectionExist(TestEzCron);
     return false;
 }

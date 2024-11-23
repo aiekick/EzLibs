@@ -36,7 +36,9 @@ bool TestEzExpr_Exceptions_DivisionByZero() {
     try {
         ev.parse("1 / 0").eval();  // Division by integer zero
         return false;              // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO;
+    }
 }
 
 bool TestEzExpr_Exceptions_DivisionByZero_Float() {
@@ -44,7 +46,9 @@ bool TestEzExpr_Exceptions_DivisionByZero_Float() {
     try {
         ev.parse("5.5 / 0.0").eval();  // Division by floating-point zero
         return false;                  // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO;
+    }
 }
 
 bool TestEzExpr_Exceptions_ModuloByZero() {
@@ -52,7 +56,9 @@ bool TestEzExpr_Exceptions_ModuloByZero() {
     try {
         ev.parse("10 % 0").eval();  // Modulo by zero
         return false;               // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO;
+    }
 }
 
 // Test for UNMATCHED_PARENTHESIS exception
@@ -61,7 +67,9 @@ bool TestEzExpr_Exceptions_UnmatchedParenthesis_Open() {
     try {
         ev.parse("1 + (2 * 3").eval();  // Unmatched opening parenthesis
         return false;                   // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::UNMATCHED_PARENTHESIS; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::UNMATCHED_PARENTHESIS;
+    }
 }
 
 bool TestEzExpr_Exceptions_UnmatchedParenthesis_Close() {
@@ -69,7 +77,9 @@ bool TestEzExpr_Exceptions_UnmatchedParenthesis_Close() {
     try {
         ev.parse("1 + 2) * 3").eval();  // Unmatched closing parenthesis
         return false;                   // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::UNMATCHED_PARENTHESIS; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::UNMATCHED_PARENTHESIS;
+    }
 }
 
 // Test for VARIABLE_NOT_FOUND exception
@@ -78,7 +88,9 @@ bool TestEzExpr_Exceptions_VariableNotFound() {
     try {
         ev.parse("x + 1").eval();  // 'x' is not defined
         return false;              // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::VARIABLE_NOT_FOUND; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::VARIABLE_NOT_FOUND;
+    }
 }
 
 bool TestEzExpr_Exceptions_VariableNotFound_Multiple() {
@@ -86,7 +98,9 @@ bool TestEzExpr_Exceptions_VariableNotFound_Multiple() {
     try {
         ev.parse("y + x + 1").eval();  // 'x' and 'y' are not defined
         return false;                  // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::VARIABLE_NOT_FOUND; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::VARIABLE_NOT_FOUND;
+    }
 }
 
 // Test for FUNCTION_NOT_FOUND exception
@@ -95,7 +109,9 @@ bool TestEzExpr_Exceptions_FunctionNotFound() {
     try {
         ev.parse("unknownFunc(1)").eval();  // 'unknownFunc' is not defined
         return false;                       // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::FUNCTION_NOT_FOUND; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::FUNCTION_NOT_FOUND;
+    }
 }
 
 bool TestEzExpr_Exceptions_FunctionWrongArgs() {
@@ -103,7 +119,9 @@ bool TestEzExpr_Exceptions_FunctionWrongArgs() {
     try {
         ev.parse("sin(1, 2)").eval();  // 'sin' is defined but with wrong number of arguments
         return false;                  // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::FUNCTION_WRONG_ARGUMENTS_COUNT; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::FUNCTION_WRONG_ARGUMENTS_COUNT;
+    }
 }
 
 // Test for EVALUATION_NAN exception
@@ -112,14 +130,18 @@ bool TestEzExpr_Exceptions_EvaluationNaN_1() {
     try {
         ev.parse("sqrt(-1)").eval();  // sqrt of negative number leads to NaN
         return false;                 // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::EVALUATION_NAN; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::EVALUATION_NAN;
+    }
 }
 bool TestEzExpr_Exceptions_EvaluationNaN_2() {
     ez::Expr ev;
     try {
         ev.parse("(-1)^0.5").eval();  // sqrt of negative number leads to NaN
         return false;                 // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::EVALUATION_NAN; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::EVALUATION_NAN;
+    }
 }
 
 bool TestEzExpr_Exceptions_EvaluationNaN_Log() {
@@ -127,7 +149,9 @@ bool TestEzExpr_Exceptions_EvaluationNaN_Log() {
     try {
         ev.parse("log(-5)").eval();  // Logarithm of negative number leads to NaN
         return false;                // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::EVALUATION_NAN; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::EVALUATION_NAN;
+    }
 }
 
 bool TestEzExpr_Exceptions_EvaluationNaN_DivZeroZero() {
@@ -135,7 +159,9 @@ bool TestEzExpr_Exceptions_EvaluationNaN_DivZeroZero() {
     try {
         ev.parse("0 / 0.0").eval();  // 0 divided by 0.0 leads to NaN
         return false;                // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO;
+    }
 }
 
 // Test for EVALUATION_INF exception
@@ -144,7 +170,9 @@ bool TestEzExpr_Exceptions_EvaluationInf() {
     try {
         ev.parse("1 / 0.0").eval();  // Division by zero should lead to Inf in floating point
         return false;                // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::DIVISION_BY_ZERO;
+    }
 }
 
 bool TestEzExpr_Exceptions_EvaluationInf_Exp() {
@@ -152,7 +180,9 @@ bool TestEzExpr_Exceptions_EvaluationInf_Exp() {
     try {
         ev.parse("exp(1000)").eval();  // Exponential of a large number may lead to Inf
         return false;                  // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::EVALUATION_INF; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::EVALUATION_INF;
+    }
 }
 
 bool TestEzExpr_Exceptions_EvaluationInf_Power() {
@@ -160,15 +190,18 @@ bool TestEzExpr_Exceptions_EvaluationInf_Power() {
     try {
         ev.parse("10^1000").eval();  // Large power leading to Inf
         return false;                // Expected an exception
-    } catch (const ez::ExprException& e) { return e.getCode() == ez::ErrorCode::EVALUATION_INF; }
+    } catch (const ez::ExprException& e) {
+        return e.getCode() == ez::ErrorCode::EVALUATION_INF;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////
 //// ENTRY POINT ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-#define IfTestExist(v) \
-    if (vTest == std::string(#v)) return v()
+#define IfTestExist(v)            \
+    if (vTest == std::string(#v)) \
+    return v()
 
 bool TestEzExpr_Exceptions(const std::string& vTest) {
     // Errors Codes

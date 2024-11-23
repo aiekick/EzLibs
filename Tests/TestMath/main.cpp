@@ -7,11 +7,11 @@
 #include <limits>
 #include <cmath>
 
-#define IfTestCollectionExist(v)        \
+#define IfTestCollectionExist(v)             \
     if (vTest.find(#v) != std::string::npos) \
     return v(vTest)
-	
-bool TestMisc(const std::string &vTest) {
+
+bool TestMisc(const std::string& vTest) {
     IfTestCollectionExist(TestEzMath);
     else IfTestCollectionExist(TestEzVec2);
     else IfTestCollectionExist(TestEzVec3);

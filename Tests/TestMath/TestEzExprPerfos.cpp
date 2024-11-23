@@ -75,17 +75,17 @@ static bool Bench(const std::string& vEzExpr,
         double slowdown_total_percentage = ((vOutEzExprTotalTime / vOutCppTotalTime) - 1.0) * 100.0;
 
         if (outputStreamPtr != nullptr) {
-            (*outputStreamPtr) <<                      //
-                "| " << vEzExpr <<                     //
-                " | " << std::floor(vOutEzExprTotalTime * 100.0) / 100.0 <<        //
+            (*outputStreamPtr) <<                                            //
+                "| " << vEzExpr <<                                           //
+                " | " << std::floor(vOutEzExprTotalTime * 100.0) / 100.0 <<  //
                 " | " << std::floor(vOutCppTotalTime * 100.0) / 100.0 <<     //
-                " | " << slowdown_total_percentage <<  //
+                " | " << slowdown_total_percentage <<                        //
                 "% |\n";
         }
 
         // the test will always been true, the goal is to geenrete a report
-        /*if (slowdown_total_percentage > slowdownThreshold) { 
-            return false; 
+        /*if (slowdown_total_percentage > slowdownThreshold) {
+            return false;
         }*/
 
         // Comparaison des résultats accumulés
@@ -103,7 +103,6 @@ static bool Bench(const std::string& vEzExpr,
         return false;
     }
 }
-
 
 ////////////////////////////////////////////////////////////////////////////
 //// PERFOS ////////////////////////////////////////////////////////////////
@@ -131,7 +130,7 @@ bool TestEzExpr_Perfos_x_cubed(double slowdownThreshold, int iterations, std::os
     double cpp_expr_total_time, cpp_expr_avg_time;
 
     return Bench(
-        "x * x * x",//
+        "x * x * x",  //
         [](ez::Expr& ev, double t) { return ev.set("x", t).eval().getResult(); },
         [](double t) { return t * t * t; },
         iterations,
@@ -148,7 +147,7 @@ bool TestEzExpr_Perfos_sin_x(double slowdownThreshold, int iterations, std::ostr
     double cpp_expr_total_time, cpp_expr_avg_time;
 
     return Bench(
-        "sin(x)",//
+        "sin(x)",  //
         [](ez::Expr& ev, double t) { return ev.set("x", t).eval().getResult(); },
         [](double t) { return std::sin(t); },
         iterations,
@@ -165,7 +164,7 @@ bool TestEzExpr_Perfos_sqrt_x(double slowdownThreshold, int iterations, std::ost
     double cpp_expr_total_time, cpp_expr_avg_time;
 
     return Bench(
-        "sqrt(x)",//
+        "sqrt(x)",  //
         [](ez::Expr& ev, double t) { return ev.set("x", t).eval().getResult(); },
         [](double t) { return std::sqrt(t); },
         iterations,
@@ -182,13 +181,9 @@ bool TestEzExpr_Perfos_cos_x_sin_y(double slowdownThreshold, int iterations, std
     double cpp_expr_total_time, cpp_expr_avg_time;
 
     return Bench(
-        "cos(x) * sin(y)",//
-        [](ez::Expr& ev, double t) {
-            return ev.set("x", t).set("y", t + 1.0).eval().getResult();
-        },
-        [](double t) {
-            return std::cos(t) * std::sin(t + 1.0);
-        },
+        "cos(x) * sin(y)",  //
+        [](ez::Expr& ev, double t) { return ev.set("x", t).set("y", t + 1.0).eval().getResult(); },
+        [](double t) { return std::cos(t) * std::sin(t + 1.0); },
         iterations,
         slowdownThreshold,
         ez_expr_total_time,
@@ -220,7 +215,7 @@ bool TestEzExpr_Perfos_5_plus_a_plus_5(double slowdownThreshold, int iterations,
     double cpp_expr_total_time, cpp_expr_avg_time;
 
     return Bench(
-        "5 + a + 5",//
+        "5 + a + 5",  //
         [](ez::Expr& ev, double t) { return ev.set("a", t).eval().getResult(); },
         [](double t) { return 5.0 + t + 5.0; },
         iterations,
@@ -237,7 +232,7 @@ bool TestEzExpr_Perfos_abs_a_plus_5(double slowdownThreshold, int iterations, st
     double cpp_expr_total_time, cpp_expr_avg_time;
 
     return Bench(
-        "abs(a + 5)",//
+        "abs(a + 5)",  //
         [](ez::Expr& ev, double t) { return ev.set("a", t).eval().getResult(); },
         [](double t) { return std::abs(t + 5.0); },
         iterations,
@@ -254,7 +249,7 @@ bool TestEzExpr_Perfos_a_plus_5_times_2(double slowdownThreshold, int iterations
     double cpp_expr_total_time, cpp_expr_avg_time;
 
     return Bench(
-        "(a + 5) * 2",//
+        "(a + 5) * 2",  //
         [](ez::Expr& ev, double t) { return ev.set("a", t).eval().getResult(); },
         [](double t) { return (t + 5.0) * 2.0; },
         iterations,
@@ -271,7 +266,7 @@ bool TestEzExpr_Perfos_a_plus_5_times_2_alt(double slowdownThreshold, int iterat
     double cpp_expr_total_time, cpp_expr_avg_time;
 
     return Bench(
-        "a + (5 * 2)",//
+        "a + (5 * 2)",  //
         [](ez::Expr& ev, double t) { return ev.set("a", t).eval().getResult(); },
         [](double t) { return t + (5.0 * 2.0); },
         iterations,
@@ -288,7 +283,7 @@ bool TestEzExpr_Perfos_sqrt_pow_a(double slowdownThreshold, int iterations, std:
     double cpp_expr_total_time, cpp_expr_avg_time;
 
     return Bench(
-        "sqrt(pow(a, 1.5) + pow(a, 2.5))",//
+        "sqrt(pow(a, 1.5) + pow(a, 2.5))",  //
         [](ez::Expr& ev, double t) { return ev.set("a", t).eval().getResult(); },
         [](double t) { return std::sqrt(std::pow(t, 1.5) + std::pow(t, 2.5)); },
         iterations,
@@ -305,7 +300,7 @@ bool TestEzExpr_Perfos_complex_fraction(double slowdownThreshold, int iterations
     double cpp_expr_total_time, cpp_expr_avg_time;
 
     return Bench(
-        "(1/(a + 1) + 2/(a + 2) + 3/(a + 3))",//
+        "(1/(a + 1) + 2/(a + 2) + 3/(a + 3))",  //
         [](ez::Expr& ev, double t) { return ev.set("a", t).eval().getResult(); },
         [](double t) { return (1.0 / (t + 1.0)) + (2.0 / (t + 2.0)) + (3.0 / (t + 3.0)); },
         iterations,
@@ -354,11 +349,13 @@ bool TestEzExpr_Perfos_All(double slowdownThreshold, int iterations) {
 //// ENTRY POINT ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-#define IfTestExist(v) \
-    if (vTest == std::string(#v)) return v(slowdownThreshold, iterations)
+#define IfTestExist(v)            \
+    if (vTest == std::string(#v)) \
+    return v(slowdownThreshold, iterations)
 
-#define IfTestBenchExist(v) \
-    if (vTest == std::string(#v)) return v(slowdownThreshold, iterations, nullptr)
+#define IfTestBenchExist(v)       \
+    if (vTest == std::string(#v)) \
+    return v(slowdownThreshold, iterations, nullptr)
 
 bool TestEzExpr_Perfos(const std::string& vTest) {
     double slowdownThreshold = 5000.0;  // 50% de ralentissement maximum acceptable

@@ -26,9 +26,7 @@ public:
         return node.getChildren();
     }
     // return true for continue xml parsing of childs in this node or false for interrupt the child exploration (if we want explore child ourselves)
-    virtual bool setFromXmlNodes(const ez::xml::Node& vNode, const ez::xml::Node& vParent, const std::string& vUserDatas) final {
-        return true;
-    }
+    virtual bool setFromXmlNodes(const ez::xml::Node& vNode, const ez::xml::Node& vParent, const std::string& vUserDatas) final { return true; }
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -36,7 +34,8 @@ public:
 ////////////////////////////////////////////////////////////////////////////
 
 bool TestEzXmlConfigParsingOK() {
-    const auto& doc = u8R"(
+    const auto& doc =
+        u8R"(
 <config>
 	<!-- Comment 1 -->
     <NumberOneLine>60</NumberOneLine>

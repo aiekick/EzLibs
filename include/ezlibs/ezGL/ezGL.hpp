@@ -28,7 +28,7 @@ SOFTWARE.
 
 #ifdef OPENGL_LOADER
 #include OPENGL_LOADER
-#endif // OPENGL_LOADER
+#endif  // OPENGL_LOADER
 
 #include <string>
 
@@ -38,7 +38,7 @@ SOFTWARE.
 
 #ifdef PROFILER_SCOPED
 #define PROFILER_SCOPED
-#endif // PROFILER_SCOPED
+#endif  // PROFILER_SCOPED
 
 #ifdef PROFILER_SCOPED_PTR
 #define PROFILER_SCOPED_PTR
@@ -90,7 +90,7 @@ static inline void checkGLErrors(const char* vFile, const char* vFunc, const int
 #include "texture.hpp"
 #include "fbo.hpp"
 #include "mesh.hpp"
-//#include "meshVfx.hpp"
+// #include "meshVfx.hpp"
 #include "quadMesh.hpp"
 #include "procMesh.hpp"
 #include "uniforms.hpp"

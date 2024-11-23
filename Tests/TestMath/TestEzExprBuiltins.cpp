@@ -670,8 +670,9 @@ bool TestEzExpr_Builtins_ModuloMod_3() {
 //// ENTRY POINT ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-#define IfTestExist(v) \
-    if (vTest == std::string(#v)) return v()
+#define IfTestExist(v)            \
+    if (vTest == std::string(#v)) \
+    return v()
 
 bool TestEzExpr_Builtins(const std::string& vTest) {
     // Builtins

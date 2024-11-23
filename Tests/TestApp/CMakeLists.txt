@@ -33,6 +33,6 @@ target_include_directories(${PROJECT} PRIVATE
 ##### EzArgs #############################################
 ##########################################################
 
-AddTest("TestEzArgs_help")
+AddTest("TestEzArgs_parsing")
 AddTest("TestEzArgs_delimiters")
 AddTest("TestEzArgs_groupeds")

@@ -21,7 +21,8 @@ bool TestEzLzw_0() {
     std::string string_to_compress("TOBEORNOTTOBEORTOBEORNOT");
     auto compressed_datas = lzw.compresss(string_to_compress).getDatas();
     auto extracted_string = lzw.extract(compressed_datas).getDatasToString();
-    if (extracted_string != string_to_compress) return false;
+    if (extracted_string != string_to_compress)
+        return false;
     return true;
 }
 
@@ -29,8 +30,9 @@ bool TestEzLzw_0() {
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-#define IfTestExist(v) \
-    if (vTest == std::string(#v)) return v()
+#define IfTestExist(v)            \
+    if (vTest == std::string(#v)) \
+    return v()
 
 bool TestEzLzw(const std::string& vTest) {
     IfTestExist(TestEzLzw_0);

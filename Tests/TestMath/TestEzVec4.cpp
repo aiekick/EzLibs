@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-// Désactivation des warnings de conversion
+// Dï¿½sactivation des warnings de conversion
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4244)  // Conversion from 'double' to 'float', possible loss of data
@@ -247,19 +247,19 @@ bool TestEzVec4Equality<float>() {
     ez::vec4<float> v1(1.0f, 2.0f, 3.0f, 4.0f);
     ez::vec4<float> v2(1.0f, 2.0f, 3.0f, 4.0f);
     if (!ez::isEqual(v1, v2))
-        return false; 
+        return false;
     ez::vec4<float> v3(5.0f, 2.0f, 3.0f, 4.0f);
     if (ez::isEqual(v1, v3))
-        return false; 
+        return false;
     ez::vec4<float> v4(1.0f, 5.0f, 3.0f, 4.0f);
     if (ez::isEqual(v1, v4))
-        return false; 
+        return false;
     ez::vec4<float> v5(1.0f, 2.0f, 5.0f, 4.0f);
     if (ez::isEqual(v1, v4))
-        return false; 
+        return false;
     ez::vec4<float> v6(1.0f, 2.0f, 3.0f, 5.0f);
     if (ez::isEqual(v1, v6))
-        return false; 
+        return false;
     return true;
 }
 
