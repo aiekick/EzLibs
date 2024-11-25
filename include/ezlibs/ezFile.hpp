@@ -27,6 +27,7 @@ SOFTWARE.
 // EzFile is part od the EzLibs project : https://github.com/aiekick/EzLibs.git
 
 #include <fstream>
+#include <iterator>
 #include <sstream>
 #include <cstdint>
 #include <string>
@@ -34,11 +35,13 @@ SOFTWARE.
 #include <ctime>
 
 #include "ezStr.hpp"
+#include <sys/stat.h>
 
 #ifndef EZ_FILE_SLASH_TYPE
 #ifdef WIN32
 #define EZ_FILE_SLASH_TYPE "\\"
 #include <Windows.h>
+#define stat _stat
 #else  // UNIX
 #define EZ_FILE_SLASH_TYPE "/"
 #endif

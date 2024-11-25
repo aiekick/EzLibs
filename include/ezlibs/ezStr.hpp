@@ -40,7 +40,7 @@ SOFTWARE.
 #include <clocale>  // std::setlocale
 #include <locale>   // toupper, tolower (with locale)
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32__)
 #include <cwchar>
 #include "Windows.h"
 #endif
@@ -49,7 +49,7 @@ SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32__)
 #pragma warning(push)
 #pragma warning(disable : 4244)  // Conversion from 'double' to 'float', possible loss of data
 #pragma warning(disable : 4305)  // Truncation from 'double' to 'float'
