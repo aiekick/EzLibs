@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "EzGL.hpp"
+#include "ezGL.hpp"
 
 #ifdef IMGUI_INCLUDE
 #include IMGUI_INCLUDE

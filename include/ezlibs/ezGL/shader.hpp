@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "EzGL.hpp"
+#include "ezGL.hpp"
 #include <map>
 #include <memory>
 #include <string>
