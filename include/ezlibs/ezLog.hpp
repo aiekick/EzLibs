@@ -127,16 +127,17 @@ public:
     enum MessageTypeEnum { LOGGING_MESSAGE_TYPE_INFOS = 0, LOGGING_MESSAGE_TYPE_WARNING, LOGGING_MESSAGE_TYPE_ERROR };
 
 public:
-    static std::function<void(const int& vType, const std::string& vMessage)> sStandardLogFunction;
-    static std::function<void(const int& vType, const std::string& vMessage)> sOpenGLLogFunction;
+    std::function<void(const int& vType, const std::string& vMessage)> standardLogFunction;
+    std::function<void(const int& vType, const std::string& vMessage)> openGLLogFunction;
 
 protected:
-    static std::mutex Logger_Mutex;
+    std::mutex Logger_Mutex;
 
 private:
-    static ofstream debugLogFile;
+    ofstream debugLogFile;
     static size_t constexpr sMAX_BUFFER_SIZE = 1024U * 3U;
     int64 lastTick = 0;
+    bool reseted = false;
 
 private:
     void m_LogString(const MessageType* vType, const std::string* vFunction, const int* vLine, const char* vStr) {
@@ -160,7 +161,7 @@ private:
 
             std::cout << msg << std::endl;
 
-            if (vStr && sStandardLogFunction) {
+            if (vStr && standardLogFunction) {
                 int type = 0;
 
                 if (vType) {
@@ -169,10 +170,10 @@ private:
 
                 auto arr = str::splitStringToVector(msg, '\n');
                 if (arr.size() == 1U) {
-                    sStandardLogFunction(type, msg);
+                    standardLogFunction(type, msg);
                 } else {
                     for (auto m : arr) {
-                        sStandardLogFunction(type, m);
+                        standardLogFunction(type, m);
                     }
                 }
             }
@@ -190,12 +191,21 @@ private:
     }
 
 public:
-    static ez::Log* Instance() {
-        static auto instance_ptr = std::unique_ptr<ez::Log>(new ez::Log());// std::make_unique is not available in cpp11
+    static ez::Log* Instance(ez::Log* vCopyPtr = nullptr, bool vForce = false) {
+        static auto instance_ptr = std::unique_ptr<ez::Log>(new ez::Log());  // std::make_unique is not available in cpp11
+        static ez::Log* _instance_copy = nullptr;
+        if (vCopyPtr || vForce) {
+            _instance_copy = vCopyPtr;
+        } else if (_instance_copy == nullptr) {
+            instance_ptr->m_createFileOnDisk();
+        }    
+        if (_instance_copy) {
+            return _instance_copy;
+        }
         return instance_ptr.get();
     }
 
-public:
+public:  // todo : to privatize
     bool ConsoleVerbose = false;
     // file, function, line, msg
     std::vector<std::string> puMessages;
@@ -205,12 +215,6 @@ public:
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
         ZoneScoped;
 #endif
-        std::unique_lock<std::mutex> lck(ez::Log::Logger_Mutex, std::defer_lock);
-        lck.lock();
-        debugLogFile.open("debug.log", ios::out);
-        lastTick = time::getTicks();
-        ConsoleVerbose = false;
-        lck.unlock();
     }
     ~Log() {
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
@@ -351,13 +355,13 @@ public:
 
                 LogVarLightError("%s", msg.c_str());
 
-                if (sOpenGLLogFunction) {
+                if (openGLLogFunction != nullptr) {
                     auto arr = str::splitStringToVector(msg, '\n');
                     if (arr.size() == 1U) {
-                        sOpenGLLogFunction(2, msg);
+                        openGLLogFunction(2, msg);
                     } else {
                         for (auto m : arr) {
-                            sOpenGLLogFunction(2, m);
+                            openGLLogFunction(2, m);
                         }
                     }
                 }
@@ -411,13 +415,23 @@ public:
 #endif
         return msg;
     }
-};
 
-#ifdef EZ_LOG_IMPLEMENTATION
-std::function<void(const int& vType, const std::string& vMessage)> Log::sStandardLogFunction = nullptr;
-std::function<void(const int& vType, const std::string& vMessage)> Log::sOpenGLLogFunction = nullptr;
-ofstream Log::debugLogFile;
-std::mutex Log::Logger_Mutex;
-#endif // EZ_LOG_IMPLEMENTATION
+private:
+    void m_createFileOnDisk() {
+        if (reseted) {
+            return;
+        }
+#if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
+        ZoneScoped;
+#endif
+        std::unique_lock<std::mutex> lck(ez::Log::Logger_Mutex, std::defer_lock);
+        lck.lock();
+        debugLogFile.open("debug.log", ios::out);
+        lastTick = time::getTicks();
+        ConsoleVerbose = false;
+        reseted = true;
+        lck.unlock();
+    }
+};
 
 }  // namespace ez
