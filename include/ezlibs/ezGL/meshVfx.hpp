@@ -32,7 +32,7 @@ SOFTWARE.
  * One tesselation eval Shader
  */
 
-#include "EzGL.hpp"
+#include "ezGL.hpp"
 
 #include <array>
 #include <memory>

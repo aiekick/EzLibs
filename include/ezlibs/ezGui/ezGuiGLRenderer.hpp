@@ -26,8 +26,8 @@ SOFTWARE.
 
 // EzGuiRenderer is part od the EzLibs project : https://github.com/aiekick/EzLibs.git
 
-#include <EzGL/EzGL.hpp>
-#include <EzGui/EzGui.hpp>
+#include <ezlibs/ezGL/ezGL.hpp>
+#include <ezlibs/ezGui/ezGui.hpp>
 
 #include <cstdint>
 #include <string>

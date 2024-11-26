@@ -67,13 +67,13 @@ namespace ez {
 
 }  // namespace ez
 
-#include "EzStr.hpp"
-#include "EzMath.hpp"
-#include "EzVariant.hpp"
-#include "EzApp.hpp"
-#include "EzTime.hpp"
-#include "EzCron.hpp"
-#include "EzLog.hpp"
+#include "ezStr.hpp"
+#include "ezMath.hpp"
+#include "ezVariant.hpp"
+#include "ezApp.hpp"
+#include "ezTime.hpp"
+#include "ezCron.hpp"
+#include "ezLog.hpp"
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
