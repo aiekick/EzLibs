@@ -24,14 +24,6 @@ SOFTWARE.
 
 // EzLog is part od the EzLibs project : https://github.com/aiekick/EzLibs.git
 
-/*
-for use the lib you need to define this the implem one time only before include
-EzLog ou EzTools
-#define EZ_LOG_IMPLEMENTATION
-#include "ezTools.hpp"
-or
-#include "ezLog.hpp"
-*/
 #pragma once
 #pragma warning(disable : 4251)
 
@@ -75,38 +67,38 @@ typedef long long int64;
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-#define IsVerboseMode (ez::Log::Instance()->ConsoleVerbose == true)
+#define IsVerboseMode (ez::Log::instance()->isVerboseMode() == true)
 
-// #define LogVar(s, ...) ez::Log::Instance()->LogStringWithFunction(std::string(__FUNCTION__), (int)(__LINE__), s,
+// #define LogVar(s, ...) ez::Log::instance()->logStringWithFunction(std::string(__FUNCTION__), (int)(__LINE__), s,
 // ##__VA_ARGS__)
 
 #define LogVarError(s, ...) \
-    ez::Log::Instance()->LogStringByTypeWithFunction(ez::Log::LOGGING_MESSAGE_TYPE_ERROR, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
+    ez::Log::instance()->logStringByTypeWithFunction(ez::Log::LOGGING_MESSAGE_TYPE_ERROR, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
 
 #define LogVarWarning(s, ...) \
-    ez::Log::Instance()->LogStringByTypeWithFunction(ez::Log::LOGGING_MESSAGE_TYPE_WARNING, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
+    ez::Log::instance()->logStringByTypeWithFunction(ez::Log::LOGGING_MESSAGE_TYPE_WARNING, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
 
 #define LogVarInfo(s, ...) \
-    ez::Log::Instance()->LogStringByTypeWithFunction(ez::Log::LOGGING_MESSAGE_TYPE_INFOS, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
+    ez::Log::instance()->logStringByTypeWithFunction(ez::Log::LOGGING_MESSAGE_TYPE_INFOS, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
 
 #define LogVarDebugError(s, ...) \
-    ez::Log::Instance()->LogStringByTypeWithFunction_Debug(ez::Log::LOGGING_MESSAGE_TYPE_ERROR, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
+    ez::Log::instance()->logStringByTypeWithFunction_Debug(ez::Log::LOGGING_MESSAGE_TYPE_ERROR, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
 
 #define LogVarDebugWarning(s, ...) \
-    ez::Log::Instance()->LogStringByTypeWithFunction_Debug(ez::Log::LOGGING_MESSAGE_TYPE_WARNING, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
+    ez::Log::instance()->logStringByTypeWithFunction_Debug(ez::Log::LOGGING_MESSAGE_TYPE_WARNING, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
 
 #define LogVarDebugInfo(s, ...) \
-    ez::Log::Instance()->LogStringByTypeWithFunction_Debug(ez::Log::LOGGING_MESSAGE_TYPE_INFOS, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
+    ez::Log::instance()->logStringByTypeWithFunction_Debug(ez::Log::LOGGING_MESSAGE_TYPE_INFOS, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
 
-#define LogVarLightError(s, ...) ez::Log::Instance()->LogSimpleStringByType(ez::Log::LOGGING_MESSAGE_TYPE_ERROR, s, ##__VA_ARGS__)
+#define LogVarLightError(s, ...) ez::Log::instance()->logSimpleStringByType(ez::Log::LOGGING_MESSAGE_TYPE_ERROR, s, ##__VA_ARGS__)
 
-#define LogVarLightWarning(s, ...) ez::Log::Instance()->LogSimpleStringByType(ez::Log::LOGGING_MESSAGE_TYPE_WARNING, s, ##__VA_ARGS__)
+#define LogVarLightWarning(s, ...) ez::Log::instance()->logSimpleStringByType(ez::Log::LOGGING_MESSAGE_TYPE_WARNING, s, ##__VA_ARGS__)
 
-#define LogVarLightInfo(s, ...) ez::Log::Instance()->LogSimpleStringByType(ez::Log::LOGGING_MESSAGE_TYPE_INFOS, s, ##__VA_ARGS__)
+#define LogVarLightInfo(s, ...) ez::Log::instance()->logSimpleStringByType(ez::Log::LOGGING_MESSAGE_TYPE_INFOS, s, ##__VA_ARGS__)
 
-#define LogVarTag(t, s, ...) ez::Log::Instance()->LogStringByTypeWithFunction(t, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
+#define LogVarTag(t, s, ...) ez::Log::instance()->logStringByTypeWithFunction(t, std::string(__FUNCTION__), (int)(__LINE__), s, ##__VA_ARGS__)
 
-#define LogVarLightTag(t, s, ...) ez::Log::Instance()->LogSimpleStringByType(t, s, ##__VA_ARGS__)
+#define LogVarLightTag(t, s, ...) ez::Log::instance()->logSimpleStringByType(t, s, ##__VA_ARGS__)
 
 #define LogAssert(a, b, ...)               \
     if (!(a)) {                            \
@@ -115,8 +107,8 @@ typedef long long int64;
     }
 
 #ifdef USE_OPENGL
-#define LogGlError() ez::Log::Instance()->LogGLError("" /*__FILE__*/, __FUNCTION__, __LINE__, "")
-#define LogGlErrorVar(var) ez::Log::Instance()->LogGLError("" /*__FILE__*/, __FUNCTION__, __LINE__, var)
+#define LogGlError() ez::Log::instance()->logGLError("" /*__FILE__*/, __FUNCTION__, __LINE__, "")
+#define LogGlErrorVar(var) ez::Log::instance()->logGLError("" /*__FILE__*/, __FUNCTION__, __LINE__, var)
 #endif
 
 namespace ez {
@@ -124,91 +116,21 @@ namespace ez {
 class Log {
 public:
     typedef int MessageType;
+    typedef std::function<void(const int& vType, const std::string& vMessage)> LogMessageFunctor;
     enum MessageTypeEnum { LOGGING_MESSAGE_TYPE_INFOS = 0, LOGGING_MESSAGE_TYPE_WARNING, LOGGING_MESSAGE_TYPE_ERROR };
 
-public:
-    std::function<void(const int& vType, const std::string& vMessage)> standardLogFunction;
-    std::function<void(const int& vType, const std::string& vMessage)> openGLLogFunction;
-
 protected:
-    std::mutex Logger_Mutex;
+    std::mutex m_logger_Mutex;
 
 private:
-    ofstream debugLogFile;
     static size_t constexpr sMAX_BUFFER_SIZE = 1024U * 3U;
-    int64 lastTick = 0;
-    bool reseted = false;
-
-private:
-    void m_LogString(const MessageType* vType, const std::string* vFunction, const int* vLine, const char* vStr) {
-        const int64 ticks = time::getTicks();
-        const double time = (ticks - lastTick) / 100.0;
-
-        static char TempBufferBis[sMAX_BUFFER_SIZE + 1];
-        int w = 0;
-        if (vFunction && vLine)
-            w = snprintf(TempBufferBis, sMAX_BUFFER_SIZE, "[%010.3fs][%s:%i] %s", time, vFunction->c_str(), *vLine, vStr);
-        else
-            w = snprintf(TempBufferBis, sMAX_BUFFER_SIZE, "[%010.3fs] %s", time, vStr);
-        if (w) {
-            const std::string msg = std::string(TempBufferBis, (size_t)w);
-
-            puMessages.push_back(msg);
-
-#if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
-            TracyMessageL(puMessages[puMessages.size() - 1U].c_str());
-#endif
-
-            std::cout << msg << std::endl;
-
-            if (vStr && standardLogFunction) {
-                int type = 0;
-
-                if (vType) {
-                    type = (int)(*vType);
-                }
-
-                auto arr = str::splitStringToVector(msg, '\n');
-                if (arr.size() == 1U) {
-                    standardLogFunction(type, msg);
-                } else {
-                    for (auto m : arr) {
-                        standardLogFunction(type, m);
-                    }
-                }
-            }
-
-            if (!debugLogFile.bad())
-                debugLogFile << msg << std::endl;
-        }
-    }
-    void m_LogString(const MessageType* vType, const std::string* vFunction, const int* vLine, const char* fmt, va_list vArgs) {
-        static char TempBuffer[sMAX_BUFFER_SIZE + 1];
-        int w = vsnprintf(TempBuffer, sMAX_BUFFER_SIZE, fmt, vArgs);
-        if (w) {
-            m_LogString(vType, vFunction, vLine, TempBuffer);
-        }
-    }
-
-public:
-    static ez::Log* Instance(ez::Log* vCopyPtr = nullptr, bool vForce = false) {
-        static auto instance_ptr = std::unique_ptr<ez::Log>(new ez::Log());  // std::make_unique is not available in cpp11
-        static ez::Log* _instance_copy = nullptr;
-        if (vCopyPtr || vForce) {
-            _instance_copy = vCopyPtr;
-        } else if (_instance_copy == nullptr) {
-            instance_ptr->m_createFileOnDisk();
-        }    
-        if (_instance_copy) {
-            return _instance_copy;
-        }
-        return instance_ptr.get();
-    }
-
-public:  // todo : to privatize
-    bool ConsoleVerbose = false;
-    // file, function, line, msg
-    std::vector<std::string> puMessages;
+    ofstream m_debugLogFile;
+    int64 m_lastTick = 0;
+    bool m_reseted = false;
+    LogMessageFunctor m_standardLogFunction;
+    LogMessageFunctor m_openGLLogFunction;
+    std::vector<std::string> m_messages;  // file, function, line, msg
+    bool m_consoleVerbose = false;
 
 public:
     Log() {
@@ -220,13 +142,13 @@ public:
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
         ZoneScoped;
 #endif
-        Close();
+        close();
     }
-    void LogSimpleString(const char* fmt, ...) {
+    void logSimpleString(const char* fmt, ...) {
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
         ZoneScoped;
 #endif
-        std::unique_lock<std::mutex> lck(ez::Log::Logger_Mutex, std::defer_lock);
+        std::unique_lock<std::mutex> lck(ez::Log::m_logger_Mutex, std::defer_lock);
         lck.lock();
         va_list args;
         va_start(args, fmt);
@@ -234,11 +156,11 @@ public:
         va_end(args);
         lck.unlock();
     }
-    void LogSimpleStringByType(const MessageType& vType, const char* fmt, ...) {
+    void logSimpleStringByType(const MessageType& vType, const char* fmt, ...) {
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
         ZoneScoped;
 #endif
-        std::unique_lock<std::mutex> lck(ez::Log::Logger_Mutex, std::defer_lock);
+        std::unique_lock<std::mutex> lck(ez::Log::m_logger_Mutex, std::defer_lock);
         lck.lock();
         va_list args;
         va_start(args, fmt);
@@ -246,11 +168,11 @@ public:
         va_end(args);
         lck.unlock();
     }
-    void LogStringWithFunction(const std::string& vFunction, const int& vLine, const char* fmt, ...) {
+    void logStringWithFunction(const std::string& vFunction, const int& vLine, const char* fmt, ...) {
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
         ZoneScoped;
 #endif
-        std::unique_lock<std::mutex> lck(ez::Log::Logger_Mutex, std::defer_lock);
+        std::unique_lock<std::mutex> lck(ez::Log::m_logger_Mutex, std::defer_lock);
         lck.lock();
         va_list args;
         va_start(args, fmt);
@@ -258,11 +180,11 @@ public:
         va_end(args);
         lck.unlock();
     }
-    void LogStringByTypeWithFunction(const MessageType& vType, const std::string& vFunction, const int& vLine, const char* fmt, ...) {
+    void logStringByTypeWithFunction(const MessageType& vType, const std::string& vFunction, const int& vLine, const char* fmt, ...) {
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
         ZoneScoped;
 #endif
-        std::unique_lock<std::mutex> lck(ez::Log::Logger_Mutex, std::defer_lock);
+        std::unique_lock<std::mutex> lck(ez::Log::m_logger_Mutex, std::defer_lock);
         lck.lock();
         va_list args;
         va_start(args, fmt);
@@ -270,12 +192,12 @@ public:
         va_end(args);
         lck.unlock();
     }
-    void LogStringByTypeWithFunction_Debug(const MessageType& vType, const std::string& vFunction, const int& vLine, const char* fmt, ...) {
+    void logStringByTypeWithFunction_Debug(const MessageType& vType, const std::string& vFunction, const int& vLine, const char* fmt, ...) {
 #ifdef _DEBUG
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
         ZoneScoped;
 #endif
-        std::unique_lock<std::mutex> lck(ez::Log::Logger_Mutex, std::defer_lock);
+        std::unique_lock<std::mutex> lck(ez::Log::m_logger_Mutex, std::defer_lock);
         lck.lock();
         va_list args;
         va_start(args, fmt);
@@ -289,12 +211,12 @@ public:
         (void)fmt;
 #endif
     }
-    void LogStringWithFunction_Debug(const std::string& vFunction, const int& vLine, const char* fmt, ...) {
+    void logStringWithFunction_Debug(const std::string& vFunction, const int& vLine, const char* fmt, ...) {
 #ifdef _DEBUG
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
         ZoneScoped;
 #endif
-        std::unique_lock<std::mutex> lck(ez::Log::Logger_Mutex, std::defer_lock);
+        std::unique_lock<std::mutex> lck(ez::Log::m_logger_Mutex, std::defer_lock);
         lck.lock();
         va_list args;
         va_start(args, fmt);
@@ -308,13 +230,13 @@ public:
 #endif
     }
 #ifdef USE_OPENGL
-    bool LogGLError(const std::string& vFile, const std::string& vFunc, int vLine, const std::string& vGLFunc = "") const {
+    bool logGLError(const std::string& vFile, const std::string& vFunc, int vLine, const std::string& vGLFunc = "") const {
         (void)vFile;
 
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
         ZoneScoped;
 #endif
-        if (!ez::Log::Instance()->ConsoleVerbose)
+        if (!ez::Log::instance()->ConsoleVerbose)
             return false;
 
         const GLenum err(glGetError());
@@ -333,7 +255,7 @@ public:
 
             if (!error.empty()) {
                 const int64 ticks = ez::time::GetTicks();
-                const float time = (ticks - lastTick) / 1000.0f;
+                const float time = (ticks - m_lastTick) / 1000.0f;
 
                 std::string msg;
 
@@ -355,19 +277,19 @@ public:
 
                 LogVarLightError("%s", msg.c_str());
 
-                if (openGLLogFunction != nullptr) {
+                if (m_openGLLogFunction != nullptr) {
                     auto arr = str::splitStringToVector(msg, '\n');
                     if (arr.size() == 1U) {
-                        openGLLogFunction(2, msg);
+                        m_openGLLogFunction(2, msg);
                     } else {
                         for (auto m : arr) {
-                            openGLLogFunction(2, m);
+                            m_openGLLogFunction(2, m);
                         }
                     }
                 }
 
-                if (!debugLogFile.bad())
-                    debugLogFile << msg << std::endl;
+                if (!m_debugLogFile.bad())
+                    m_debugLogFile << msg << std::endl;
 
                 return true;
             }
@@ -376,19 +298,18 @@ public:
         return false;
     }
 #endif
-    void Close() {
+    void close() {
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
         ZoneScoped;
 #endif
-        std::unique_lock<std::mutex> lck(ez::Log::Logger_Mutex, std::defer_lock);
+        std::unique_lock<std::mutex> lck(ez::Log::m_logger_Mutex, std::defer_lock);
         lck.lock();
-        debugLogFile.close();
-        debugLogFile.clear();
+        m_debugLogFile.close();
+        m_debugLogFile.clear();
         lck.unlock();
     }
 
-public:
-    std::string GetLastErrorAsString() {
+    std::string getLastErrorAsString() {
         std::string msg;
 
 #ifdef _MSC_VER
@@ -416,21 +337,93 @@ public:
         return msg;
     }
 
+    void setStandardLogMessageFunctor(const LogMessageFunctor& vMessageLogFunctor) { m_standardLogFunction = vMessageLogFunctor; }
+    void setOpenglLogMessageFunctor(const LogMessageFunctor& vMessageLogFunctor) { m_openGLLogFunction = vMessageLogFunctor; }
+
+    void setVerboseMode(bool vFlag) { m_consoleVerbose = vFlag; }
+    bool isVerboseMode() { return m_consoleVerbose; }
+
 private:
     void m_createFileOnDisk() {
-        if (reseted) {
+        if (m_reseted) {
             return;
         }
 #if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
         ZoneScoped;
 #endif
-        std::unique_lock<std::mutex> lck(ez::Log::Logger_Mutex, std::defer_lock);
+        std::unique_lock<std::mutex> lck(ez::Log::m_logger_Mutex, std::defer_lock);
         lck.lock();
-        debugLogFile.open("debug.log", ios::out);
-        lastTick = time::getTicks();
-        ConsoleVerbose = false;
-        reseted = true;
+        m_debugLogFile.open("debug.log", ios::out);
+        m_lastTick = time::getTicks();
+        m_consoleVerbose = false;
+        m_reseted = true;
         lck.unlock();
+    }
+
+private:
+    void m_LogString(const MessageType* vType, const std::string* vFunction, const int* vLine, const char* vStr) {
+        const int64 ticks = time::getTicks();
+        const double time = (ticks - m_lastTick) / 100.0;
+
+        static char TempBufferBis[sMAX_BUFFER_SIZE + 1];
+        int w = 0;
+        if (vFunction && vLine)
+            w = snprintf(TempBufferBis, sMAX_BUFFER_SIZE, "[%010.3fs][%s:%i] %s", time, vFunction->c_str(), *vLine, vStr);
+        else
+            w = snprintf(TempBufferBis, sMAX_BUFFER_SIZE, "[%010.3fs] %s", time, vStr);
+        if (w) {
+            const std::string msg = std::string(TempBufferBis, (size_t)w);
+
+            m_messages.push_back(msg);
+
+#if defined(TRACY_ENABLE) && defined(LOG_TRACY_MESSAGES)
+            TracyMessageL(m_messages[m_messages.size() - 1U].c_str());
+#endif
+
+            std::cout << msg << std::endl;
+
+            if (vStr && m_standardLogFunction) {
+                int type = 0;
+
+                if (vType) {
+                    type = (int)(*vType);
+                }
+
+                auto arr = str::splitStringToVector(msg, '\n');
+                if (arr.size() == 1U) {
+                    m_standardLogFunction(type, msg);
+                } else {
+                    for (auto m : arr) {
+                        m_standardLogFunction(type, m);
+                    }
+                }
+            }
+
+            if (!m_debugLogFile.bad())
+                m_debugLogFile << msg << std::endl;
+        }
+    }
+    void m_LogString(const MessageType* vType, const std::string* vFunction, const int* vLine, const char* fmt, va_list vArgs) {
+        static char TempBuffer[sMAX_BUFFER_SIZE + 1];
+        int w = vsnprintf(TempBuffer, sMAX_BUFFER_SIZE, fmt, vArgs);
+        if (w) {
+            m_LogString(vType, vFunction, vLine, TempBuffer);
+        }
+    }
+
+public:
+    static ez::Log* instance(ez::Log* vCopyPtr = nullptr, bool vForce = false) {
+        static auto instance_ptr = std::unique_ptr<ez::Log>(new ez::Log());  // std::make_unique is not available in cpp11
+        static ez::Log* _instance_copy = nullptr;
+        if (vCopyPtr || vForce) {
+            _instance_copy = vCopyPtr;
+        } else if (_instance_copy == nullptr) {
+            instance_ptr->m_createFileOnDisk();
+        }
+        if (_instance_copy) {
+            return _instance_copy;
+        }
+        return instance_ptr.get();
     }
 };
 
