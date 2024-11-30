@@ -27,7 +27,31 @@ SOFTWARE.
 // EzFile is part od the EzLibs project : https://github.com/aiekick/EzLibs.git
 
 namespace ez {
-namespace imgui {
+namespace imgui {}   // namespace imgui
+namespace implot {}  // namespace implot
+}  // namespace ez
 
-}
-}
+#include <ezlibs/ezVec2.hpp>
+#include <ezlibs/ezVec4.hpp>
+
+#ifndef IM_VEC2_CLASS_EXTRA
+#define IM_VEC2_CLASS_EXTRA                        \
+    ImVec2(const ez::fvec2& v) : x(v.x), y(v.y) {} \
+    ImVec2(const ez::dvec2& v) : x(static_cast<float>(v.x)), y(static_cast<float>(v.y)) {}
+#endif
+
+#ifndef IM_VEC4_CLASS_EXTRA
+#define IM_VEC4_CLASS_EXTRA                                        \
+    ImVec4(const ez::fvec4& v) : x(v.x), y(v.y), z(v.z), w(v.w) {} \
+    ImVec4(const ez::dvec4& v) : x(static_cast<float>(v.x)), y(static_cast<float>(v.y)), z(static_cast<float>(v.z)), w(static_cast<float>(v.w)) {}
+#endif
+
+#ifndef IM_PLOT_RECT_CLASS_EXTRA
+#define IM_PLOT_RECT_CLASS_EXTRA \
+    ImPlotRect(const ez::dvec4& v) { \
+        X.Min = v.x;                 \
+        X.Max = v.y;                 \
+        Y.Min = v.z;                 \
+        Y.Max = v.w;                 \
+    }
+#endif
