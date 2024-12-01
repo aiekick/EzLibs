@@ -121,7 +121,7 @@ public:
         inputtype = "string";
         datatype = inputtype;
     }
-    variant(const bool& v) {
+    variant(const bool v) {
         bool_value = v;
         inputtype = "bool";
         datatype = inputtype;
