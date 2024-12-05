@@ -230,6 +230,12 @@ private:
     }
 };
 
+template <>
+inline Node& Node::setContent(const bool& vContent) {
+    m_Content = vContent ? "true" : "false";
+    return *this;
+}
+
 }  // namespace xml
 
 class Xml {

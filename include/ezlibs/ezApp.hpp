@@ -121,6 +121,8 @@ public:
         }
     }
 
+    std::string getAppPath() const { return m_AppPath; }
+
     std::string getAppPath() {
         if (m_AppPath.empty()) {
             char buffer[MAX_PATH] = {};
