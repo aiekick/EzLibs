@@ -14,7 +14,7 @@ file(GLOB SRC_RECURSE
 	${EZ_LIBS_INCLUDE_DIR}/ezlibs/ezCron.hpp
 	${EZ_LIBS_INCLUDE_DIR}/ezlibs/ezTime.hpp
 )
-source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/EzLibs PREFIX Lib FILES ${SRC_RECURSE})
+source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/ezlibs PREFIX Lib FILES ${SRC_RECURSE})
 
 add_executable(${PROJECT} 
 	${SRC_RECURSE}

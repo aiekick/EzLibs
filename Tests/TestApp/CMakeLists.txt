@@ -13,7 +13,7 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX Src FILES ${PROJECT_TEST_SR
 file(GLOB SRC_RECURSE 
 	${EZ_LIBS_INCLUDE_DIR}/ezlibs/ezApp.hpp
 	${EZ_LIBS_INCLUDE_DIR}/ezlibs/ezArgs.hpp)
-source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/EzLibs PREFIX Libs FILES ${SRC_RECURSE})
+source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/ezlibs PREFIX Libs FILES ${SRC_RECURSE})
 
 add_executable(${PROJECT} 
 	${SRC_RECURSE}

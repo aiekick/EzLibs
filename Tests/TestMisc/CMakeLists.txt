@@ -15,7 +15,7 @@ file(GLOB SRC_RECURSE
 	${EZ_LIBS_INCLUDE_DIR}/ezlibs/ezStr.hpp
 	${EZ_LIBS_INCLUDE_DIR}/ezlibs/ezXml.hpp
 	${EZ_LIBS_INCLUDE_DIR}/ezlibs/ezCodeQr.hpp)
-source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/EzLibs PREFIX Libs FILES ${SRC_RECURSE})
+source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/ezlibs PREFIX Libs FILES ${SRC_RECURSE})
 
 add_executable(${PROJECT} 
 	${SRC_RECURSE}
