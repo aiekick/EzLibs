@@ -11,15 +11,15 @@ file(GLOB_RECURSE PROJECT_TEST_SRC_RECURSE
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX Src FILES ${PROJECT_TEST_SRC_RECURSE})
 
 file(GLOB SRC_RECURSE 
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzFile.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzIni.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzLog.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzXmlConfig.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzBmp.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzGif.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzPng.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzVdbWriter.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzVoxWriter.hpp)
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezFile.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezIni.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezLog.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezXmlConfig.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezBmp.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezGif.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezPng.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezVdbWriter.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezVoxWriter.hpp)
 source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/EzLibs PREFIX Libs FILES ${SRC_RECURSE})
 
 add_executable(${PROJECT} 

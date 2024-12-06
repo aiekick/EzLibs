@@ -11,10 +11,10 @@ file(GLOB_RECURSE PROJECT_TEST_SRC_RECURSE
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX Src FILES ${PROJECT_TEST_SRC_RECURSE})
 
 file(GLOB SRC_RECURSE 
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzGraph.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzStr.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzXml.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzCodeQr.hpp)
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezGraph.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezStr.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezXml.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezCodeQr.hpp)
 source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/EzLibs PREFIX Libs FILES ${SRC_RECURSE})
 
 add_executable(${PROJECT} 

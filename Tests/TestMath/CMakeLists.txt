@@ -11,16 +11,16 @@ file(GLOB_RECURSE PROJECT_TEST_SRC_RECURSE
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX Src FILES ${PROJECT_TEST_SRC_RECURSE})
 
 file(GLOB SRC_RECURSE 
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzExpr.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzMath.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzVec2.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzVec3.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzVec4.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzQuat.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzPlane.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzAABB.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzAABBCCC.hpp
-	${EZ_LIBS_INCLUDE_DIR}/EzLibs/EzVariant.hpp)
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezExpr.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezMath.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezVec2.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezVec3.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezVec4.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezQuat.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezPlane.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezAABB.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezAABBCCC.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezLibs/ezVariant.hpp)
 source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/EzLibs PREFIX Libs FILES ${SRC_RECURSE})
 
 add_executable(${PROJECT} 
