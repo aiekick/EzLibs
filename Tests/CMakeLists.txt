@@ -34,6 +34,10 @@ if (USE_CODE_COVERAGE)
 	endfunction(AddTest)
 endif()
 
+include_directories(
+	${EZ_LIBS_INCLUDE_DIR}
+)
+
 function(AddTest arg)
   add_test("${arg}" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT}" "${arg}")
 endfunction(AddTest)
