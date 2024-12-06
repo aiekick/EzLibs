@@ -16,24 +16,7 @@ Just the lib [EzGL](doc/EzGL.md) is depending of a Opengl Loader like [Glad](htt
 
 you just need to include the libs in your project and use it. thats all.
 
-Some libs are in inter dependencies, so you may need to include the 
-EzLibs dir in your building system
-
-Some libs need to use a define one time for create implementation 
-and let the linker know where are defined methods. But is a rare sheme.
-
-ex: (cf EzLog)
-
-main.cpp : One time only defined
-```cpp
-#define EZ_LOG_IMPLEMENTATION
-#include <ezlibs/ezLog.hpp>
-```
-
-toto.cpp : No more define needed
-```cpp
-#include <ezlibs/ezLog.hpp> 
-```
+Some libs are in inter dependencies, so you may need to include the EzLibs dir in your building system
 
 # Available Libs categories :
 
