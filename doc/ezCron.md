@@ -26,7 +26,7 @@ Simple use
 
 ```cpp
 #include <iostream>
-#include <EzTools/EzCron.hpp>
+#include <EzTools/ezCron.hpp>
 
 int main() {
 	ez::time::Cron cr("* */2 * * *"); // each 2 hours

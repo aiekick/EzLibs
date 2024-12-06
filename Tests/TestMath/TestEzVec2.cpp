@@ -2,7 +2,7 @@
 #include <cmath>
 #include <limits>
 
-// D�sactivation des warnings de conversion
+// Desactivation des warnings de conversion
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4244)  // Conversion from 'double' to 'float', possible loss of data
