@@ -1,4 +1,4 @@
-#include <ezLibs/ezMath.hpp>
+#include <ezlibs/ezMath.hpp>
 #include <cmath>
 #include <limits>
 
