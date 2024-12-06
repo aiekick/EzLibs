@@ -27,12 +27,12 @@ ex: (cf EzLog)
 main.cpp : One time only defined
 ```cpp
 #define EZ_LOG_IMPLEMENTATION
-#include <EzLibs/EzLog.hpp>
+#include <ezLibs/ezLog.hpp>
 ```
 
 toto.cpp : No more define needed
 ```cpp
-#include <EzLibs/EzLog.hpp> 
+#include <ezLibs/ezLog.hpp> 
 ```
 
 # Available Libs categories :

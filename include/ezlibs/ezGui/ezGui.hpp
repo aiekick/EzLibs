@@ -28,7 +28,7 @@ SOFTWARE.
 
 #include <vector>
 
-#include <ezlibs/ezTools.hpp>
+#include <ezLibs/ezTools.hpp>
 
 namespace ez {
 

@@ -1,4 +1,4 @@
-#include <EzLibs/EzGif.hpp>
+#include <ezLibs/ezGif.hpp>
 #include <string>
 
 // D�sactivation des warnings de conversion

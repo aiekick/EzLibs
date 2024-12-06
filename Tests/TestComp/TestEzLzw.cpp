@@ -1,4 +1,4 @@
-#include <EzLibs/EzLzw.hpp>
+#include <ezLibs/ezLzw.hpp>
 #include <string>
 
 // D�sactivation des warnings de conversion

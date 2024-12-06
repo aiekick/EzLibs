@@ -31,8 +31,8 @@ namespace imgui {}   // namespace imgui
 namespace implot {}  // namespace implot
 }  // namespace ez
 
-#include <ezlibs/ezVec2.hpp>
-#include <ezlibs/ezVec4.hpp>
+#include <ezLibs/ezVec2.hpp>
+#include <ezLibs/ezVec4.hpp>
 
 #ifndef IM_VEC2_CLASS_EXTRA
 #define IM_VEC2_CLASS_EXTRA                        \

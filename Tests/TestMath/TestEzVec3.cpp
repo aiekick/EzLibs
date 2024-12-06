@@ -1,4 +1,4 @@
-#include <EzLibs/EzMath.hpp>
+#include <ezLibs/ezMath.hpp>
 #include <cmath>
 #include <limits>
 
@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-// Désactivation des warnings de conversion
+// Dï¿½sactivation des warnings de conversion
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4244)  // Conversion from 'double' to 'float', possible loss of data

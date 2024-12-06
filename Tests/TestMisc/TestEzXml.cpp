@@ -1,5 +1,5 @@
 #include <TestEzXml.h>
-#include <ezlibs/ezXml.hpp>
+#include <ezLibs/ezXml.hpp>
 
 #include <iostream>
 #include <string>
