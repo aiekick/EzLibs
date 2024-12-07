@@ -80,6 +80,24 @@ inline bool epochToISO8601(const std::time_t& vEpochTime, std::string& vOutTime)
 }
 
 // TODO: TO TEST
+inline tm decomposeEpoch(const std::time_t& vEpochTime) {
+    tm ret{};
+    auto tp = std::chrono::system_clock::from_time_t(vEpochTime);
+    auto tt = std::chrono::system_clock::to_time_t(tp);
+#ifdef _MSC_VER
+    tm _timeinfo;
+    tm* pTimeInfo = &_timeinfo;
+    if (localtime_s(pTimeInfo, &tt) != 0) {
+        return ret;
+    }
+#else
+    auto* pTimeInfo = std::localtime(&tt);
+#endif
+    ret = *pTimeInfo;
+    return ret;
+}
+
+// TODO: TO TEST
 inline std::string getCurrentDate() {
     auto curr_date_t = std::time(nullptr);
 #ifdef _MSC_VER
