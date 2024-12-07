@@ -35,6 +35,7 @@ SOFTWARE.
 #include <ctime>
 
 #include "ezStr.hpp"
+#include "ezLog.hpp"
 #include <sys/stat.h>
 
 #ifndef EZ_FILE_SLASH_TYPE
@@ -319,11 +320,10 @@ inline bool createDirectoryIfNotExist(const std::string &name) {
 #ifdef WIN32
             CreateDirectory(filePathName.c_str(), nullptr);
 #elif defined(UNIX)
-            char buffer[MAX_PATH] = {};
-            snprintf(buffer, MAX_PATH, "mkdir -p %s", filePathName.c_str());
-            const int dir_err = std::system(buffer);
+            auto cmd = ez::str::toStr("mkdir -p %s", filePathName.c_str());
+            const int dir_err = std::system(cmd.c_str());
             if (dir_err == -1) {
-                printf("FileHelper::CreateDirectoryIfNotExist : Error creating directory %s", filePathName.c_str());
+                LogVarError("Error creating directory %s", filePathName.c_str());
                 res = false;
             }
 #endif
@@ -353,20 +353,20 @@ inline bool createPathIfNotExist(const std::string &vPath) {
 }
 
 // will open the file is the associated app
-inline void openFile(const std::string &vShaderToOpen) {
-    const auto shaderToOpen = correctSlashTypeForFilePathName(vShaderToOpen);
+inline void openFile(const std::string &vFile) {
+    const auto file = correctSlashTypeForFilePathName(vFile);
 #if defined(WIN32)
-    auto *result = ShellExecute(nullptr, "", shaderToOpen.c_str(), nullptr, nullptr, SW_SHOW);
+    auto *result = ShellExecute(nullptr, "", file.c_str(), nullptr, nullptr, SW_SHOW);
     if (result < (HINSTANCE)32) {  //-V112
         // try to open an editor
-        result = ShellExecute(nullptr, "edit", shaderToOpen.c_str(), nullptr, nullptr, SW_SHOW);
+        result = ShellExecute(nullptr, "edit", file.c_str(), nullptr, nullptr, SW_SHOW);
         if (result == (HINSTANCE)SE_ERR_ASSOCINCOMPLETE || result == (HINSTANCE)SE_ERR_NOASSOC) {
             // open associating dialog
-            const std::string sCmdOpenWith = "shell32.dll,OpenAs_RunDLL \"" + shaderToOpen + "\"";
+            const std::string sCmdOpenWith = "shell32.dll,OpenAs_RunDLL \"" + file + "\"";
             result = ShellExecute(nullptr, "", "rundll32.exe", sCmdOpenWith.c_str(), nullptr, SW_NORMAL);
         }
         if (result < (HINSTANCE)32) {  // open in explorer //-V112
-            const std::string sCmdExplorer = "/select,\"" + shaderToOpen + "\"";
+            const std::string sCmdExplorer = "/select,\"" + file + "\"";
             ShellExecute(
                 nullptr, "", "explorer.exe", sCmdExplorer.c_str(), nullptr, SW_NORMAL);  // ce serait peut etre mieu d'utilsier la commande system comme dans SelectFile
         }
@@ -374,11 +374,11 @@ inline void openFile(const std::string &vShaderToOpen) {
 #elif defined(LINUX)
     int pid = fork();
     if (pid == 0) {
-        execl("/usr/bin/xdg-open", "xdg-open", shaderToOpen.c_str(), (char *)0);
+        execl("/usr/bin/xdg-open", "xdg-open", file.c_str(), (char *)0);
     }
 #elif defined(APPLE)
-    std::string command = "open " + shaderToOpen;
-    std::system(command.c_str());
+    std::string cmd = "open " + file;
+    std::system(cmd.c_str());
 #endif
 }
 
@@ -388,13 +388,12 @@ inline void openUrl(const std::string &vUrl) {
 #ifdef WIN32
     ShellExecute(nullptr, nullptr, url.c_str(), nullptr, nullptr, SW_SHOW);
 #elif defined(LINUX)
-    char buffer[MAX_PATH] = {};
-    snprintf(buffer, MAX_PATH, "<mybrowser> %s", url.c_str());
-    std::system(buffer);
+    auto cmd = ez::str::toStr("<mybrowser> %s", url.c_str());
+    std::system(cmd.c_str());
 #elif defined(APPLE)
     // std::string sCmdOpenWith = "open -a Firefox " + vUrl;
-    std::string sCmdOpenWith = "open " + url;
-    std::system(sCmdOpenWith.c_str());
+    std::string cmd = "open " + url;
+    std::system(cmd.c_str());
 #endif
 }
 
@@ -407,12 +406,12 @@ inline void selectFile(const std::string &vFileToSelect) {
         std::system(sCmdOpenWith.c_str());
     }
 #elif defined(LINUX)
-    // todo : is there a similar command on linux ?
+    // todo : is there a similar cmd on linux ?
     assert(nullptr);
 #elif defined(APPLE)
     if (!fileToSelect.empty()) {
-        std::string sCmdOpenWith = "open -R " + fileToSelect;
-        std::system(sCmdOpenWith.c_str());
+        std::string cmd = "open -R " + fileToSelect;
+        std::system(cmd.c_str());
     }
 #endif
 }
