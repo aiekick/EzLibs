@@ -62,7 +62,7 @@ bool TestEzBuildInc_base() {
 #define Project_BuildId "0.3.3630"
 )";
 
-    builder.incBuildNumber().write();
+    builder.incBuildNumber().write().printInfos();
     auto newContent = ez::file::loadFileToString(file);
     if (newContent != expectedContent) {
         return false;

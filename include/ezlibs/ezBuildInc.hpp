@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 namespace ez {
 
@@ -63,6 +64,33 @@ public:
                 endLine = content.find('\n', startLine);
             }
         }
+        return *this;
+    }
+    std::string getInfos() {
+        std::stringstream prefix, build_id, file, infos;
+        prefix << "Prefix : " << m_prefix;
+        build_id << "Build Id : " << m_majorNumber << "." << m_minorNumber << "." << m_buildNumber;
+        file << "In file : " << m_buildFileHeader;
+        std::string prefix_str = prefix.str();
+        std::string build_id_str = build_id.str();
+        std::string file_str = file.str();
+        size_t row_len = build_id_str.size();
+        if (row_len < file_str.size()) {
+            row_len = file_str.size();
+        }
+        if (row_len < prefix_str.size()) {
+            row_len = prefix_str.size();
+        }
+        auto spliter = std::string(row_len + 6, '-');  // +6 for '-- ' and ' --'
+        infos << spliter << std::endl;
+        infos << "-- " << prefix_str << std::string(row_len - prefix_str.size(), ' ') << " --" << std::endl;
+        infos << "-- " << build_id_str << std::string(row_len - build_id_str.size(), ' ') << " --" << std::endl;
+        infos << "-- " << file_str << std::string(row_len - file_str.size(), ' ') << " --" << std::endl;
+        infos << spliter << std::endl;
+        return infos.str();
+    }
+    BuildInc& printInfos() {
+        std::cout << getInfos();
         return *this;
     }
     const std::string& getProject() { return m_project; }
