@@ -287,7 +287,7 @@ public:
                     newNode.m_setType(xml::Node::Type::Comment);
                     newNode.setContent(token.first);
                 } else {
-                    if (!m_extractAttributes(token.first, attributes)) {
+                    if (!m_extractAttributes(tagName, token.first, attributes)) {
                         return false;
                     }
                     for (const auto& kv : attributes) {
@@ -348,13 +348,17 @@ private:
     }
 
     std::string m_extractTagName(const std::string& vLine) {
-        size_t startPos = vLine.find('<') + 1;
+        std::string ret;
+        size_t startPos = vLine.find('<')+1;
+        while (vLine.at(startPos) == ' ' && vLine.size() > startPos) {
+            ++startPos;
+        }
         size_t endPos = vLine.find_first_of(" \t>", startPos);
         return vLine.substr(startPos, endPos - startPos);
     }
 
     // will remove space outside of <> and ""
-    std::string m_trim(const std::string& vToken) {
+    std::string m_trim1(const std::string& vToken) {
         std::string res;
         int32_t scope = 0;
         for (const auto c : vToken) {
@@ -371,41 +375,63 @@ private:
         return res;
     }
 
-    bool m_extractAttributes(const std::string& vLine, std::map<std::string, std::string>& attributes) {
-        size_t startPos = vLine.find(' ');
-        while (startPos != std::string::npos) {
-            startPos = vLine.find_first_not_of(" \t", startPos);
-            size_t equalsPos = vLine.find('=', startPos);
-            if (equalsPos == std::string::npos) {
-                return false; 
+    // will remove spaces from start and from end
+    // if the token is like tk0 tk1 tk2, only tk0 will be returned
+    std::string m_trim2(const std::string& vToken) {
+        std::string res;
+        for (const auto c : vToken) {
+            if (c != ' ') {
+                res += c;
+            } else if (!res.empty()) {
+                break;
             }
-            std::string key = vLine.substr(startPos, equalsPos - startPos);
-            startPos = equalsPos + 1;
-            char quoteChar = vLine[startPos];
-            while (quoteChar == ' ') {
-                quoteChar = vLine[++startPos];
-            }
-            if (quoteChar == '"' || quoteChar == '\'') {
-                startPos++;
-                size_t endPos = vLine.find(quoteChar, startPos);
-                if (endPos != std::string::npos) {
-                    std::string value = vLine.substr(startPos, endPos - startPos);
-                    attributes[key] = value;
-                    startPos = vLine.find(' ', endPos);  // Passer ? l'attribut suivant
+        }
+        return res;
+    }
+
+    bool m_extractAttributes(const std::string& vTagName, const std::string& vLine, std::map<std::string, std::string>& attributes) {
+        size_t startPos = vLine.find(vTagName);
+        if (startPos != std::string::npos) {
+            startPos += vTagName.size();
+            startPos = vLine.find(' ', startPos);
+            while (startPos != std::string::npos) {
+                startPos = vLine.find_first_not_of(" \t", startPos);
+                if (vLine.at(startPos) == '>') {
+                    break;
+                }
+                size_t equalsPos = vLine.find('=', startPos);
+                if (equalsPos == std::string::npos) {
+                    return false;
+                }
+                std::string key = m_trim2(vLine.substr(startPos, equalsPos - startPos));
+                startPos = equalsPos + 1;
+                char quoteChar = vLine[startPos];
+                while (quoteChar == ' ') {
+                    quoteChar = vLine[++startPos];
+                }
+                if (quoteChar == '"' || quoteChar == '\'') {
+                    startPos++;
+                    size_t endPos = vLine.find(quoteChar, startPos);
+                    if (endPos != std::string::npos) {
+                        std::string value = vLine.substr(startPos, endPos - startPos);
+                        attributes[key] = value;
+                        startPos = vLine.find(' ', endPos);  // Passer ? l'attribut suivant
+                    } else {
+#ifdef LogVarError
+                        LogVarError("The attribut '%s' have invalid value", key.c_str());
+#endif
+                        return false;  // Erreur : guillemets/apostrophes non ferm?s
+                    }
                 } else {
 #ifdef LogVarError
                     LogVarError("The attribut '%s' have invalid value", key.c_str());
 #endif
-                    return false;  // Erreur : guillemets/apostrophes non ferm?s
+                    return false;  // Erreur : attribut sans guillemets ou apostrophes
                 }
-            } else {
-#ifdef LogVarError
-                LogVarError("The attribut '%s' have invalid value", key.c_str());
-#endif
-                return false;  // Erreur : attribut sans guillemets ou apostrophes
             }
+            return true;
         }
-        return true;  // Extraction r?ussie
+        return false;
     }
 };
 
