@@ -37,7 +37,7 @@ namespace ez {
 /* File Format 
 #pragma once
 
-#define Project_Prefix "project"
+#define Project_Label "project"
 #define Project_BuildNumber 3629
 #define Project_MinorNumber 3
 #define Project_MajorNumber 0
@@ -48,7 +48,7 @@ class BuildInc {
 private:
     std::string m_buildFileHeader;
     std::string m_project;
-    std::string m_prefix;
+    std::string m_label;
     int32_t m_majorNumber = 0;
     int32_t m_minorNumber = 0;
     int32_t m_buildNumber = 0;
@@ -76,8 +76,8 @@ public:
                 line = content.substr(startLine, endLine - startLine);
                 if (m_parseDefine(line, project, key, value)) {
                     m_project = project;  // overwrote each time but its the same for each
-                    if (key == "Prefix") {
-                        m_prefix = value;
+                    if (key == "Label") {
+                        m_label = value;
                     } else if (key == "MajorNumber") {
                         m_majorNumber = m_toNumber(value);
                     } else if (key == "MinorNumber") {
@@ -93,23 +93,28 @@ public:
         return *this;
     }
     std::string getInfos() {
-        std::stringstream prefix, build_id, file, infos;
-        prefix << "Prefix : " << m_prefix;
+        std::stringstream project, build_id, file, infos;
+        std::string project_str, build_id_str, file_str;
         build_id << "Build Id : " << m_majorNumber << "." << m_minorNumber << "." << m_buildNumber;
-        file << "In file : " << m_buildFileHeader;
-        std::string prefix_str = prefix.str();
-        std::string build_id_str = build_id.str();
-        std::string file_str = file.str();
+        build_id_str = build_id.str();
         size_t row_len = build_id_str.size();
+        file << "In file : " << m_buildFileHeader;
+        file_str = file.str();
         if (row_len < file_str.size()) {
             row_len = file_str.size();
-        }
-        if (row_len < prefix_str.size()) {
-            row_len = prefix_str.size();
+        }        
+        if (!m_project.empty()) {
+            project << "Project : " << m_project;
+            project_str = project.str();
+            if (row_len < project_str.size()) {
+                row_len = project_str.size();
+            }
         }
         auto spliter = std::string(row_len + 6, '-');  // +6 for '-- ' and ' --'
         infos << spliter << std::endl;
-        infos << "-- " << prefix_str << std::string(row_len - prefix_str.size(), ' ') << " --" << std::endl;
+        if (!m_project.empty()) {
+            infos << "-- " << project_str << std::string(row_len - project_str.size(), ' ') << " --" << std::endl;
+        }
         infos << "-- " << build_id_str << std::string(row_len - build_id_str.size(), ' ') << " --" << std::endl;
         infos << "-- " << file_str << std::string(row_len - file_str.size(), ' ') << " --" << std::endl;
         infos << spliter << std::endl;
@@ -120,7 +125,7 @@ public:
         return *this;
     }
     const std::string& getProject() { return m_project; }
-    const std::string& getPrefix() { return m_prefix; }
+    const std::string& getLabel() { return m_label; }
     int32_t getMajor() { return m_majorNumber; }
     int32_t getMinor() { return m_minorNumber; }
     int32_t getBuildNumber() { return m_buildNumber; }
@@ -128,8 +133,8 @@ public:
         m_project = vProject;
         return *this;
     }
-    BuildInc& setPrefix(const std::string& vPrefix) {
-        m_prefix = vPrefix;
+    BuildInc& setLabel(const std::string& vPrefix) {
+        m_label = vPrefix;
         return *this;
     }
     BuildInc& setMajor(const int32_t vMajorNumber) {
@@ -152,7 +157,7 @@ public:
         std::stringstream content;
         content << "#pragma once" << std::endl;
         content << std::endl;
-        content << "#define " << m_project << "_Prefix \"" << m_prefix << "\"" << std::endl;
+        content << "#define " << m_project << "_Label \"" << m_label << "\"" << std::endl;
         content << "#define " << m_project << "_BuildNumber " << m_buildNumber << std::endl;
         content << "#define " << m_project << "_MinorNumber " << m_minorNumber << std::endl;
         content << "#define " << m_project << "_MajorNumber " << m_majorNumber << std::endl;
