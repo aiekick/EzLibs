@@ -34,7 +34,7 @@ SOFTWARE.
 
 namespace ez {
 
-/*  FORMAT 
+/* File Format 
 #pragma once
 
 #define Project_Prefix "project"
