@@ -133,8 +133,8 @@ public:
         m_project = vProject;
         return *this;
     }
-    BuildInc& setLabel(const std::string& vPrefix) {
-        m_label = vPrefix;
+    BuildInc& setLabel(const std::string& vLabel) {
+        m_label = vLabel;
         return *this;
     }
     BuildInc& setMajor(const int32_t vMajorNumber) {
