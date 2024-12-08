@@ -79,13 +79,14 @@ bool TestEzArgs_delimiters() {
 
 bool TestEzArgs_groupeds() {
     try {
-        std::vector<char*> arr{"cvzf", "sample.txt"};
+        std::vector<char*> arr{"cvzf", "sample.txt", "-ff=mode2"};
         ez::Args args("Test");
         args.addHeader("=========== test tool ===========").addFooter("=========== Thats all folks ===========").addDescription("Just a test");
         args.addOptional("c").help("Create");
         args.addOptional("v").help("Verbose");
         args.addOptional("z").help("gzip");
         args.addOptional("f").help("file").delimiter(' ');
+        args.addOptional("-ff").help("file mode").delimiter('=');
         if (!args.parse(static_cast<int32_t>(arr.size()), arr.data(), 0U)) {
             return false;
         }
@@ -112,6 +113,18 @@ bool TestEzArgs_groupeds() {
             return false;
         }
         if (args.getValue<std::string>("f") != "sample.txt") {
+            return false;
+        }
+        if (!args.isPresent("ff")) {
+            return false;
+        }
+        if (args.getValue<std::string>("ff") != "mode2") {
+            return false;
+        }
+        if (!args.isPresent("-ff")) {
+            return false;
+        }
+        if (args.getValue<std::string>("-ff") != "mode2") {
             return false;
         }
     } catch (std::exception& ex) {
