@@ -54,6 +54,7 @@ class Argument {
 private:
     std::vector<std::string> m_base_args;  // base args
     std::set<std::string> m_full_args;  // full args
+    char one_char_arg = 0;
     std::string m_help_text;
     std::string m_help_var_name;
     std::string m_type;
@@ -187,7 +188,10 @@ public:
     template <typename T>
     T getValue(const std::string& vKey) const {
         auto token = m_getArgumentPtr(vKey)->m_value;
-        return m_convertString<T>(token);
+        if (!token.empty()) {
+            return m_convertString<T>(token);
+        }
+        return {};
     }
 
     std::string getHelp(  //
@@ -233,25 +237,41 @@ public:
             std::string token = arg;
             std::string value;
             bool is_optional = false;
+            bool check_for_value = false;
             for (auto& arg_ref : m_Optionals) {
-                if (arg_ref.m_delimiter != 0 && arg_ref.m_delimiter != ' ') {
-                    if (token.find(arg_ref.m_delimiter) != std::string::npos) {
-                        auto arr = ez::str::splitStringToVector(token, arg_ref.m_delimiter);
-                        if (arr.size() == 2) {
-                            token = arr.at(0);
-                            value = arr.at(1);
-                        } else {
-                            if (arr.size() < 2) {
-                                throw std::runtime_error("bad parsing of key \"" + token + "\". no value");
-                            } else if (arr.size() > 2) {
-                                throw std::runtime_error("bad parsing of key \"" + token + "\". more than one value");
+                check_for_value = false;
+                if (arg_ref.m_delimiter != 0) {
+                    if (arg_ref.m_delimiter != ' ') {
+                        if (token.find(arg_ref.m_delimiter) != std::string::npos) {
+                            auto arr = ez::str::splitStringToVector(token, arg_ref.m_delimiter);
+                            if (arr.size() == 2) {
+                                token = arr.at(0);
+                                value = arr.at(1);
+                            } else {
+                                if (arr.size() < 2) {
+                                    throw std::runtime_error("bad parsing of key \"" + token + "\". no value");
+                                } else if (arr.size() > 2) {
+                                    throw std::runtime_error("bad parsing of key \"" + token + "\". more than one value");
+                                }
                             }
                         }
                     }
                 }
-                if (arg_ref.m_full_args.find(token) != arg_ref.m_full_args.end()) {
+                if (arg_ref.one_char_arg != 0) {
+                    auto p = token.find(arg_ref.one_char_arg);
+                    if (p != std::string::npos) {
+                        arg_ref.m_is_present = true;
+                        is_optional = true;
+                        if (p == (token.size() - 1)) {
+                            check_for_value = true;
+                        }
+                    }
+                } else if (arg_ref.m_full_args.find(token) != arg_ref.m_full_args.end()) {
                     arg_ref.m_is_present = true;
                     is_optional = true;
+                    check_for_value = true;
+                }
+                if (check_for_value) {
                     if (arg_ref.m_delimiter == ' ') {
                         if (idx < (vArgc + 1)) {
                             ++idx;
@@ -310,6 +330,7 @@ private:
                 vInOutArgument.m_full_args.emplace(arg.substr(short_last_minus + 1));
             }
         }
+        vInOutArgument.one_char_arg = (vKey.size() == 1U) ? vKey[0] : 0;
         return vInOutArgument;
     }
 

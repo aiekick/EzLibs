@@ -89,28 +89,28 @@ bool TestEzArgs_groupeds() {
             return false;
         }
         args.printHelp();
-        if (!args.isPresent("-s")) {
+        if (!args.isPresent("c")) {
             return false;
         }
-        if (!args.isPresent("s")) {
+        if (args.getValue<std::string>("c") == "sample.txt") {
             return false;
         }
-        if (!args.isPresent("--source")) {
+        if (!args.isPresent("v")) {
             return false;
         }
-        if (!args.isPresent("source")) {
+        if (args.getValue<std::string>("v") == "sample.txt") {
             return false;
         }
-        if (args.isPresent("-src")) {
+        if (!args.isPresent("z")) {
             return false;
         }
-        if (args.getValue<std::string>("-s") != "sample.txt") {
+        if (args.getValue<std::string>("z") == "sample.txt") {
             return false;
         }
-        if (args.getValue<std::string>("-t") != "target.txt") {
+        if (!args.isPresent("f")) {
             return false;
         }
-        if (args.getValue<int>("-n") != 5) {
+        if (args.getValue<std::string>("f") != "sample.txt") {
             return false;
         }
     } catch (std::exception& ex) {
