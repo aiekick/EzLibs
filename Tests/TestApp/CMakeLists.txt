@@ -12,7 +12,8 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX Src FILES ${PROJECT_TEST_SR
 
 file(GLOB SRC_RECURSE 
 	${EZ_LIBS_INCLUDE_DIR}/ezlibs/ezApp.hpp
-	${EZ_LIBS_INCLUDE_DIR}/ezlibs/ezArgs.hpp)
+	${EZ_LIBS_INCLUDE_DIR}/ezlibs/ezArgs.hpp
+	${EZ_LIBS_INCLUDE_DIR}/ezlibs/ezBuildInc.hpp)
 source_group(TREE ${EZ_LIBS_INCLUDE_DIR}/ezlibs PREFIX Libs FILES ${SRC_RECURSE})
 
 add_executable(${PROJECT} 
@@ -36,3 +37,9 @@ target_include_directories(${PROJECT} PRIVATE
 AddTest("TestEzArgs_parsing")
 AddTest("TestEzArgs_delimiters")
 AddTest("TestEzArgs_groupeds")
+
+##########################################################
+##### EzBuildInc #########################################
+##########################################################
+
+AddTest("TestEzBuildInc_base")

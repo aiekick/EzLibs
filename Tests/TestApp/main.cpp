@@ -1,4 +1,6 @@
+#include <TestEzApp.h>
 #include <TestEzArgs.h>
+#include <TestEzBuildInc.h>
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -9,7 +11,9 @@
     return v(vTest)
 
 bool TestApp(const std::string& vTest) {
-    IfTestCollectionExist(TestEzArgs);
+    IfTestCollectionExist(TestEzApp);
+    else IfTestCollectionExist(TestEzArgs);
+    else IfTestCollectionExist(TestEzBuildInc);
     return true;
 }
 
@@ -23,5 +27,5 @@ int main(int argc, char** argv) {
         return TestApp(argv[1]) ? 0 : 1;
     }
     // User testing
-    return TestApp("TestEzArgs_groupeds") ? 0 : 1;
+    return TestApp("TestEzBuildInc_base") ? 0 : 1;
 }
