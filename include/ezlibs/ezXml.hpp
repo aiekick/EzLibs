@@ -32,8 +32,7 @@ SOFTWARE.
 #include <vector>
 #include <cassert>
 #include <sstream>
-
-#include "ezStr.hpp"
+#include <fstream>
 
 namespace ez {
 class Xml;
@@ -262,7 +261,21 @@ public:
         return m_Root;
     }
 
-    bool parse(const std::string& vDoc) {
+    bool parseFile(const std::string& vFilePathName) {
+        std::ifstream docFile(vFilePathName, std::ios::in);
+        if (docFile.is_open()) {
+            std::stringstream strStream;
+            strStream << docFile.rdbuf();  // read the file
+            auto xml_content = strStream.str();
+            m_replaceString(xml_content, "\r\n", "\n");
+            m_replaceString(xml_content, "\r", "\n");
+            docFile.close();
+            return parseString(xml_content);
+        } 
+        return false;
+    }
+
+    bool parseString(const std::string& vDoc) {
         auto tokens = m_tokenize(vDoc);
         if (tokens.empty()) {
             return false;
@@ -314,6 +327,17 @@ public:
     }
 
 private:
+    bool m_replaceString(std::string& str, const std::string& oldStr, const std::string& newStr) {
+        bool found = false;
+        size_t pos = 0;
+        while ((pos = str.find(oldStr, pos)) != std::string::npos) {
+            found = true;
+            str.replace(pos, oldStr.length(), newStr);
+            pos += newStr.length();
+        }
+        return found;
+    }
+
     std::vector<std::pair<std::string, TokenType>> m_tokenize(const std::string& vDoc) {
         std::vector<std::pair<std::string, TokenType>> tokens;
         size_t pos = 0;

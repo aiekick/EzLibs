@@ -87,7 +87,7 @@ public:
         std::string datas = vDatas;
         Node::replaceAll(datas, "\r\n", "\n");
         ez::Xml doc;
-        res = doc.parse(datas);
+        res = doc.parseString(datas);
         if (res) {
             Node parent("root");
             RecursParsingConfig(doc.getRoot(), parent, vUserDatas);
