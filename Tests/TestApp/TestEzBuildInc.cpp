@@ -47,7 +47,7 @@ bool TestEzBuildInc_base() {
     if (builder.getMajor() != 0) {
         return false;
     }
-    if (builder.getPrefix() != "project") {
+    if (builder.getLabel() != "project") {
         return false;
     }
     if (builder.getProject() != "Project") {
